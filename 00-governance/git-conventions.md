@@ -27,10 +27,12 @@ main        ← Production. Merge from release only. Always stable.
 [type]/[description-in-kebab-case]
 
 Examples:
-feat/oauth2-login
-fix/schedule-overlap-calculation
-chore/update-spring-dependencies
-hotfix/null-token-expiration
+feat/auth-login
+feat/guardian-route-tracking
+fix/duplicate-boarding-record
+docs/update-security-policy
+chore/configure-notifications
+hotfix/expose-student-location
 ```
 
 ---
@@ -59,14 +61,15 @@ hotfix/null-token-expiration
 
 **Examples:**
 ```
-feat(iam): implement JWT login
+feat(tracking): show current school route location
 
-fix(scheduling): correct schedule overlap validation
-Closes #42
+feat(attendance): register student boarding by QR
 
-docs(api): update actor service OpenAPI contract
+fix(attendance): prevent duplicate boarding scan
 
-chore(deps): upgrade Spring Boot to 3.2.0
+docs(api): update student attendance contract
+
+fix(auth): reject expired guardian session
 ```
 
 ---
