@@ -17,6 +17,7 @@
 | Java + Spring Boot | [java-spring.md](./java-spring.md) | Backend in Spring Boot 3.x with Maven or Gradle |
 | Python + FastAPI | [python-fastapi.md](./python-fastapi.md) | Backend in FastAPI/Django with Python 3.10+ |
 | Go | [go.md](./go.md) | Backend in Go with net/http or Gin/Echo |
+| ASP.NET Core (.NET) | [dotnet-aspnet.md](./dotnet-aspnet.md) | Backend in ASP.NET Core, .NET 10 / C# 14 |
 
 ---
 
@@ -32,7 +33,7 @@
 
 ## Why all examples use the same domain
 
-All 4 stack guides use the same example domain: **medical appointments system**
+All 5 stack guides use the same example domain: **medical appointments system**
 (entity `Appointment`, `Patient`, `Doctor`). This is intentional: it allows comparing
 how the same logic is implemented in Java, Python, Go, and Node.js without the difference
 in domain confusing the comparison.
