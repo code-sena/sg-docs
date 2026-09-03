@@ -23,40 +23,40 @@
 
 ## Microservice folder structure (Hexagonal)
 
+Each microservice lives in its own solution and follows the convention
+`ms-<name-service>/src/ms-<name-service>.Api/`. Modules (bounded contexts such as
+`Admin`, `Driver`, `Family`, `Parent`, `Student`) live inside the `.Api` project,
+each following the hexagonal layers.
+
 ```
-src/
-├── Domain/                      # No external dependencies — the heart of the system
-│   ├── Entities/                # Entities and Aggregates
-│   │   └── MyEntity.cs
-│   ├── ValueObjects/            # Immutable Value Objects (records)
-│   │   └── MyValueObject.cs
-│   ├── Events/                  # Domain Events (interfaces or simple classes)
-│   │   └── MyEntityCreated.cs
-│   ├── Ports/                   # Interfaces defined by the domain
-│   │   ├── In/                  # Primary ports (use cases)
-│   │   │   └── ICreateMyEntityUseCase.cs
-│   │   └── Out/                 # Secondary ports (repositories, external services)
-│   │       ├── IMyEntityRepository.cs
-│   │       └── IEventPublisher.cs
-│   └── Services/                # Domain Services (logic that doesn't fit in one entity)
-│
-├── Application/                 # Orchestrates the domain — only depends on Domain/
-│   └── UseCases/
-│       └── CreateMyEntityUseCase.cs
-│
-├── Infrastructure/              # Adapters — depends on Application/ and Domain/
-│   ├── Http/                    # Primary adapter: HTTP (controllers, middleware)
-│   │   └── Controllers/
-│   │       └── MyEntityController.cs
-│   ├── Persistence/             # Secondary adapter: Database (EF Core DbContext + repositories)
-│   │   ├── AppDbContext.cs
-│   │   └── MyEntityRepository.cs   # implements IMyEntityRepository
-│   ├── Messaging/               # Secondary adapter: Message broker
-│   │   └── EventPublisher.cs    #     implements IEventPublisher
-│   └── External/                # Secondary adapter: External APIs (e.g. Google Maps)
-│
-└── Api/                         # Bootstrap: composition root, Program.cs wiring, DI
-    └── Program.cs
+ms-{name-service}/
+└── src/
+    └── ms-{name-service}.Api/
+        ├── {Module}/                 # One folder per bounded context (Admin, Driver, Family...)
+        │   ├── Domain/               # No external dependencies — the heart of the system
+        │   │   └── Model/            # Entities and Aggregates
+        │   │       └── MyEntity.cs
+        │   │   └── ValueObjects/     # Immutable Value Objects (records)
+        │   │       └── MyValueObject.cs
+        │   │   └── Ports/            # Interfaces defined by the domain
+        │   │       ├── In/           # Primary ports (use cases)
+        │   │       │   └── ICreateMyEntityUseCase.cs
+        │   │       └── Out/          # Secondary ports (repositories, external services)
+        │   │           ├── IMyEntityRepository.cs
+        │   │           └── IEventPublisher.cs
+        │   ├── Application/          # Orchestrates the domain — only depends on Domain/
+        │   │   └── UseCases/
+        │   │       └── CreateMyEntityUseCase.cs
+        │   └── Infrastructure/       # Adapters — depends on Application/ and Domain/
+        │       ├── Http/             # Primary adapter: HTTP (controllers, middleware)
+        │       │   └── Controllers/
+        │       │       └── MyEntityController.cs
+        │       ├── Persistence/      # Secondary adapter: Database (EF Core DbContext + repositories)
+        │       │   └── MyEntityRepository.cs   # implements IMyEntityRepository
+        │       └── External/         # Secondary adapter: External APIs (e.g. Google Maps)
+        ├── Shared/                   # Cross-cutting shared code across modules
+        │   └── Domain/Model/         # e.g. common value objects (Person, Status...)
+        └── Program.cs                # Bootstrap: composition root, DI wiring
 ```
 
 **Dependency rule:** `Infrastructure → Application → Domain`. The domain does not import anything from outside.
@@ -70,6 +70,7 @@ Minimum baseline — run these per project/service:
 ```bash
 # HTTP infrastructure (ASP.NET Core ships with the web templates)
 dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer   # JWT tokens
+dotnet add package Swashbuckle.AspNetCore                          # Swagger UI + API docs
 
 # Data infrastructure — Entity Framework Core
 dotnet add package Microsoft.EntityFrameworkCore.SqlServer          # or Npgsql provider
@@ -88,6 +89,7 @@ dotnet add package Serilog
 <Project>
   <ItemGroup>
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.*" />
+    <PackageVersion Include="Swashbuckle.AspNetCore" Version="7.*" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.*" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.*" />
     <PackageVersion Include="FluentValidation" Version="12.*" />
@@ -100,9 +102,9 @@ dotnet add package Serilog
 ## Example: Input port (Use Case Interface)
 
 ```csharp
-// src/Domain/Ports/In/ICreateAppointmentUseCase.cs
+// src/service.Api/Domain/Ports/In/ICreateAppointmentUseCase.cs
 
-namespace SchoolGuardian.Domain.Ports.In;
+namespace service.Api.Domain.Ports.In;
 
 public record CreateAppointmentCommand(
     string PatientId,
@@ -118,11 +120,11 @@ public interface ICreateAppointmentUseCase
 ## Example: Output port (Repository Interface)
 
 ```csharp
-// src/Domain/Ports/Out/IAppointmentRepository.cs
+// src/service.Api/Domain/Ports/Out/IAppointmentRepository.cs
 
-using SchoolGuardian.Domain.Entities;
+using service.Api.Domain.Model;
 
-namespace SchoolGuardian.Domain.Ports.Out;
+namespace service.Api.Domain.Ports.Out;
 
 public interface IAppointmentRepository
 {
@@ -137,11 +139,11 @@ public interface IAppointmentRepository
 ```csharp
 // src/Application/UseCases/CreateAppointmentUseCase.cs
 
-using SchoolGuardian.Domain.Entities;
-using SchoolGuardian.Domain.Ports.In;
-using SchoolGuardian.Domain.Ports.Out;
+using service.Api.Domain.Model;
+using service.Api.Domain.Ports.In;
+using service.Api.Domain.Ports.Out;
 
-namespace SchoolGuardian.Application.UseCases;
+namespace service.Api.Application.UseCases;
 
 public sealed class CreateAppointmentUseCase : ICreateAppointmentUseCase
 {
@@ -163,58 +165,14 @@ public sealed class CreateAppointmentUseCase : ICreateAppointmentUseCase
 
 ---
 
-## JWT setup (primary adapter / auth)
-
-```csharp
-// src/Infrastructure/Http/Configuration/JwtConfig.cs
-
-namespace SchoolGuardian.Infrastructure.Http.Configuration;
-
-public class JwtConfig
-{
-    public string Issuer { get; set; } = string.Empty;
-    public string Audience { get; set; } = string.Empty;
-    public string SecretKey { get; set; } = string.Empty;
-    public int ExpirationMinutes { get; set; } = 60;
-}
-```
-
-```csharp
-// src/Api/Program.cs — JWT registration
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-
-builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("Jwt"));
-
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwt.Issuer,
-            ValidAudience = jwt.Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SecretKey))
-        };
-    });
-```
-
----
-
 ## Domain unit test (xUnit)
 
 ```csharp
 // tests/Domain.Tests/AppointmentTests.cs
 
-using SchoolGuardian.Domain.Entities;
+using service.Api.Domain.Model;
 
-namespace SchoolGuardian.Tests.Domain;
+namespace service.Tests.Domain;
 
 public class AppointmentTests
 {
@@ -234,8 +192,8 @@ public class AppointmentTests
 ```csharp
 // tests/Application.Tests/CreateAppointmentUseCaseTests.cs
 
-using SchoolGuardian.Application.UseCases;
-using SchoolGuardian.Tests.Support;
+using service.Api.Application.UseCases;
+using service.Api.Tests.Support;
 
 public class CreateAppointmentUseCaseTests
 {
@@ -257,20 +215,22 @@ public class CreateAppointmentUseCaseTests
 
 ## Project commands
 
+Commands follow the real solution layout of the project:
+`ms-{name-service}/ms-{name-service}.slnx` with the API project at
+`ms-{name-service}/src/ms-{name-service}.Api/`.
+
 ```bash
-# Create a new microservice (solution + API project)
+# From the service root (ms-user-management/), create/maintain a new microservice
+# Create the solution and the API project (already made for ms-user-management)
 dotnet new sln -n ms-{name-service}
-dotnet new webapi -n ms-{name-service}.Api -o src/Api
-dotnet new classlib -n ms-{name-service}.Domain -o src/Domain
-dotnet new classlib -n ms-{name-service}.Application -o src/Application
-dotnet new classlib -n ms-{name-service}.Infrastructure -o src/Infrastructure
-dotnet sln add src/Api src/Domain src/Application src/Infrastructure
+dotnet new webapi -n ms-{name-service}.Api -o src/ms-{name-service}.Api
+dotnet sln add src/ms-{name-service}.Api/ms-{name-service}.Api.csproj
 
 # Restore packages
 dotnet restore
 
-# Development with hot-reload
-dotnet watch --project src/Api
+# Development with hot-reload (run the API project)
+dotnet watch --project src/ms-{name-service}.Api
 
 # Tests
 dotnet test
@@ -281,8 +241,8 @@ dotnet test --collect:"XPlat Code Coverage"          # coverage
 dotnet build -c Release
 
 # EF Core migrations (package Microsoft.EntityFrameworkCore.Design)
-dotnet ef migrations add InitialCreate -p src/Infrastructure -s src/Api
-dotnet ef database update -p src/Infrastructure -s src/Api
+dotnet ef migrations add InitialCreate -p src/ms-{name-service}.Api -s src/ms-{name-service}.Api
+dotnet ef database update -p src/ms-{name-service}.Api -s src/ms-{name-service}.Api
 ```
 
 ---
