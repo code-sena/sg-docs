@@ -18,8 +18,15 @@
 
 | Term | Definition | Notes / Synonyms |
 |------|-----------|-----------------|
-| [Term A] | [Precise definition in the context of this system] | [Synonyms or alternative uses to AVOID] |
-| [Term B] | [Definition] | |
+| Parent / Father | Adult responsible for a student who receives notifications and tracks the student's school transport | Synonym: "Guardian". Use exactly one term consistently; "Guardian" is preferred |
+| Student | Person enrolled in the institution who uses the school transport service | |
+| Driver | Person who operates a vehicle on a school route | |
+| School | Educational institution that provides or contracts the transport service | |
+| Route | Journey that a vehicle follows to pick up and drop off students | Spanish: "ruta" |
+| Stop | Fixed point where a student boards or alights from the vehicle | Spanish: "parada" |
+| Boarding | The action of getting on the vehicle, recorded as the pickup check-in | Spanish: "abordaje" |
+| Attendance | Record of which students boarded or alighted at each leg of the trip | |
+| Vehicle | Transport unit assigned to a route | |
 
 ---
 

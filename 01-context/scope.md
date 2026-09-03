@@ -14,16 +14,19 @@ What the system **DOES build and maintain**:
 
 | # | Feature | Description | Responsible service |
 |---|---------|-------------|---------------------|
-| 1 | [Feature A] | [Brief description] | [service-name] |
-| 2 | [Feature B] | [Brief description] | [service-name] |
-| 3 | [Feature C] | [Brief description] | [service-name] |
+| 1 | User authentication | Login/register with roles (guardian, student, driver, school admin) | iam-service |
+| 2 | Vehicle and driver management | Register vehicles and drivers and assign them to routes | bus-service |
+| 3 | Route and stop management | Create and manage routes, stops, and their schedules | route-service |
+| 4 | Boarding / alighting registration | Record student check-in and check-out at each stop | boarding-service |
+| 5 | Live route tracking | Show the vehicle position and the current trip in real time | pending |
+| 6 | Parent notifications | Notify guardians when the student boards/alights (in-app) | notification-service |
 
 ### Included integrations
 
 | External system | Integration type | Purpose |
 |----------------|-----------------|---------|
-| [System A] | REST API / Webhook / SDK | [purpose] |
-| [System B] | SFTP / Database | [purpose] |
+| Google Maps | Library | Map visualization and real-time vehicle tracking. |
+| In-app notifications | Mobile push | Notify guardians about boarding, alighting, and alerts |
 
 ### Environments being built
 
@@ -42,9 +45,8 @@ What the system **does NOT build** in this version and why:
 
 | # | What is out of scope | Reason | Future version? |
 |---|---------------------|--------|----------------|
-| 1 | [Feature X] | [Out of budget / Not MVP / Uses external system] | Yes — H2 2024 |
-| 2 | [Integration with Y] | [Provider has no public API yet] | Pending provider |
-| 3 | [Module Z] | [Another team builds it] | N/A |
+| 1 | Payments and billing | Not yet evaluated; free service for now | Yes — pending growth |
+| 2 | Advanced analytics / reports | Depends on data volume and usage | Yes — pending |
 
 ### What another system / team handles (and why not us)
 
@@ -61,7 +63,7 @@ What the system **does NOT build** in this version and why:
 
 | # | Assumption | Consequence if false |
 |---|-----------|---------------------|
-| 1 | External system [X] has an available REST API | We would have to build the integration differently |
+| 1 | Parents have cell phones with notifications |  |
 | 2 | Users use [language / device / etc.] | The UX design would change |
 | 3 | Initial data volume is < [N] records | The database strategy might change |
 
