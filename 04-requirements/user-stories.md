@@ -10,7 +10,7 @@
 
 | Cut | Sprint | Total HUs | Refined | In progress | Completed |
 |-----|--------|-----------|---------|-------------|-----------|
-| Cut 1 | Sprint 1-2 | 5 | 0 | 0 | 0 |
+| Cut 1 | Sprint 1-2 | 15 | 0 | 0 | 0 |
 | Cut 2 | Sprint 3-4 | [N] | [N] | [N] | [N] |
 
 ---
@@ -19,9 +19,12 @@
 
 | ID | Epic | Description |
 |----|------|-------------|
+| EP-001 | QR Boarding / Alighting | Register student boarding and alighting by scanning their QR code |
 | EP-002 | Notifications | Notify guardians about student boarding/alighting and route alerts |
+| EP-003 | Route & Fleet Management | Manage routes, buses, stops, and driver/student assignments |
 | EP-004 | User Management / Family | Manage users and link students to guardian accounts |
 | EP-005 | Live Tracking | Show the school bus location on a map in real time |
+| EP-006 | Incidents | Report and notify incidents/emergencies that occur during a trip |
 
 ---
 
@@ -292,6 +295,547 @@ Scenario 2: Bus resumes before the threshold (no alert)
 | Priority | Medium |
 | Target sprint | Sprint 5 |
 | Dependencies | HU-GPS-002 (live location), HU-NOTIF-001 (notification channel) |
+
+---
+
+### HU-QR-001 — Driver scans the student's QR code to register their boarding {#HU-QR-001}
+
+**Epic:** EP-001 (QR Boarding / Alighting)
+
+> **As** a driver
+> **I want** to scan the student's QR code when they board the bus
+> **so that** the boarding is registered on the route and the parents are notified in real time.
+
+**Acceptance Criteria:**
+
+```gherkin
+Scenario 1: Successful boarding (happy path)
+  Given the student is assigned to route R-01 with their stop registered
+  When the driver scans the student's QR code in the app
+  Then the system registers the boarding with the current time and stop
+  And publishes the BoardingRegistered event
+
+Scenario 2: Student not assigned to this route (error case)
+  Given the QR code belongs to a student assigned to another route
+  When the driver scans it in the app
+  Then the system rejects the registration with the message "Student not assigned to this route"
+```
+
+**Technical notes:**
+
+> The boarding is registered synchronously and its event is published asynchronously
+> to trigger the notification to the guardian. The QR code must be readable in low-light
+> conditions and the flow must handle brief loss of connectivity (local queue with retry).
+
+- **Responsible service(s):** boarding-service
+- **Endpoint(s) implemented:** `POST /api/v1/boarding`
+- **Events generated:** `BoardingRegistered`
+- **Required permissions:** authenticated driver (JWT)
+
+**Definition of Done (DoD):**
+
+> This HU can only be closed when it meets the team's full DoD.
+> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+
+**Additional checks specific to this HU (if applicable):**
+- [ ] QR scanning tested on real devices in low-light conditions
+- [ ] Offline scenario defined (local queue and retry) and documented
+- [ ] Remove this section if there are no additional checks
+
+**Estimation and priority:**
+
+| Field | Value |
+|-------|-------|
+| Story Points | 5 |
+| Priority | High |
+| Target sprint | Sprint 2 |
+| Dependencies | HU-IAM-001 (accounts and roles), HU-QR-004 (student QR), HU-ROUTE-003 (active trip) |
+
+---
+
+### HU-QR-002 — Driver scans the student's QR code to register their alighting {#HU-QR-002}
+
+**Epic:** EP-001 (QR Boarding / Alighting)
+
+> **As** a driver
+> **I want** to scan the student's QR code when they alight at their destination stop
+> **so that** the alighting is recorded and the parents know their child arrived safely.
+
+**Acceptance Criteria:**
+
+```gherkin
+Scenario 1: Successful alighting (happy path)
+  Given the student has an active boarding on the current trip
+  When the driver scans their QR code at the destination stop
+  Then the system records the alighting with the current time and location
+  And publishes the AlightingRegistered event
+
+Scenario 2: Scanning without a previous boarding (error case)
+  Given the student has no active boarding on the current trip
+  When the driver attempts to register the alighting
+  Then the system rejects it with the message "No active boarding for the student"
+```
+
+**Technical notes:**
+
+> The alighting can only be registered for a student who has an active boarding on the
+> current trip. The event is consumed by the notification service to alert the guardian
+> with the drop-off time and location.
+
+- **Responsible service(s):** boarding-service
+- **Endpoint(s) implemented:** `POST /api/v1/alighting`
+- **Events generated:** `AlightingRegistered`
+- **Required permissions:** authenticated driver (JWT)
+
+**Definition of Done (DoD):**
+
+> This HU can only be closed when it meets the team's full DoD.
+> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+
+**Additional checks specific to this HU (if applicable):**
+- [ ] Validation of active boarding before registering the alighting
+- [ ] Remove this section if there are no additional checks
+
+**Estimation and priority:**
+
+| Field | Value |
+|-------|-------|
+| Story Points | 5 |
+| Priority | High |
+| Target sprint | Sprint 2 |
+| Dependencies | HU-QR-001 (boarding), HU-ROUTE-003 (active trip) |
+
+---
+
+### HU-ROUTE-002 — Driver views their assigned route with stops and schedules {#HU-ROUTE-002}
+
+**Epic:** EP-003 (Route & Fleet Management)
+
+> **As** a driver
+> **I want** to see my assigned route with its stops, order, and scheduled times in the app
+> **so that** I know the exact itinerary and can prepare before starting the trip.
+
+**Acceptance Criteria:**
+
+```gherkin
+Scenario 1: Driver with an assigned and active route (happy path)
+  Given the driver has an assigned and active route
+  When they open "My route" in the app
+  Then they see the ordered list of stops with their scheduled times
+  And the bus assigned to the route
+
+Scenario 2: Driver without an assigned route (error case)
+  Given the driver has no route assigned
+  When they open "My route" in the app
+  Then they see the message "No route assigned"
+```
+
+**Technical notes:**
+
+> The route data comes from the route-service. The endpoint returns the route currently
+> assigned to the authenticated driver, including ordered stops, scheduled times, and bus.
+
+- **Responsible service(s):** route-service
+- **Endpoint(s) implemented:** `GET /api/v1/routes/current`
+- **Events generated:** —
+- **Required permissions:** authenticated driver (JWT)
+
+**Definition of Done (DoD):**
+
+> This HU can only be closed when it meets the team's full DoD.
+> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+
+**Additional checks specific to this HU (if applicable):**
+- [ ] Stops sorted by itinerary order, not by creation order
+- [ ] Remove this section if there are no additional checks
+
+**Estimation and priority:**
+
+| Field | Value |
+|-------|-------|
+| Story Points | 3 |
+| Priority | High |
+| Target sprint | Sprint 2 |
+| Dependencies | HU-ROUTE-001 (route definition), HU-ROUTE-007 (driver assignment) |
+
+---
+
+### HU-ROUTE-003 — Driver starts and finishes the route trip {#HU-ROUTE-003}
+
+**Epic:** EP-003 (Route & Fleet Management)
+
+> **As** a driver
+> **I want** to start and finish the trip of my route from the app
+> **so that** the system knows when the route is in operation and notifications are triggered meaningfully.
+
+**Acceptance Criteria:**
+
+```gherkin
+Scenario 1: Start the trip (happy path)
+  Given the driver has an assigned route valid for the current schedule
+  When the driver taps "Start trip"
+  Then the system marks the trip as active
+  And publishes the TripStarted event
+
+Scenario 2: Finish the trip
+  Given the trip is active
+  When the driver taps "Finish trip"
+  Then the system closes the trip and validates that there are no pending alightings
+  And publishes the TripEnded event
+
+Scenario 3: Start a second concurrent trip (error case)
+  Given the bus already has an active trip
+  When the driver attempts to start a new trip
+  Then the system rejects it with the message "There is already an active trip for this bus"
+```
+
+**Technical notes:**
+
+> A bus can only have one active trip at a time. Trip lifecycle events signal the
+> boarding-flow and notification services when the route is operational.
+
+- **Responsible service(s):** route-service
+- **Endpoint(s) implemented:** `POST /api/v1/trips/start`, `POST /api/v1/trips/end`
+- **Events generated:** `TripStarted`, `TripEnded`
+- **Required permissions:** authenticated driver (JWT)
+
+**Definition of Done (DoD):**
+
+> This HU can only be closed when it meets the team's full DoD.
+> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+
+**Additional checks specific to this HU (if applicable):**
+- [ ] Block of concurrent active trips per bus
+- [ ] Remove this section if there are no additional checks
+
+**Estimation and priority:**
+
+| Field | Value |
+|-------|-------|
+| Story Points | 3 |
+| Priority | Medium |
+| Target sprint | Sprint 2 |
+| Dependencies | HU-ROUTE-002 (assigned route view) |
+
+---
+
+### HU-INCIDENT-001 — Driver reports an incident or emergency during the trip {#HU-INCIDENT-001}
+
+**Epic:** EP-006 (Incidents)
+
+> **As** a driver
+> **I want** to report an incident or emergency during the trip
+> **so that** the school and the parents of the students on board are notified quickly.
+
+**Acceptance Criteria:**
+
+```gherkin
+Scenario 1: Successful report (happy path)
+  Given the driver is on an active trip
+  When the driver reports an incident selecting a type and an optional description
+  Then the system records the incident with the current trip and location
+  And notifies the school and the parents of the students on board
+
+Scenario 2: Report outside an active trip (error case)
+  Given the driver has no active trip
+  When the driver attempts to report an incident without selecting a trip
+  Then the system requires the trip as a mandatory field and rejects the report
+```
+
+**Technical notes:**
+
+> The incident type list must be configurable by the school. The report attaches the GPS
+> location at the moment of the event and triggers an alert to guardians of students on board.
+
+- **Responsible service(s):** incident-service
+- **Endpoint(s) implemented:** `POST /api/v1/incidents`
+- **Events generated:** `IncidentReported`
+- **Required permissions:** authenticated driver (JWT)
+
+**Definition of Done (DoD):**
+
+> This HU can only be closed when it meets the team's full DoD.
+> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+
+**Additional checks specific to this HU (if applicable):**
+- [ ] Configurable incident types (not hard-coded)
+- [ ] GPS location attached to the report
+- [ ] Remove this section if there are no additional checks
+
+**Estimation and priority:**
+
+| Field | Value |
+|-------|-------|
+| Story Points | 3 |
+| Priority | Medium |
+| Target sprint | Sprint 5 |
+| Dependencies | HU-ROUTE-003 (active trip), HU-GPS-002 (location source) |
+
+---
+
+### HU-ROUTE-004 — Guardian views the details of their child's route {#HU-ROUTE-004}
+
+**Epic:** EP-003 (Route & Fleet Management)
+
+> **As** a guardian
+> **I want** to see the details of my child's route, including schedules, stops, bus, and driver
+> **so that** I know when and where to pick them up or drop them off with certainty.
+
+**Acceptance Criteria:**
+
+```gherkin
+Scenario 1: Child with an assigned route (happy path)
+  Given my child is linked to my account and has an assigned route
+  When I open the route details of my child
+  Then I see the bus, the driver, the stops, and the scheduled times
+
+Scenario 2: Child without an assigned route (error case)
+  Given my child has no route assigned yet
+  When I open the route details of my child
+  Then I see the message "No route assigned yet"
+```
+
+**Technical notes:**
+
+> The guardian can only view routes of students linked to their account. The endpoint
+> returns the route configuration of the student, not the live position (see HU-GPS-002).
+
+- **Responsible service(s):** route-service
+- **Endpoint(s) implemented:** `GET /api/v1/students/{studentId}/route`
+- **Events generated:** —
+- **Required permissions:** authenticated guardian (JWT), only for linked students
+
+**Definition of Done (DoD):**
+
+> This HU can only be closed when it meets the team's full DoD.
+> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+
+**Additional checks specific to this HU (if applicable):**
+- [ ] Authorization check that the student is linked to the requesting guardian
+- [ ] Remove this section if there are no additional checks
+
+**Estimation and priority:**
+
+| Field | Value |
+|-------|-------|
+| Story Points | 2 |
+| Priority | Medium |
+| Target sprint | Sprint 3 |
+| Dependencies | HU-USER-003 (student-linked to guardian), HU-ROUTE-001 (route definition) |
+
+---
+
+### HU-QR-004 — Student views their personal QR code in the mobile app {#HU-QR-004}
+
+**Epic:** EP-001 (QR Boarding / Alighting)
+
+> **As** a student
+> **I want** to see my personal QR code in the mobile app
+> **so that** the driver can scan it when I board and alight from the bus.
+
+**Acceptance Criteria:**
+
+```gherkin
+Scenario 1: View a valid QR code (happy path)
+  Given the student has an active account
+  When the student opens the "My QR" section in the app
+  Then they see the generated QR code with a unique identifier
+  And the screen shows their name for visual verification
+
+Scenario 2: QR not available (error case)
+  Given the student's QR code has expired or the student has been deactivated
+  When the student attempts to view their QR code
+  Then the app shows the message "QR not available"
+```
+
+**Technical notes:**
+
+> The QR code encodes a unique student identifier that the boarding-service resolves.
+> It must support rotation/expiration and be regenerated when credentials are replaced.
+
+- **Responsible service(s):** student-service
+- **Endpoint(s) implemented:** `GET /api/v1/students/{studentId}/qr`
+- **Events generated:** —
+- **Required permissions:** authenticated student (JWT), only their own QR code
+
+**Definition of Done (DoD):**
+
+> This HU can only be closed when it meets the team's full DoD.
+> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+
+**Additional checks specific to this HU (if applicable):**
+- [ ] QR rotation/expiration policy defined and implemented
+- [ ] Remove this section if there are no additional checks
+
+**Estimation and priority:**
+
+| Field | Value |
+|-------|-------|
+| Story Points | 2 |
+| Priority | Medium |
+| Target sprint | Sprint 1 |
+| Dependencies | HU-IAM-001 (accounts and roles), HU-USER-004 (student account) |
+
+---
+
+### HU-BUS-001 — Administrator manages the bus fleet and assigns buses to a route {#HU-BUS-001}
+
+**Epic:** EP-003 (Route & Fleet Management)
+
+> **As** an administrator
+> **I want** to create, edit, activate/deactivate buses and assign them to a route
+> **so that** the fleet stays up to date and every route has an available bus.
+
+**Acceptance Criteria:**
+
+```gherkin
+Scenario 1: Create and assign a bus (happy path)
+  Given the administrator has access to fleet management
+  When the administrator creates a bus with a valid plate and capacity and assigns it to route R-01
+  Then the bus is registered and linked to the route
+  And it appears in the bus list with the status "On route"
+
+Scenario 2: Reassign a deactivated bus to a route that already has a bus (error case)
+  Given the bus is deactivated and route R-01 already has a bus assigned
+  When the administrator attempts to assign the bus to route R-01
+  Then the system rejects the assignment with the message "The route already has a bus assigned"
+```
+
+**Technical notes:**
+
+> The bus plate must be unique and the capacity greater than zero. A bus can only be
+> assigned to one route at a time. Assigning an inactive bus is not allowed.
+
+- **Responsible service(s):** fleet-service
+- **Endpoint(s) implemented:** `POST /api/v1/buses`, `PUT /api/v1/buses/{id}`, `PATCH /api/v1/buses/{id}/status`, `PUT /api/v1/routes/{routeId}/bus`
+- **Events generated:** `BusCreated`, `BusAssignedToRoute`
+- **Required permissions:** administrator (JWT)
+
+**Definition of Done (DoD):**
+
+> This HU can only be closed when it meets the team's full DoD.
+> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+
+**Additional checks specific to this HU (if applicable):**
+- [ ] Unique plate constraint enforced at the data level
+- [ ] Remove this section if there are no additional checks
+
+**Estimation and priority:**
+
+| Field | Value |
+|-------|-------|
+| Story Points | 3 |
+| Priority | Medium |
+| Target sprint | Sprint 2 |
+| Dependencies | HU-ROUTE-001 (route definition) |
+
+---
+
+### HU-ROUTE-007 — Administrator assigns drivers to routes {#HU-ROUTE-007}
+
+**Epic:** EP-003 (Route & Fleet Management)
+
+> **As** an administrator
+> **I want** to assign and unassign drivers to routes
+> **so that** every route is covered by an enabled driver according to availability.
+
+**Acceptance Criteria:**
+
+```gherkin
+Scenario 1: Successful assignment (happy path)
+  Given an active driver exists and a route has no driver assigned
+  When the administrator assigns the driver to the route
+  Then the route is registered with the driver
+  And the driver sees the route in their app (HU-ROUTE-002)
+
+Scenario 2: Driver already assigned to another route with a schedule conflict (error case)
+  Given the driver already has a route assigned at the same time slot
+  When the administrator attempts to assign the driver to another route
+  Then the system rejects the assignment with the message "Driver with schedule conflict"
+  And publishes the DriverAssignedToRoute event
+```
+
+**Technical notes:**
+
+> Inactive drivers cannot be assigned. The assignment must validate schedule conflicts
+> across the routes assigned to the same driver.
+
+- **Responsible service(s):** route-service
+- **Endpoint(s) implemented:** `POST /api/v1/routes/{routeId}/drivers`, `DELETE /api/v1/routes/{routeId}/drivers/{driverId}`
+- **Events generated:** `DriverAssignedToRoute`
+- **Required permissions:** administrator (JWT)
+
+**Definition of Done (DoD):**
+
+> This HU can only be closed when it meets the team's full DoD.
+> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+
+**Additional checks specific to this HU (if applicable):**
+- [ ] Schedule-conflict validation implemented per driver
+- [ ] Remove this section if there are no additional checks
+
+**Estimation and priority:**
+
+| Field | Value |
+|-------|-------|
+| Story Points | 2 |
+| Priority | High |
+| Target sprint | Sprint 2 |
+| Dependencies | HU-ROUTE-001 (route definition), HU-USER-004 (driver accounts) |
+
+---
+
+### HU-ROUTE-008 — Administrator assigns students to a route indicating their stop {#HU-ROUTE-008}
+
+**Epic:** EP-003 (Route & Fleet Management)
+
+> **As** an administrator
+> **I want** to assign students to a route indicating their boarding and alighting stop
+> **so that** the system knows whom to expect, at which stop, and at what time.
+
+**Acceptance Criteria:**
+
+```gherkin
+Scenario 1: Successful assignment (happy path)
+  Given the student exists and route R-01 is active
+  When the administrator assigns the student with their boarding and alighting stops
+  Then the student is linked to the route
+  And the guardian can see the child's route (HU-ROUTE-004)
+
+Scenario 2: Stop that does not belong to the route (error case)
+  Given the administrator selects a stop that is not on route R-01
+  When the administrator attempts to complete the assignment
+  Then the system rejects it with the message "The stop does not belong to this route"
+```
+
+**Technical notes:**
+
+> The selected stops must belong to the route. A student can only have one active route
+> at a time. The assignment enables the guardian and the QR boarding flow.
+
+- **Responsible service(s):** route-service
+- **Endpoint(s) implemented:** `POST /api/v1/routes/{routeId}/students`
+- **Events generated:** `StudentAssignedToRoute`
+- **Required permissions:** administrator (JWT)
+
+**Definition of Done (DoD):**
+
+> This HU can only be closed when it meets the team's full DoD.
+> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+
+**Additional checks specific to this HU (if applicable):**
+- [ ] Validation that stops belong to the route
+- [ ] Uniqueness of one active route per student
+- [ ] Remove this section if there are no additional checks
+
+**Estimation and priority:**
+
+| Field | Value |
+|-------|-------|
+| Story Points | 3 |
+| Priority | High |
+| Target sprint | Sprint 2 |
+| Dependencies | HU-ROUTE-001 (route definition), HU-USER-003/004 (student accounts) |
 
 ---
 
