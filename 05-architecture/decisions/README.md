@@ -20,6 +20,9 @@ ADRs document important architectural decisions. Each file = one decision.
 
 | # | Title | Status | Date |
 |---|-------|--------|------|
-| None yet | — | — | — |
+| 001 | Documentation language (English) | Accepted | 2024-01-10 |
+| 002 | Shared Database (Monolithic DB) for all microservices | Accepted | 2026-09-04 |
+| 003 | Monolithic web and mobile client applications | Proposed | 2026-09-04 |
+| 004 | Apache Kafka as the event/message broker | Accepted | 2026-09-04 |
 
 > Add rows here as you create ADRs in `records/`
