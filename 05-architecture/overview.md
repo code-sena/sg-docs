@@ -70,17 +70,16 @@ graph TB
     GW[API Gateway<br/>:8080]
     SA[Service A<br/>:3001]
     SB[Service B<br/>:3002]
-    BUS[(Message Bus<br/>Kafka/RabbitMQ)]
-    DBA[(Service A DB<br/>PostgreSQL)]
-    DBB[(Service B DB<br/>MongoDB)]
+    BUS[(Message Bus<br/>Kafka)]
+    DBS[(SQL Server<br/>shared instance)]
   end
 
   WEB[Web App] --> GW
   MOB[Mobile] --> GW
   GW --> SA
   GW --> SB
-  SA --> DBA
-  SB --> DBB
+  SA --> DBS
+  SB --> DBS
   SA --> BUS
   BUS --> SB
 ```
@@ -91,10 +90,11 @@ graph TB
 
 | # | Service | Responsibility | Port | DB | Communication type |
 |---|---------|---------------|------|-----|-------------------|
-| 1 | [api-gateway] | Routing, auth, rate limiting | 8080 | Redis (cache) | HTTP Proxy |
-| 2 | [auth-service] | Registration, login, JWT tokens | 3001 | PostgreSQL | REST + Events |
-| 3 | [xxx-service] | [responsibility] | 300X | [DB] | [REST/Async] |
+| 1 | api-gateway | Routing, auth, rate limiting | 8080 | Redis (cache) | HTTP Proxy |
+| 2 | iam-service | Registration, login, JWT tokens | 3001 | SQL Server (schema `identity`) | REST + Events |
+| 3 | [xxx-service] | [responsibility] | 300X | SQL Server (schema `[xxx]`) | [REST/Async] |
 
+> All services share a single SQL Server instance, each with its own schema (see ADR-002).
 > Full detail per service in `09-microservices/service-catalog.md`
 
 ---
@@ -108,9 +108,15 @@ verify it is consistent with these principles.
 Design the API contract (OpenAPI) before implementing the service.
 Contracts are the source of truth for consumers.
 
-### P2: Database per Service
-Each service has its own database. No service directly accesses another service's database.
-Communication is always through API or events.
+### P2: Shared Monolithic Database — Schema per Service
+A single SQL Server instance is shared by all microservices, but each service only owns
+and accesses its **own schema** (logical isolation). No service reads or writes another
+service's schema, and inter-service communication is always through API or events
+(never JOINs across schemas).
+
+> Deviation from the framework default "Database per Service", justified in
+> ADR-002. If the data volume or team grows, migrate gradually to separate
+> databases (Strangler Fig).
 
 ### P3: Fail Fast, Recover Gracefully
 Detect errors early (validation at the edge). When an external service fails,
@@ -130,7 +136,7 @@ distributed traces with Jaeger/Zipkin. It is not optional or a story for "later"
 | Pattern | Adopted | Reference |
 |---------|---------|-----------|
 | API Gateway | Yes | `05-architecture/pattern-guide.md` |
-| Database per Service | Yes | ADR-00X |
+| Database per Service | No | ADR-002 (deviation: shared DB, schema per service) |
 | CQRS | No (review in Q3) | |
 | Event Sourcing | No | |
 | Circuit Breaker | Yes | ADR-00X |

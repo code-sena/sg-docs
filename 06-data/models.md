@@ -1,7 +1,8 @@
 # Data Models per Service
 
 > **What to fill in here:** The data schema for each microservice.
-> Each service has its own section. Remember: **each service has its own database**.
+> Each service has its own section. Remember: **all services share a single SQL Server
+> instance, each with its own schema** (ADR-002).
 > Schema changes are always done with versioned migrations, never by modifying tables in place.
 
 > **DB engine note:** This document is technology-agnostic. The examples show standard SQL
@@ -13,14 +14,21 @@
 
 ## Data modeling principles
 
-### 1. Database per Service (mandatory)
-No service directly accesses another service's database.
+### 1. Shared Monolithic Database — Schema per Service (ADR-002)
+All services share a **single SQL Server instance**, but each service only owns and
+accesses its **own schema** (logical isolation). No service reads or writes another
+service's schema, and there are never JOINs across schemas.
 Communication between services is always via API or events.
 
+> Deviation from the framework default "Database per Service", justified in
+> `05-architecture/decisions/records/ADR-002-shared-database-monolithic-db.md`.
+> If the data volume or team grows, migrate gradually to separate databases (Strangler Fig).
+
 ```
-✓ Service A → DB A (PostgreSQL)
-✓ Service B → DB B (MongoDB)
-✗ Service A → JOIN with Service B's tables
+✓ Service A → schema_a (SQL Server shared instance)
+✓ Service B → schema_b (SQL Server shared instance)
+✗ Service A → JOIN with Service B's tables (different schema)
+✗ Service A → writes to Service B's schema
 ```
 
 ### 2. Standard audit fields

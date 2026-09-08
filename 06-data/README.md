@@ -5,10 +5,13 @@
 
 ## Fundamental principle in microservices
 
-> **Each microservice owns its own data.**
+> **All services share a single SQL Server instance, each with its own schema.**
 
-No service should access another service's database directly. If it needs data from another
-service, it requests it via API or receives it via event. This principle guarantees independence.
+Per ADR-002, this project uses a **shared monolithic database** (one SQL Server) with a
+**separate schema per service** (logical isolation). Each service owns its schema and never
+accesses another service's schema directly. If it needs data from another service, it requests
+it via API or receives it via event. The migration path to a full "Database per Service" is
+documented in ADR-002 (Strangler Fig).
 
 ---
 
