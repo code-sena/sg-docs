@@ -48,11 +48,11 @@ This facilitates auditing and recovery.
 ### 4. Naming conventions
 
 ```sql
--- Tables:      snake_case, plural              → orders, order_items, users
--- Columns:     snake_case, descriptive         → unit_price, delivery_date
--- FKs:         [referenced_table]_id           → customer_id, product_id
--- Indexes:     idx_[table]_[column(s)]         → idx_orders_customer_id
--- Timestamps:  always with timezone (TIMESTAMPTZ, not TIMESTAMP)
+-- Tables:      PascalCase, plural              → Orders, OrderItems, Users
+-- Columns:     PascalCase, descriptive         → UnitPrice, delivery_date
+-- FKs:         [referenced_table]Id            → CustomerId, ProductId
+-- Indexes:     IX_<Table>_<Columns>            → IX_Order_CustomerID
+-- DATETIME2:   
 ```
 
 ---
