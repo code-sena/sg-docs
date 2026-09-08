@@ -14,33 +14,44 @@
   (Web, Mobile, API)  ──▶ │   :8080         │
                           └────────┬────────┘
                                    │ routes by path
-          ┌───────────────┬────────┴───────────┬──────────────────┐
-          ▼               ▼                    ▼                  ▼
-  ┌──────────────┐ ┌──────────────┐  ┌──────────────────┐ ┌──────────────┐
-  │ auth-service │ │[service-A]   │  │ [service-B]      │ │[service-N]   │
-  │    :3001     │ │    :3002     │  │    :3003         │ │    :300N     │
-  └──────────────┘ └──────┬───────┘  └────────┬─────────┘ └──────────────┘
-                           │                   │
-                           └──────────┬────────┘
-                                      ▼
-                            ┌─────────────────┐
-                            │  Message Broker  │
-                            │  (Kafka/RabbitMQ)│
-                            └─────────────────┘
+                                   ▼
+         ┌──────────┬──────────┬───┴──────┬──────────┬─────────┐
+         ▼          ▼          ▼          ▼          ▼         ▼
+  ┌──────────┐ ┌──────────┐ ┌─────────┐ ┌─────────┐ ┌───────┐ ┌─────────┐
+  │iam       │ │user-mgmt │ │school   │ │notif    │ │bus    │ │route    │
+  └──────────┘ └──────────┘ └─────────┘ └─────────┘ └───────┘ └─────────┘
+         ┌──────────┬──────────┬──────────┬──────────┬─────────┐
+         ▼          ▼          ▼          ▼          ▼         ▼
+  ┌──────────┐ ┌──────────┐ ┌─────────┐ ┌─────────┐ ┌───────┐
+  │gps       │ │exception │ │audit    │ │config   │ │       │
+  └──────────┘ └──────────┘ └─────────┘ └─────────┘ └───────┘
 ```
 
 ---
 
 ## Service registry
 
-| # | Service | Main responsibility | Port | DB | DB type | Status |
-|---|---------|-------------------|------|-----|---------|--------|
-| 01 | `api-gateway` | Routing, authentication, rate limiting | 8080 | Redis | Cache | 🟢 Active |
-| 02 | `auth-service` | Registration, login, JWT tokens, RBAC | 3001 | PostgreSQL | Relational | 🟢 Active |
-| 03 | `[service-name]` | [responsibility] | 3002 | [DB] | [type] | 🟡 In development |
-| 04 | `[service-name]` | [responsibility] | 3003 | [DB] | [type] | 🔴 Planned |
+> All services share a **single SQL Server instance** (ADR-002), each with its own schema for
+> logical isolation. The API Gateway is the only stateless service (uses Redis).
+
+| # | Service | Main responsibility | Port | Schema | DB type | Status |
+|---|---------|-------------------|------|--------|---------|--------|
+| 01 | `api-gateway` | Routing, authentication, rate limiting | 8080 | — (Redis cache) | Cache | 🟢 Active |
+| 02 | `iam` | Identity, auth, roles, permissions, sessions | 3001 | `Iam` | Relational (shared) | 🟢 Active |
+| 03 | `user-management` | Persons, families, family members, driver licenses | 3002 | `UserManagement` | Relational (shared) | 🟡 In development |
+| 04 | `school` | Schools, campuses, courses, cities | 3003 | `School` + `Geographic` | Relational (shared) | 🟡 In development |
+| 05 | `notification` | Boarding/alighting events, alerts and recipients | 3004 | `Notification` | Relational (shared) | 🟡 In development |
+| 06 | `bus` | Bus fleet, brands, models | 3005 | `Bus` | Relational (shared) | 🟡 In development |
+| 07 | `route` | Routes, stops, schedules, executions, assignments | 3006 | `Route` | Relational (shared) | 🟡 In development |
+| 08 | `gps` | GPS devices and position history | 3007 | `Gps` | Relational (shared) | 🟡 In development |
+| 09 | `exceptional` | Exceptional driver and route usage | 3008 | `Exceptional` | Relational (shared) | 🟡 In development |
+| 10 | `audit` | Audit trail and error logs | 3009 | `Audit` | Relational (shared) | 🟡 In development |
+| 11 | `configuration` | Security settings and password policies | 3010 | `Configuration` | Relational (shared) | 🟡 In development |
 
 **Statuses:** 🟢 Active in prod | 🟡 In development | 🔴 Planned | ⏸ Deprecated
+
+> **Data note (ADR-002):** All services share a **single SQL Server instance** (monolithic DB),
+> each with its own schema for logical isolation. Neither PostgreSQL nor MongoDB are used.
 
 ---
 
@@ -54,7 +65,6 @@
 | **Responsibility** | Single entry point. Routes, authenticates, and applies rate limiting |
 | **Type** | Infrastructure service (not domain) |
 | **Port** | 8080 (HTTPS 8443) |
-| **Technology** | [Kong / NGINX + custom / Spring Cloud Gateway] |
 | **DB** | Redis (token cache, rate limiting) |
 | **Communicates with** | All internal services |
 | **Externally exposed** | Yes — it is the only entry point |
@@ -64,52 +74,115 @@
 
 ---
 
-### 02 — `auth-service`
+### 02 — `iam`
 
 | Field | Value |
 |-------|-------|
-| **Folder** | `09-microservices/services/02-auth-service/` |
-| **Responsibility** | Identity and access: registration, login, refresh token, RBAC |
-| **Type** | Supporting service |
-| **Port** | 3001 |
-| **Technology** | [Node.js + Express / Spring Boot / etc.] |
-| **DB** | PostgreSQL |
-| **Bounded Context** | `02-domain/domain-map.md` → IAM Context |
+| **Folder** | `09-microservices/services/02-iam/` |
+| **Responsibility** | Identity and access: auth, JWT, roles/permissions (RBAC), sessions |
+| **Schema** | `Iam` |
+| **Tables** | Role, Permissions, PermissionsRole, Profile, SessionProfile |
+| **Consumed by** | api-gateway (token verification), all other services |
 | **Externally exposed** | Only through the API Gateway |
-
-**Key endpoints:**
-- `POST /auth/register` — User registration
-- `POST /auth/login` — Authentication, returns JWT
-- `POST /auth/refresh` — Renew token
-- `DELETE /auth/logout` — Invalidate refresh token
-
-**Events published:**
-- `UserRegistered` → Topic: `iam.user.registered`
-- `SessionStarted` → Topic: `iam.session.started`
 
 ---
 
-### 03 — `[service-name]`
+### 03 — `user-management`
 
 | Field | Value |
 |-------|-------|
-| **Folder** | `09-microservices/services/03-[name]/` |
-| **Responsibility** | [Describe in one sentence] |
-| **Type** | [Core / Supporting / Generic] |
-| **Port** | 300X |
-| **Technology** | [Stack] |
-| **DB** | [Engine and name] |
-| **Bounded Context** | [Reference in domain-map] |
-| **Externally exposed** | [Yes / Internal only] |
+| **Folder** | `09-microservices/services/03-user-management/` |
+| **Responsibility** | Persons, families, family members, driver licenses |
+| **Schema** | `UserManagement` |
+| **Tables** | Person, Family, FamilyMember, DriverLicense |
 
-**Key endpoints:**
-- `[METHOD] /[path]` — [description]
+---
 
-**Events published:**
-- `[EventName]` → Topic: `[topic.name]`
+### 04 — `school`
 
-**Events consumed:**
-- `[EventName]` from `[source service]`
+| Field | Value |
+|-------|-------|
+| **Folder** | `09-microservices/services/04-school/` |
+| **Responsibility** | Schools, campuses, courses, course groups, cities |
+| **Schema** | `School` + `Geographic` |
+| **Tables** | School, SchoolCampus, Course, CourseGroup, City |
+
+---
+
+### 05 — `notification`
+
+| Field | Value |
+|-------|-------|
+| **Folder** | `09-microservices/services/05-notification/` |
+| **Responsibility** | Boarding/alighting events, alerts, alert types, recipients |
+| **Schema** | `Notification` |
+| **Tables** | Boarding, Alert, AlertType, AlertRecipient |
+
+---
+
+### 06 — `bus`
+
+| Field | Value |
+|-------|-------|
+| **Folder** | `09-microservices/services/06-bus/` |
+| **Responsibility** | Bus fleet, brands, models |
+| **Schema** | `Bus` |
+| **Tables** | Bus, Brand, Model |
+
+---
+
+### 07 — `route`
+
+| Field | Value |
+|-------|-------|
+| **Folder** | `09-microservices/services/07-route/` |
+| **Responsibility** | Routes, stops, schedules, executions, assignments |
+| **Schema** | `Route` |
+| **Tables** | Route, Stop, RouteStop, RouteBusAssignments, RouteStudentAssignments, RouteSchedule, RouteExecution |
+
+---
+
+### 08 — `gps`
+
+| Field | Value |
+|-------|-------|
+| **Folder** | `09-microservices/services/08-gps/` |
+| **Responsibility** | GPS devices and position history |
+| **Schema** | `Gps` |
+| **Tables** | GpsDevice, GpsLocation |
+
+---
+
+### 09 — `exceptional`
+
+| Field | Value |
+|-------|-------|
+| **Folder** | `09-microservices/services/09-exceptional/` |
+| **Responsibility** | Exceptional driver and route usage |
+| **Schema** | `Exceptional` |
+| **Tables** | ExceptionalDriverUsage, ExceptionalRouteUsage |
+
+---
+
+### 10 — `audit`
+
+| Field | Value |
+|-------|-------|
+| **Folder** | `09-microservices/services/10-audit/` |
+| **Responsibility** | Audit trail and error logs |
+| **Schema** | `Audit` |
+| **Tables** | Audit, LogErrors |
+
+---
+
+### 11 — `configuration`
+
+| Field | Value |
+|-------|-------|
+| **Folder** | `09-microservices/services/11-configuration/` |
+| **Responsibility** | Security settings and password policies |
+| **Schema** | `Configuration` |
+| **Tables** | SecuritySettings, PasswordPolicies |
 
 ---
 
@@ -119,7 +192,10 @@
 
 | Source service | Destination service | Channel | Type | Description |
 |----------------|--------------------|---------|----- |-------------|
-| api-gateway | auth-service | HTTP/REST | Synchronous | Validate JWT on each request |
+| api-gateway | iam | HTTP/REST | Synchronous | Validate JWT on each request |
+| notification | iam | HTTP/REST | Synchronous | Resolve profile identity for events |
+| notification | route | HTTP/REST | Synchronous | Reference route executions/stops |
+| notification | bus | HTTP/REST | Synchronous | Reference bus fleet |
 | [svc-a] | [svc-b] | Event | Asynchronous | Notify of [event] |
 | [svc-b] | [svc-c] | HTTP/REST | Synchronous | Query [data] |
 
@@ -132,9 +208,18 @@ Others access via API or events, never directly to the DB.
 
 | Entity / Data | Owner service (Source of Truth) | How other services access |
 |---------------|--------------------------------|--------------------------|
-| User / Identity | auth-service | REST API (`GET /users/:id`) |
-| [Entity A] | [service-A] | `[EntityACreated]` event |
-| [Entity B] | [service-B] | REST API (`GET /b/:id`) |
+| Profile, Role, Permissions, Sessions | iam | REST API |
+| Person, Family, DriverLicense | user-management | REST API |
+| School, Campus, Course, City | school | REST API |
+| Boarding, Alert | notification | REST API + consumed events |
+| Bus, Brand, Model | bus | REST API |
+| Route, Stop, Schedule, Execution | route | REST API + events |
+| GpsDevice, GpsLocation | gps | REST query |
+| Exceptional usage | exceptional | REST API |
+| Audit, LogErrors | audit | REST API (write-only ingest) |
+| SecuritySettings, PasswordPolicies | configuration | REST API |
+
+> Full ownership per schema → `09-microservices/data-ownership-matrix.md`
 
 ---
 
