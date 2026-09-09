@@ -2,11 +2,11 @@
 
 ## Service: School
 
-**DB Engine:** SQL Server 15.
+**DB Engine:** SQL Server 16.
 
 **Engine justification:**
-- SQL Server supports transactional school, campus, course, and geographic reference data.
-- Separate logical `School` and `Geographic` schemas clarify ownership within the shared instance.
+- SQL Server supports transactional school and campus, reference data.
+- Separate logical `School` schemas clarify ownership within the shared instance.
 
 ### Table: School
 
@@ -14,8 +14,8 @@
 
 ```sql
 CREATE TABLE School (
-    Id UUID PRIMARY KEY, 
-    CityId UUID NOT NULL, 
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    CityId UNIQUEIDENTIFIER NOT NULL,
     Logo BYTE NOT NULL,
     Name VARCHAR(30) NOT NULL,
     Address VARCHAR(30) NOT NULL,
@@ -31,8 +31,8 @@ CREATE TABLE School (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | School identifier | `550e8400-...` |
-| CityId | UUID | City reference | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | School identifier | `550e8400-...` |
+| CityId | UNIQUEIDENTIFIER | City reference | `550e8400-...` |
 | Logo | BYTE | School logo content | `0x89504E47` |
 | Name | VARCHAR(30) | School name | `Central School` |
 | Address | VARCHAR(30) | School address | `10 Main St` |
@@ -52,8 +52,8 @@ CREATE TABLE School (
 
 ```sql
 CREATE TABLE SchoolCampus (
-    Id UUID PRIMARY KEY, 
-    SchoolId UUID NOT NULL, 
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    SchoolId UNIQUEIDENTIFIER NOT NULL,
     Name VARCHAR(30) NOT NULL, Address VARCHAR(30) NOT NULL, 
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
@@ -63,8 +63,8 @@ CREATE TABLE SchoolCampus (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Campus identifier | `550e8400-...` |
-| SchoolId | UUID | Parent school | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | Campus identifier | `550e8400-...` |
+| SchoolId | UNIQUEIDENTIFIER | Parent school | `550e8400-...` |
 | Name | VARCHAR(30) | Campus name | `North Campus` |
 | Address | VARCHAR(30) | Campus address | `20 North St` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
@@ -79,8 +79,8 @@ CREATE TABLE SchoolCampus (
 
 ```sql
 CREATE TABLE Course (
-    Id UUID PRIMARY KEY, 
-    CampusId UUID NOT NULL, 
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    CampusId UNIQUEIDENTIFIER NOT NULL,
     Name VARCHAR(10) NOT NULL, 
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
@@ -90,66 +90,14 @@ CREATE TABLE Course (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Course identifier | `550e8400-...` |
-| CampusId | UUID | Campus reference | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | Course identifier | `550e8400-...` |
+| CampusId | UNIQUEIDENTIFIER | Campus reference | `550e8400-...` |
 | Name | VARCHAR(10) | Course name or code | `5A` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
 
 **Modeling decisions:**
 1. Course is an offering; enrollment is represented separately by CourseGroup.
 2. Campus ownership avoids duplicating school data.
-
-### Table: CourseGroup
-
-**Purpose:** Groups student profiles into a course.
-
-```sql
-CREATE TABLE CourseGroup (
-    Id UUID PRIMARY KEY, 
-    ProfileId UUID NOT NULL, 
-    CourseId UUID NOT NULL, 
-    Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
-);
-```
-
-**Data dictionary:**
-
-| Column | Type | Description | Example |
-|--------|------|-------------|---------|
-| Id | UUID | Enrollment identifier | `550e8400-...` |
-| ProfileId | UUID | Student profile correlation | `550e8400-...` |
-| CourseId | UUID | Course reference | `550e8400-...` |
-| Status | VARCHAR(20) | Lifecycle status | `Active` |
-
-**Modeling decisions:**
-1. CourseGroup models enrollment without duplicating profile data.
-2. Profile ownership remains in IAM.
-
-### Table: City
-
-**Purpose:** Provides geographic city reference data.
-
-```sql
-CREATE TABLE City (
-    Id UUID PRIMARY KEY, 
-    Name VARCHAR(40) NOT NULL, 
-    Country VARCHAR(30) NOT NULL, 
-    Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
-);
-```
-
-**Data dictionary:**
-
-| Column | Type | Description | Example |
-|--------|------|-------------|---------|
-| Id | UUID | City identifier | `550e8400-...` |
-| Name | VARCHAR(40) | City name | `Bogota` |
-| Country | VARCHAR(30) | Country name | `Colombia` |
-| Status | VARCHAR(20) | Lifecycle status | `Active` |
-
-**Modeling decisions:**
-1. City is shared by School and correlated by Route without direct cross-service joins.
-2. Status supports controlled reference-data retirement.
 
 ### Indexes
 

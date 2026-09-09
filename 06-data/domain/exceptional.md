@@ -2,7 +2,7 @@
 
 ## Service: Exceptional
 
-**DB Engine:** SQL Server 15.
+**DB Engine:** SQL Server 16.
 
 **Engine justification:**
 - SQL Server provides transactional records for exceptional driver and route usage.
@@ -14,9 +14,9 @@
 
 ```sql
 CREATE TABLE ExceptionalDriverUsage (
-	ID UUID PRIMARY KEY, 
-    BusID UUID NOT NULL, 
-    ProfileID UUID NOT NULL,
+	ID UNIQUEIDENTIFIER PRIMARY KEY,
+	BusID UNIQUEIDENTIFIER NOT NULL,
+	ProfileID UNIQUEIDENTIFIER NOT NULL,
 	DateTime DATETIME2 NOT NULL, 
     Reason VARCHAR(200) NOT NULL,
 	Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
@@ -27,9 +27,9 @@ CREATE TABLE ExceptionalDriverUsage (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Usage record identifier | `550e8400-...` |
-| BusId | UUID | Bus reference | `550e8400-...` |
-| ProfileId | UUID | Driver profile reference | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | Usage record identifier | `550e8400-...` |
+| BusId | UNIQUEIDENTIFIER | Bus reference | `550e8400-...` |
+| ProfileId | UNIQUEIDENTIFIER | Driver profile reference | `550e8400-...` |
 | DateTime | DATETIME2 | Exceptional usage timestamp | `2026-09-08T08:00:00Z` |
 | Reason | VARCHAR(200) | Business justification | `Replacement driver` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
@@ -44,9 +44,9 @@ CREATE TABLE ExceptionalDriverUsage (
 
 ```sql
 CREATE TABLE ExceptionalRouteUsage (
-	Id UUID PRIMARY KEY, 
-    ProfileId UUID NOT NULL, 
-    RouteId UUID NOT NULL,
+	Id UNIQUEIDENTIFIER PRIMARY KEY,
+	ProfileId UNIQUEIDENTIFIER NOT NULL,
+	RouteId UNIQUEIDENTIFIER NOT NULL,
 	StartDateTime DATETIME NOT NULL, 
     EndDateTime DATETIME NOT NULL,
 	Reason VARCHAR(200) NOT NULL, 
@@ -58,9 +58,9 @@ CREATE TABLE ExceptionalRouteUsage (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Usage record identifier | `550e8400-...` |
-| ProfileId | UUID | Student profile reference | `550e8400-...` |
-| RouteId | UUID | Route reference | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | Usage record identifier | `550e8400-...` |
+| ProfileId | UNIQUEIDENTIFIER | Student profile reference | `550e8400-...` |
+| RouteId | UNIQUEIDENTIFIER | Route reference | `550e8400-...` |
 | StartDateTime | DATETIME | Usage start | `2026-09-08T08:00:00Z` |
 | EndDateTime | DATETIME | Usage end | `2026-09-08T16:00:00Z` |
 | Reason | VARCHAR(200) | Business justification | `Temporary relocation` |

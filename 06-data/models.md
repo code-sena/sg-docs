@@ -35,7 +35,7 @@ Communication between services is always via API or events.
 All tables include:
 
 ```sql
-id          UUID        PRIMARY KEY  DEFAULT gen_random_uuid(),
+id          UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
 created_at  TIMESTAMPTZ NOT NULL     DEFAULT NOW(),
 updated_at  TIMESTAMPTZ NOT NULL     DEFAULT NOW(),
 deleted_at  TIMESTAMPTZ              -- NULL = active (soft delete)
@@ -71,7 +71,7 @@ This facilitates auditing and recovery.
 
 ```sql
 CREATE TABLE [table_name] (
-  id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  id              UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
   
   -- Business fields
   [field1]        [TYPE]      NOT NULL,
@@ -79,7 +79,7 @@ CREATE TABLE [table_name] (
   [field3]        [TYPE]      NOT NULL DEFAULT [value],
   
   -- Relationships
-  [reference]_id  UUID        REFERENCES [referenced_table](id) ON DELETE RESTRICT,
+  [reference]_id  UNIQUEIDENTIFIER REFERENCES [referenced_table](id) ON DELETE RESTRICT,
   
   -- Status fields
   status          VARCHAR(50) NOT NULL DEFAULT 'ACTIVE'
@@ -89,8 +89,8 @@ CREATE TABLE [table_name] (
   created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   deleted_at      TIMESTAMPTZ,
-  created_by      UUID,
-  updated_by      UUID
+  created_by      UNIQUEIDENTIFIER,
+  updated_by      UNIQUEIDENTIFIER
 );
 
 -- Indexes
@@ -104,7 +104,7 @@ CREATE INDEX idx_[table]_[search_field] ON [table_name] ([search_field]);
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| id | UUID | Auto-generated unique identifier | `550e8400-...` |
+| id | UNIQUEIDENTIFIER | Auto-generated unique identifier | `550e8400-...` |
 | [field1] | [TYPE] | [Business description] | [Example] |
 | status | VARCHAR(50) | Lifecycle status | `ACTIVE` |
 | created_at | TIMESTAMPTZ | When the record was created | `2024-01-15T10:30:00Z` |
@@ -121,8 +121,8 @@ CREATE INDEX idx_[table]_[search_field] ON [table_name] ([search_field]);
 
 ```sql
 CREATE TABLE [related_table] (
-  id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-  [principal]_id  UUID        NOT NULL REFERENCES [principal_table](id) ON DELETE CASCADE,
+  id              UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
+  [principal]_id  UNIQUEIDENTIFIER NOT NULL REFERENCES [principal_table](id) ON DELETE CASCADE,
   
   -- Fields
   [field]         [TYPE]      NOT NULL,
@@ -213,16 +213,16 @@ Mermaid example:
 erDiagram
     ORDERS ||--o{ ORDER_ITEMS : contains
     ORDERS {
-        uuid id PK
-        uuid customer_id FK
+        uniqueidentifier id PK
+        uniqueidentifier customer_id FK
         varchar status
         decimal total
         timestamptz created_at
     }
     ORDER_ITEMS {
-        uuid id PK
-        uuid order_id FK
-        uuid product_id FK
+        uniqueidentifier id PK
+        uniqueidentifier order_id FK
+        uniqueidentifier product_id FK
         integer quantity
         decimal unit_price
     }

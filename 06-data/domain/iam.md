@@ -2,7 +2,7 @@
 
 ## Service: Iam
 
-**DB Engine:** SQL Server
+**DB Engine:** SQL Server 16.
 
 **Engine justification:**
 - SQL Server provides transactional consistency for identity, RBAC, profiles, and sessions.
@@ -15,7 +15,7 @@
 ```sql
 CREATE TABLE Role (
     Id          TINYINT      PRIMARY KEY IDENTITY,
-    Name        VARCHAR(20)  NOT NULL,
+    Name        VARCHAR(20)  UNIQUE NOT NULL,
     Description VARCHAR(100) NOT NULL,
     Status      VARCHAR(20)  NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
@@ -93,9 +93,9 @@ CREATE TABLE PermissionsRole (
 
 ```sql
 CREATE TABLE Profile (
-    Id           UUID         PRIMARY KEY,
-    PersonId     UUID         NOT NULL,
-    SchoolId     UUID         NOT NULL,
+    Id           UNIQUEIDENTIFIER PRIMARY KEY,
+    PersonId     UNIQUEIDENTIFIER NOT NULL,
+    CampuseId    UNIQUEIDENTIFIER NOT NULL,
     PasswordHash VARCHAR(100) NOT NULL,
     RoleId       TINYINT      NOT NULL REFERENCES Role(ID),
     Status       VARCHAR(20)  NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
@@ -106,15 +106,15 @@ CREATE TABLE Profile (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Profile identifier | `550e8400-e29b-41d4-a716-446655440000` |
-| PersonId | UUID | Person identifier from UserManagement | `...` |
-| SchoolId | UUID | School identifier from School | `...` |
+| Id | UNIQUEIDENTIFIER | Profile identifier | `550e8400-e29b-41d4-a716-446655440000` |
+| PersonId | UNIQUEIDENTIFIER | Person identifier from UserManagement | `...` |
+| CampuseId | UNIQUEIDENTIFIER | Campuse identifier from School | `...` |
 | PasswordHash | VARCHAR(100) | Stored password hash | `hashed-value` |
 | RoleId | TINYINT | Assigned role | `1` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
 
 **Modeling decisions:**
-1. `PersonId` and `SchoolId` are API or event references; there are no cross-schema joins.
+1. `PersonId` and `CampuseId` are API or event references; there are no cross-schema joins.
 2. Passwords are stored only as hashes, never as clear text.
 
 ---
@@ -126,7 +126,7 @@ CREATE TABLE Profile (
 ```sql
 CREATE TABLE SessionProfile (
     Id            INT         PRIMARY KEY IDENTITY,
-    ProfileId     UUID        NOT NULL REFERENCES Profile(ID),
+    ProfileId     UNIQUEIDENTIFIER NOT NULL REFERENCES Profile(ID),
     DateStart     DATETIME2   NOT NULL,
     DateEnd       DATETIME2   NOT NULL,
     IPAddress     VARCHAR(50) NOT NULL,
@@ -139,7 +139,7 @@ CREATE TABLE SessionProfile (
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
 | Id | INT | Unique session identifier | `1001` |
-| ProfileId | UUID | Profile owning the session | `...` |
+| ProfileId | UNIQUEIDENTIFIER | Profile owning the session | `...` |
 | DateStart | DATETIME2 | Session start | `2026-09-08T08:00:00` |
 | DateEnd | DATETIME2 | Session end | `2026-09-08T16:00:00` |
 | IPAddress | VARCHAR(50) | Client IP address | `192.0.2.10` |

@@ -2,7 +2,7 @@
 
 ## Service: Audit
 
-**DB Engine:** SQL Server 15.
+**DB Engine:** SQL Server 16.
 
 **Engine justification:**
 - SQL Server provides durable transactions for append-only action and error records.
@@ -14,8 +14,8 @@
 
 ```sql
 CREATE TABLE Audit (
-	Id INT PRIMARY KEY IDENTITY, 
-    ProfileId UUID NOT NULL, 
+	Id BIGINT PRIMARY KEY IDENTITY, 
+	ProfileId UNIQUEIDENTIFIER NOT NULL,
     Action VARCHAR(255) NOT NULL,
 	DateTime DATETIME2 NOT NULL, 
     Description VARCHAR(500) NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE Audit (
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
 | Id | INT | Audit record identifier | `1001` |
-| ProfileId | UUID | Acting profile reference | `550e8400-...` |
+| ProfileId | UNIQUEIDENTIFIER | Acting profile reference | `550e8400-...` |
 | Action | VARCHAR(255) | Action performed | `Route.Read` |
 | DateTime | DATETIME2 | Action timestamp | `2026-09-08T08:00:00Z` |
 | Description | VARCHAR(500) | Action detail | `Viewed route` |
@@ -46,10 +46,11 @@ CREATE TABLE Audit (
 
 ```sql
 CREATE TABLE LogErrors (
-	Id INT PRIMARY KEY IDENTITY, 
+	Id BIGINT PRIMARY KEY IDENTITY, 
     TypeError VARCHAR(100) NOT NULL,
 	Description VARCHAR(255) NOT NULL, 
-    IPAddress VARCHAR(50) NOT NULL
+    IPAddress VARCHAR(50) NOT NULL,
+	OccurredAt DATETIME2 NOT NULL DEFAULT GETDATE()
 );
 ```
 
@@ -95,7 +96,7 @@ Retention or archival is handled by an explicit operational migration.
 **Compatible schema changes (non-breaking):**
 
 ```sql
-ALTER TABLE Audit ADD CorrelationId UUID NULL;
+ALTER TABLE Audit ADD CorrelationId UNIQUEIDENTIFIER NULL;
 CREATE INDEX IX_Audit_Application ON Audit (Application);
 CREATE INDEX IX_Audit_ProfileID ON Audit (ProfileId);
 CREATE INDEX IX_Audit_DateTime ON Audit (DateTime);

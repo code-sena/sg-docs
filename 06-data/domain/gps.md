@@ -2,7 +2,7 @@
 
 ## Service: Gps
 
-**DB Engine:** SQL Server 15.
+**DB Engine:** SQL Server 16.
 
 **Engine justification:**
 - SQL Server provides durable relational storage for device registration and position history.
@@ -14,10 +14,10 @@
 
 ```sql
 CREATE TABLE GpsDevice (
-	Id UUID PRIMARY KEY, 
-    Imei VARCHAR(20) NOT NULL, 
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    Imei VARCHAR(20) UNIQUE NOT NULL,
     LastConnection DATETIME2 NOT NULL,
-    Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
+    GpsStatus BOOLEAN NOT NULL
 );
 ```
 
@@ -25,10 +25,10 @@ CREATE TABLE GpsDevice (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Device identifier | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | Device identifier | `550e8400-...` |
 | Imei | VARCHAR(20) | Device IMEI | `359881234567890` |
 | LastConnection | DATETIME2 | Last device connection | `2026-09-08T12:00:00Z` |
-| Status | VARCHAR(20) | Lifecycle status | `Active` |
+| GpsStatus | BOOLEAN | GPS status | TRUE |
 
 **Modeling decisions:**
 1. IMEI is unique when supplied, while registration can precede device activation.
@@ -40,14 +40,13 @@ CREATE TABLE GpsDevice (
 
 ```sql
 CREATE TABLE GpsLocation (
-	Id UUID PRIMARY KEY, 
-    GpsDeviceId UUID NOT NULL, 
+	Id UNIQUEIDENTIFIER PRIMARY KEY,
+    GpsDeviceId UNIQUEIDENTIFIER NOT NULL,
     Latitude DECIMAL(10,7) NOT NULL,
 	Longitude DECIMAL(10,7) NOT NULL, 
     Speed DECIMAL(8,2) NOT NULL, 
     Course DECIMAL(8,2) NOT NULL,
-	DateTime DATETIME2 NOT NULL, 
-    Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
+	DateTime DATETIME2 NOT NULL
 );
 ```
 
@@ -55,14 +54,13 @@ CREATE TABLE GpsLocation (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| ID | UUID | Location identifier | `550e8400-...` |
-| GpsDeviceID | UUID | Reporting device | `550e8400-...` |
+| ID | UNIQUEIDENTIFIER | Location identifier | `550e8400-...` |
+| GpsDeviceID | UNIQUEIDENTIFIER | Reporting device | `550e8400-...` |
 | Latitude | DECIMAL(10,7) | Latitude coordinate | `4.7110000` |
 | Longitude | DECIMAL(10,7) | Longitude coordinate | `-74.0721000` |
 | Speed | DECIMAL(8,2) | Vehicle speed | `35.50` |
 | Course | DECIMAL(8,2) | Heading in degrees | `90.00` |
 | DateTime | DATETIME2 | Position timestamp | `2026-09-08T12:01:00Z` |
-| Status | VARCHAR(20) | Lifecycle status | `Active` |
 
 **Modeling decisions:**
 1. Seven decimal places preserve GPS-grade coordinate precision.

@@ -2,7 +2,7 @@
 
 ## Service: Route
 
-**DB Engine:** SQL Server 15.
+**DB Engine:** SQL Server 16.
 
 **Engine justification:**
 - SQL Server supports the relational route hierarchy, schedules, assignments, and executions.
@@ -14,8 +14,8 @@
 
 ```sql
 CREATE TABLE Route (
-    Id UUID PRIMARY KEY, 
-    SchoolId UUID NOT NULL, 
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    CampuseId UNIQUEIDENTIFIER NOT NULL,
     Name VARCHAR(30) NOT NULL, 
     TargetSector VARCHAR(30) NOT NULL, 
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
@@ -26,8 +26,8 @@ CREATE TABLE Route (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Route identifier | `550e8400-...` |
-| SchoolId | UUID | School correlation | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | Route identifier | `550e8400-...` |
+| CampuseId | UNIQUEIDENTIFIER | School campus reference| `550e8400-...` |
 | Name | VARCHAR(30) | Route name | `North Route` |
 | TargetSector | VARCHAR(30) | Served sector | `North` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
@@ -42,9 +42,8 @@ CREATE TABLE Route (
 
 ```sql
 CREATE TABLE Stop (
-    Id UUID PRIMARY KEY, 
-    CityId UUID NOT NULL, 
-    SchoolId UUID NOT NULL, 
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    CityId UNIQUEIDENTIFIER NOT NULL,
     Address VARCHAR(30) NOT NULL, 
     Longitude DECIMAL(10,2) NOT NULL, 
     Latitude DECIMAL(10,2) NOT NULL, 
@@ -56,9 +55,8 @@ CREATE TABLE Stop (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Stop identifier | `550e8400-...` |
-| CityId | UUID | City correlation | `550e8400-...` |
-| SchoolId | UUID | School correlation | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | Stop identifier | `550e8400-...` |
+| CityId | UNIQUEIDENTIFIER | City correlation | `550e8400-...` |
 | Address | VARCHAR(30) | Stop address | `10 Main St` |
 | Longitude | DECIMAL(12,2) | Longitude | `-74.07` |
 | Latitude | DECIMAL(12,2) | Latitude | `4.71` |
@@ -74,10 +72,10 @@ CREATE TABLE Stop (
 
 ```sql
 CREATE TABLE RouteStop (
-    Id UUID PRIMARY KEY, 
-    RouteId UUID NOT NULL, 
-    StopId UUID NOT NULL, 
-    Order INT NOT NULL, 
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    RouteId UNIQUEIDENTIFIER NOT NULL,
+    StopId UNIQUEIDENTIFIER NOT NULL,
+    OrderSequence INT NOT NULL,
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
 ```
@@ -86,9 +84,9 @@ CREATE TABLE RouteStop (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Route-stop identifier | `550e8400-...` |
-| RouteId | UUID | Route reference | `550e8400-...` |
-| StopId | UUID | Stop reference | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | Route-stop identifier | `550e8400-...` |
+| RouteId | UNIQUEIDENTIFIER | Route reference | `550e8400-...` |
+| StopId | UNIQUEIDENTIFIER | Stop reference | `550e8400-...` |
 | Order | INT | Sequence within route | `3` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
 
@@ -102,9 +100,9 @@ CREATE TABLE RouteStop (
 
 ```sql
 CREATE TABLE RouteBusAssignments (
-    Id UUID PRIMARY KEY, 
-    BusId UUID NOT NULL, 
-    RouteId UUID NOT NULL, 
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    BusId UNIQUEIDENTIFIER NOT NULL,
+    RouteId UNIQUEIDENTIFIER NOT NULL,
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
 ```
@@ -113,9 +111,9 @@ CREATE TABLE RouteBusAssignments (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Assignment identifier | `550e8400-...` |
-| BusId | UUID | Bus correlation | `550e8400-...` |
-| RouteId | UUID | Route reference | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | Assignment identifier | `550e8400-...` |
+| BusId | UNIQUEIDENTIFIER | assignment of the bus to the route | `550e8400-...` |
+| RouteId | UNIQUEIDENTIFIER | Route reference | `550e8400-...` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
 
 **Modeling decisions:**
@@ -128,9 +126,9 @@ CREATE TABLE RouteBusAssignments (
 
 ```sql
 CREATE TABLE RouteStudentAssignments (
-    Id UUID PRIMARY KEY, 
-    ProfileId UUID NOT NULL, 
-    RouteStopId UUID NOT NULL, 
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    ProfileId UNIQUEIDENTIFIER NOT NULL,
+    RouteStopId UNIQUEIDENTIFIER NOT NULL,
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
 ```
@@ -139,9 +137,9 @@ CREATE TABLE RouteStudentAssignments (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Assignment identifier | `550e8400-...` |
-| ProfileId | UUID | Student profile correlation | `550e8400-...` |
-| RouteStopId | UUID | Route-stop reference | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | Assignment identifier | `550e8400-...` |
+| ProfileId | UNIQUEIDENTIFIER | Student profile correlation | `550e8400-...` |
+| RouteStopId | UNIQUEIDENTIFIER | Route-stop reference | `550e8400-...` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
 
 **Modeling decisions:**
@@ -154,9 +152,9 @@ CREATE TABLE RouteStudentAssignments (
 
 ```sql
 CREATE TABLE RouteSchedule (
-    Id UUID PRIMARY KEY, 
-    RouteBusAssignmentsId UUID NOT NULL, 
-    DayOfWeek DAYOFWEEK NOT NULL DEFAULT 'MONDAY', 
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    RouteBusAssignmentsId UNIQUEIDENTIFIER NOT NULL,
+    DayOfWeek DayOfWeek NOT NULL (DayOfWeek IN ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')) DEFAULT 'Monday',
     Direction VARCHAR(10) NOT NULL, 
     StartTime TIME NOT NULL, 
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
@@ -167,9 +165,9 @@ CREATE TABLE RouteSchedule (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Schedule identifier | `550e8400-...` |
-| RouteBusAssignmentsId | UUID | Assignment reference | `550e8400-...` |
-| DayOfWeek | DAYOFWEEK | Scheduled weekday | `MONDAY` |
+| Id | UNIQUEIDENTIFIER | Schedule identifier | `550e8400-...` |
+| RouteBusAssignmentsId | UNIQUEIDENTIFIER | Assignment reference | `550e8400-...` |
+| DayOfWeek | DayOfWeek | Scheduled weekday | `MONDAY` |
 | Direction | VARCHAR(10) | Trip direction | `OUTBOUND` |
 | StartTime | TIME | Scheduled start | `07:00:00` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
@@ -184,9 +182,10 @@ CREATE TABLE RouteSchedule (
 
 ```sql
 CREATE TABLE RouteExecution (
-    Id UUID PRIMARY KEY, 
-    RouteScheduleId UUID NOT NULL, 
-    DayOfWeek DAYOFWEEK NOT NULL DEFAULT 'MONDAY', 
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    -- RouteScheduleId UNIQUEIDENTIFIER NOT NULL,
+    BusId UNIQUEIDENTIFIER NOT NULL,
+    DriverId UNIQUEIDENTIFIER NOT NULL,
     StartDateTime DATETIME2 NOT NULL, 
     EndDateTime DATETIME2 NOT NULL, 
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
@@ -197,8 +196,9 @@ CREATE TABLE RouteExecution (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Execution identifier | `550e8400-...` |
-| RouteScheduleId | UUID | Schedule reference | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | Execution identifier | `550e8400-...` |
+| BusId | UNIQUEIDENTIFIER | bus running the route | `550e1200-...` |
+| DriverId | UNIQUEIDENTIFIER | driver executing the route | `340e8400-...` |
 | DayOfWeek | DAYOFWEEK | Execution weekday | `MONDAY` |
 | StartDateTime | DATETIME2 | Execution start | `2026-09-08T07:00:00Z` |
 | EndDateTime | DATETIME2 | Execution end | `2026-09-08T08:00:00Z` |

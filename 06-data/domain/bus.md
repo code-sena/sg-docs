@@ -2,7 +2,7 @@
 
 ## Service: Bus
 
-**DB Engine:** SQL Server 15.
+**DB Engine:** SQL Server 16.
 
 **Engine justification:**
 - SQL Server enforces relational consistency for fleet and catalog records.
@@ -14,14 +14,12 @@
 
 ```sql
 CREATE TABLE Bus (
-	Id UUID PRIMARY KEY, 
-    DriverId UUID NOT NULL, 
-    SchoolId UUID NOT NULL,
+	Id UNIQUEIDENTIFIER PRIMARY KEY,
+    CampuseId UNIQUEIDENTIFIER NOT NULL,
 	SoatValidity DATE NOT NULL, 
-    GpsDeviceId UUID NOT NULL, 
-    GpsStatus BOOLEAN NOT NULL,
+    GpsDeviceId UNIQUEIDENTIFIER UNIQUE NOT NULL,
 	Capacity TINYINT NOT NULL, 
-    Plate VARCHAR(15) NOT NULL, 
+    Plate VARCHAR(15) UNIQUE NOT NULL,
     ModelId TINYINT NOT NULL,
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
@@ -31,11 +29,11 @@ CREATE TABLE Bus (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Bus identifier | `550e8400-...` |
-| DriverId | UUID | Driver profile reference | `550e8400-...` |
-| SchoolId | UUID | School reference | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | Bus identifier | `550e8400-...` |
+| DriverId | UNIQUEIDENTIFIER | Driver profile reference | `550e8400-...` |
+| CampuseId | UNIQUEIDENTIFIER | School campus reference | `550e8400-...` |
 | SoatValidity | DATE | Insurance validity date | `2027-01-31` |
-| GpsDeviceId | UUID | GPS device reference | `550e8400-...` |
+| GpsDeviceId | UNIQUEIDENTIFIER | GPS device reference | `550e8400-...` |
 | GpsStatus | BOOLEAN | Whether GPS is enabled | `true` |
 | Capacity | TINYINT | Passenger capacity | `40` |
 | Plate | VARCHAR(15) | License plate | `ABC123` |
@@ -91,6 +89,34 @@ CREATE TABLE Model (
 | BrandId | TINYINT | Brand reference | `1` |
 | Name | VARCHAR(30) | Model name | `B340M` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
+
+**Modeling decisions:**
+1. Brand ownership is represented by `BrandID`.
+2. Integer catalog keys minimize storage and simplify lookup.
+
+### Table: DriverAssignemts
+
+**Purpose:** Catalogs vehicle models linked to a brand.
+
+```sql
+CREATE TABLE DriverAssignemts (
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    ProfileId UNIQUEIDENTIFIER NOT NULL,
+    BusId UNIQUEIDENTIFIER NOT NULL,
+    AssignedFrom DATE NOT NULL,
+    AssignedTo DATE NULL
+);
+```
+
+**Data dictionary:**
+
+| Column | Type | Description | Example |
+|--------|------|-------------|---------|
+| Id | UNIQUEIDENTIFIER | Model identifier | `4` |
+| ProfileId | UNIQUEIDENTIFIER | Brand reference | `1` |
+| BusId | UNIQUEIDENTIFIER | Model name | `B340M` |
+| AssignedFrom | DATE | Lifecycle status | `Active` |
+| AssignedTo | DATE | Lifecycle status | `Active` |
 
 **Modeling decisions:**
 1. Brand ownership is represented by `BrandID`.

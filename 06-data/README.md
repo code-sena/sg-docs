@@ -30,7 +30,7 @@ Data models for each microservice.
 ### Table/Collection: [name]
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| id | UUID | No | Unique identifier | PK |
+| id | UNIQUEIDENTIFIER | No | Unique identifier | PK |
 | [field] | [type] | [Yes/No] | [description] | [FK/Unique/etc.] |
 
 ### Indexes

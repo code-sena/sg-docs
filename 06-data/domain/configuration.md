@@ -2,7 +2,7 @@
 
 ## Service: Configuration
 
-**DB Engine:** SQL Server 15.
+**DB Engine:** SQL Server 16.
 
 **Engine justification:**
 - SQL Server provides durable transactional storage for security settings and password policies.
@@ -15,7 +15,7 @@
 ```sql
 CREATE TABLE SecuritySettings (
 	Id TINYINT PRIMARY KEY IDENTITY, 
-    NameSettings VARCHAR(100) NOT NULL,
+    NameSettings VARCHAR(100) UNIQUE NOT NULL,
 	ValueSettings VARCHAR(100) NOT NULL, 
     Description VARCHAR(255) NOT NULL
 );

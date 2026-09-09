@@ -2,7 +2,7 @@
 
 ## Service: Notification
 
-**DB Engine:** SQL Server 15.
+**DB Engine:** SQL Server 16.
 
 **Engine justification:**
 - SQL Server provides transactional event, alert, and recipient state storage.
@@ -14,12 +14,11 @@
 
 ```sql
 CREATE TABLE Boarding (
-	Id UUID PRIMARY KEY, 
-    RouteExecutionId UUID NOT NULL, 
-    ProfileId UUID NOT NULL,
-	BusId UUID NOT NULL, 
-    StopId UUID NOT NULL, 
-    DateTime DATETIME2 NOT NULL,
+	Id UNIQUEIDENTIFIER PRIMARY KEY,
+    RouteExecutionId UNIQUEIDENTIFIER NOT NULL,
+    ProfileId UNIQUEIDENTIFIER NOT NULL,
+    RouteStopId UNIQUEIDENTIFIER NOT NULL,
+    DateTime DATETIME2 NOT NULL DEFAULT GETDATE(),
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active', 
     BoardingType VARCHAR(20) NOT NULL CHECK (BoardingType IN ('ON_BOARD', 'OFF_BOARD')) DEFAULT 'ON_BOARD'
 );
@@ -29,11 +28,10 @@ CREATE TABLE Boarding (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Boarding event identifier | `550e8400-...` |
-| RouteExecutionId | UUID | Route trip reference | `550e8400-...` |
-| ProfileId | UUID | Student profile reference | `550e8400-...` |
-| BusId | UUID | Bus reference | `550e8400-...` |
-| StopId | UUID | Stop reference | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | Boarding event identifier | `550e8400-...` |
+| RouteExecutionId | UNIQUEIDENTIFIER | Route trip reference | `550e8400-...` |
+| ProfileId | UNIQUEIDENTIFIER | Student profile reference | `550e8400-...` |
+| RouteStopId | UNIQUEIDENTIFIER | Stop and Route reference | `550e8400-...` |
 | DateTime | DATETIME2 | Event timestamp | `2026-09-08T08:10:00Z` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
 | BoardingType | BOARDINGTYPE | `ON_BOARD` or `OFF_BOARD` | `ON_BOARD` |
@@ -76,12 +74,13 @@ CREATE TABLE AlertType (
 
 ```sql
 CREATE TABLE Alert (
-	Id UUID PRIMARY KEY, 
-    RouteExecutionId UUID NOT NULL, 
+	Id UNIQUEIDENTIFIER PRIMARY KEY,
+    RouteExecutionId UNIQUEIDENTIFIER NOT NULL,
     AlertTypeId TINYINT NOT NULL,
-	ProfileId UUID NOT NULL, 
-    DateTime DATETIME2 NOT NULL, 
+    ProfileId UNIQUEIDENTIFIER NOT NULL,
+    DateTime DATETIME2 NOT NULL DEFAULT GETDATE(),
     Description VARCHAR(100) NOT NULL, 
+    AcknowledgedAt DATETIME2 NULL
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
 ```
@@ -90,12 +89,13 @@ CREATE TABLE Alert (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Alert identifier | `550e8400-...` |
-| RouteExecutionId | UUID | Route trip reference | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | Alert identifier | `550e8400-...` |
+| RouteExecutionId | UNIQUEIDENTIFIER | Route trip reference | `550e8400-...` |
 | AlertTypeId | TINYINT | Alert catalog reference | `1` |
-| ProfileId | UUID | Reporting profile reference | `550e8400-...` |
+| ProfileId | UNIQUEIDENTIFIER | Reporting profile reference | `550e8400-...` |
 | DateTime | DATETIME2 | Alert timestamp | `2026-09-08T08:15:00Z` |
 | Description | VARCHAR(100) | Alert detail | `Traffic delay` |
+| AcknowledgedAt | DATETIME2 | when someone attended to her | `2026-09-09T02:10:00Z` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
 
 **Modeling decisions:**
@@ -108,9 +108,9 @@ CREATE TABLE Alert (
 
 ```sql
 CREATE TABLE AlertRecipient (
-    Id UUId PRIMARY KEY, 
-    AlertId UUID NOT NULL, 
-    ProfileId UUID NOT NULL, 
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    AlertId UNIQUEIDENTIFIER NOT NULL,
+    ProfileId UNIQUEIDENTIFIER NOT NULL,
     DateTimeRead DATETIME2 NOT NULL, 
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
@@ -120,9 +120,9 @@ CREATE TABLE AlertRecipient (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Recipient record identifier | `550e8400-...` |
-| AlertId | UUID | Alert reference | `550e8400-...` |
-| ProfileId | UUID | Recipient profile reference | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | Recipient record identifier | `550e8400-...` |
+| AlertId | UNIQUEIDENTIFIER | Alert reference | `550e8400-...` |
+| ProfileId | UNIQUEIDENTIFIER | Recipient profile reference | `550e8400-...` |
 | DateTimeRead | DATETIME2 | Read timestamp | `2026-09-08T08:20:00Z` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
 

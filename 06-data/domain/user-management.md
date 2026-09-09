@@ -2,7 +2,7 @@
 
 ## Service: UserManagement
 
-**DB Engine:** SQL Server 15.
+**DB Engine:** SQL Server 16.
 
 **Engine justification:**
 - SQL Server supports transactional personal, family, relationship, and license records.
@@ -14,7 +14,7 @@
 
 ```sql
 CREATE TABLE Person (
-    Id UUID PRIMARY KEY, 
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
     Name VARCHAR(50) NOT NULL, 
     LastName VARCHAR(50) NOT NULL, 
     IdentificationType VARCHAR(20) NOT NULL CHECK (IdentificationType IN ('TI', 'CC')) DEFAULT 'TI',
@@ -31,7 +31,7 @@ CREATE TABLE Person (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Person identifier | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | Person identifier | `550e8400-...` |
 | Name | VARCHAR(50) | First name | `Ana` |
 | LastName | VARCHAR(50) | Last name | `Garcia` |
 | IdentificationType | VARCHAR(20) | Document type | `TI` |
@@ -52,7 +52,7 @@ CREATE TABLE Person (
 
 ```sql
 CREATE TABLE Family (
-    Id UUID PRIMARY KEY, 
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
     Name VARCHAR(50) NOT NULL, 
     Observations VARCHAR(100) NOT NULL, 
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
@@ -63,7 +63,7 @@ CREATE TABLE Family (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Family identifier | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | Family identifier | `550e8400-...` |
 | Name | VARCHAR(50) | Family name or label | `Garcia Family` |
 | Observations | VARCHAR(100) | Additional notes | `Shared pickup` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
@@ -78,9 +78,9 @@ CREATE TABLE Family (
 
 ```sql
 CREATE TABLE FamilyMember (
-    Id UUID PRIMARY KEY, 
-    FamilyId UUID NOT NULL, 
-    ProfileId UUID NOT NULL, 
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    FamilyId UNIQUEIDENTIFIER NOT NULL,
+    ProfileId UNIQUEIDENTIFIER NOT NULL,
     RelationshipType VARCHAR(20) NOT NULL CHECK (RelationshipType IN ('Parent', 'Student')) DEFAULT 'Parent',
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
@@ -90,9 +90,9 @@ CREATE TABLE FamilyMember (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | Membership identifier | `550e8400-...` |
-| FamilyId | UUID | Family reference | `550e8400-...` |
-| ProfileId | UUID | IAM profile correlation | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | Membership identifier | `550e8400-...` |
+| FamilyId | UNIQUEIDENTIFIER | Family reference | `550e8400-...` |
+| ProfileId | UNIQUEIDENTIFIER | IAM profile correlation | `550e8400-...` |
 | RelationshipType | VARCHAR(20) | `PARENT` or `STUDENT` | `PARENT` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
 
@@ -106,9 +106,9 @@ CREATE TABLE FamilyMember (
 
 ```sql
 CREATE TABLE DriverLicense (
-    Id UUID PRIMARY KEY, 
-    ProfileId UUID NOT NULL, 
-    LicenseNumber SMALLINT NOT NULL, 
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    ProfileId UNIQUEIDENTIFIER NOT NULL,
+    LicenseNumber VARCHAR(20) NOT NULL,
     LicenseExpirationDate DATE NOT NULL, 
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
@@ -118,8 +118,8 @@ CREATE TABLE DriverLicense (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UUID | License record identifier | `550e8400-...` |
-| ProfileId | UUID | Driver profile correlation | `550e8400-...` |
+| Id | UNIQUEIDENTIFIER | License record identifier | `550e8400-...` |
+| ProfileId | UNIQUEIDENTIFIER | Driver profile correlation | `550e8400-...` |
 | LicenseNumber | SMALLINT | License number | `12345` |
 | LicenseExpirationDate | DATE | Expiration date | `2028-12-31` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
