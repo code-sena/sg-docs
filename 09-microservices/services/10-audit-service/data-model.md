@@ -22,7 +22,7 @@
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
 | ID | INT | No | Unique identifier | PK, AUTO_INCREMENT |
-| ProfileID | UUID | No | Reference to acting profile | FK → Profile.ID (IAM) |
+| ProfileID | UNIQUEIDENTIFIER | No | Reference to acting profile | FK → Profile.ID (IAM) |
 | Action | VARCHAR(255) | No | Action performed | |
 | Date | DATETIME2 | No | When the action occurred | |
 | Description | VARCHAR(500) | No | Action detail | |

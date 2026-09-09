@@ -21,9 +21,9 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
-| BusID | UUID | No | Reference to bus | FK → Bus.ID (Bus) |
-| ProfileID | UUID | No | Reference to driver profile | FK → Profile.ID (IAM) |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
+| BusID | UNIQUEIDENTIFIER | No | Reference to bus | FK → Bus.ID (Bus) |
+| ProfileID | UNIQUEIDENTIFIER | No | Reference to driver profile | FK → Profile.ID (IAM) |
 | DateTime | DATETIME | No | When the exceptional usage occurred | |
 | Reason | VARCHAR(200) | No | Justification | |
 | Status | STATUS | No | Record status | Default: ACTIVE |
@@ -38,9 +38,9 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
-| ProfileID | UUID | No | Reference to student profile | FK → Profile.ID (IAM) |
-| RouteID | UUID | No | Reference to route | FK → Route.ID (Route) |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
+| ProfileID | UNIQUEIDENTIFIER | No | Reference to student profile | FK → Profile.ID (IAM) |
+| RouteID | UNIQUEIDENTIFIER | No | Reference to route | FK → Route.ID (Route) |
 | StartDateTime | DATETIME | No | Usage start | |
 | EndDateTime | DATETIME | No | Usage end | |
 | Reason | VARCHAR(200) | No | Justification | |

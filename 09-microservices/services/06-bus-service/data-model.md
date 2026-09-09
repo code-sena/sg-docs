@@ -21,11 +21,11 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
-| DriverID | UUID | No | Reference to driver profile | FK → Profile.ID (IAM) |
-| SchoolID | UUID | No | Reference to school | FK → School.ID (School) |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
+| DriverID | UNIQUEIDENTIFIER | No | Reference to driver profile | FK → Profile.ID (IAM) |
+| SchoolID | UNIQUEIDENTIFIER | No | Reference to school | FK → School.ID (School) |
 | SoatValidity | DATE | No | SOAT insurance validity | |
-| GpsDeviceID | UUID | No | Reference to GPS device | FK → GpsDevice.ID (GPS) |
+| GpsDeviceID | UNIQUEIDENTIFIER | No | Reference to GPS device | FK → GpsDevice.ID (GPS) |
 | GpsStatus | BOOLEAN | No | GPS enabled status | |
 | Capacity | TINYINT | No | Passenger capacity | |
 | Plate | VARCHAR(15) | No | License plate | |

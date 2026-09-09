@@ -21,8 +21,8 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
-| SchoolID | UUID | No | Reference to school | FK → School.ID (School) |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
+| SchoolID | UNIQUEIDENTIFIER | No | Reference to school | FK → School.ID (School) |
 | Name | VARCHAR(30) | Yes | Route name | |
 | TargetSector | VARCHAR(30) | Yes | Target neighborhood/sector | |
 | Status | STATUS | No | Record status | Default: ACTIVE |
@@ -36,9 +36,9 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
-| CityID | UUID | No | Reference to city | FK → City.ID (School) |
-| SchoolID | UUID | No | Reference to school | FK → School.ID (School) |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
+| CityID | UNIQUEIDENTIFIER | No | Reference to city | FK → City.ID (School) |
+| SchoolID | UNIQUEIDENTIFIER | No | Reference to school | FK → School.ID (School) |
 | Address | VARCHAR(30) | Yes | Address | |
 | Longitude | DECIMAL(12,2) | Yes | Longitude coordinate | |
 | Latitude | DECIMAL(12,2) | Yes | Latitude coordinate | |
@@ -54,9 +54,9 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
-| RouteID | UUID | No | Reference to route | FK → Route.ID |
-| StopID | UUID | No | Reference to stop | FK → Stop.ID |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
+| RouteID | UNIQUEIDENTIFIER | No | Reference to route | FK → Route.ID |
+| StopID | UNIQUEIDENTIFIER | No | Reference to stop | FK → Stop.ID |
 | Order | INT | No | Stop sequence order | |
 | Status | STATUS | No | Record status | Default: ACTIVE |
 
@@ -70,9 +70,9 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
-| BusID | UUID | No | Reference to bus | FK → Bus.ID (Bus) |
-| RouteID | UUID | No | Reference to route | FK → Route.ID |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
+| BusID | UNIQUEIDENTIFIER | No | Reference to bus | FK → Bus.ID (Bus) |
+| RouteID | UNIQUEIDENTIFIER | No | Reference to route | FK → Route.ID |
 | Status | STATUS | No | Record status | Default: ACTIVE |
 
 **Relationships:**
@@ -85,9 +85,9 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
-| ProfileID | UUID | No | Reference to student profile | FK → Profile.ID (IAM) |
-| RouteStopID | UUID | No | Reference to route stop | FK → RouteStop.ID |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
+| ProfileID | UNIQUEIDENTIFIER | No | Reference to student profile | FK → Profile.ID (IAM) |
+| RouteStopID | UNIQUEIDENTIFIER | No | Reference to route stop | FK → RouteStop.ID |
 | Status | STATUS | No | Record status | Default: ACTIVE |
 
 **Relationships:**
@@ -100,8 +100,8 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
-| RouteBusAssignmentsId | UUID | No | Reference to route-bus assignment | FK → RouteBusAssignments.ID |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
+| RouteBusAssignmentsId | UNIQUEIDENTIFIER | No | Reference to route-bus assignment | FK → RouteBusAssignments.ID |
 | DayOfWeek | DAYOFWEEK | No | Day of the week | Default: MONDAY |
 | Direction | VARCHAR(10) | No | Trip direction (e.g., outbound/inbound) | |
 | StartTime | TIME | No | Scheduled start time | |
@@ -118,8 +118,8 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
-| RouteScheduleId | UUID | No | Reference to route schedule | FK → RouteSchedule.ID |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
+| RouteScheduleId | UNIQUEIDENTIFIER | No | Reference to route schedule | FK → RouteSchedule.ID |
 | DayOfWeek | DAYOFWEEK | No | Day of the week | Default: MONDAY |
 | StartDateTime | DATETIME | No | Start of execution | |
 | EndDateTime | DATETIME | No | End of execution | |

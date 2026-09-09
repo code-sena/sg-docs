@@ -21,7 +21,7 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
 | Name | VARCHAR(50) | No | First name | |
 | LastName | VARCHAR(50) | No | Last name | |
 | IdentificationType | IDENTIFICATIONTYPE | No | ID document type | Default: TI |
@@ -38,7 +38,7 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
 | Name | VARCHAR(50) | Yes | Family name/label | |
 | Observations | VARCHAR(100) | Yes | Additional notes | |
 | Status | STATUS | No | Record status | Default: ACTIVE |
@@ -49,9 +49,9 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
-| FamilyID | UUID | No | Reference to family | FK → Family.ID |
-| ProfileID | UUID | No | Reference to profile | FK → Profile.ID (IAM) |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
+| FamilyID | UNIQUEIDENTIFIER | No | Reference to family | FK → Family.ID |
+| ProfileID | UNIQUEIDENTIFIER | No | Reference to profile | FK → Profile.ID (IAM) |
 | RelationshipType | RELATIONSHIPTYPE | No | Relationship type | Default: PARENT |
 | Status | STATUS | No | Record status | Default: ACTIVE |
 
@@ -67,8 +67,8 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
-| ProfileID | UUID | No | Reference to profile | FK → Profile.ID (IAM) |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
+| ProfileID | UNIQUEIDENTIFIER | No | Reference to profile | FK → Profile.ID (IAM) |
 | LicenseNumber | SMALLINT | Yes | License number | |
 | LicenseExpirationDate | DATE | No | Expiration date | |
 | Status | STATUS | No | Record status | Default: ACTIVE |

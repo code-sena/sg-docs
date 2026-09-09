@@ -21,7 +21,7 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
 | Imei | VARCHAR(20) | Yes | Device IMEI | |
 | LastConnection | DATETIME | Yes | Last connection time | |
 | Status | STATUS | No | Record status | Default: ACTIVE |
@@ -32,8 +32,8 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
-| GpsDeviceID | UUID | No | Reference to GPS device | FK → GpsDevice.ID |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
+| GpsDeviceID | UNIQUEIDENTIFIER | No | Reference to GPS device | FK → GpsDevice.ID |
 | Latitude | DECIMAL(10,7) | Yes | Latitude coordinate | |
 | Longitude | DECIMAL(10,7) | Yes | Longitude coordinate | |
 | Speed | DECIMAL(8,2) | Yes | Vehicle speed | |

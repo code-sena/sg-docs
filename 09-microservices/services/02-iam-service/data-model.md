@@ -56,9 +56,9 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
-| PersonID | UUID | No | Reference to person | FK → Person.ID (User Management) |
-| SchoolID | UUID | No | Reference to school | FK → School.ID (School) |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
+| PersonID | UNIQUEIDENTIFIER | No | Reference to person | FK → Person.ID (User Management) |
+| SchoolID | UNIQUEIDENTIFIER | No | Reference to school | FK → School.ID (School) |
 | PasswordHash | VARCHAR(100) | No | Hashed password | |
 | RoleID | TINYINT | No | Reference to role | FK → Role.ID |
 | Status | STATUS | No | Record status | Default: ACTIVE |
@@ -75,7 +75,7 @@
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
 | ID | INT | No | Unique identifier | PK, AUTO_INCREMENT |
-| ProfileID | UUID | No | Reference to profile | FK → Profile.ID |
+| ProfileID | UNIQUEIDENTIFIER | No | Reference to profile | FK → Profile.ID |
 | DateStart | DATETIME2 | No | Session start time | |
 | DateEnd | DATETIME2 | No | Session end time | |
 | IPAddress | VARCHAR(50) | No | Client IP address | |

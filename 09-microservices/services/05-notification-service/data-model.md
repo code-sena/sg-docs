@@ -20,11 +20,11 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
-| RouteExecutionID | UUID | No | Reference to route execution | FK → RouteExecution.ID (Route) |
-| ProfileID | UUID | No | Reference to student profile | FK → Profile.ID (IAM) |
-| BusID | UUID | No | Reference to bus | FK → Bus.ID (Bus) |
-| StopID | UUID | No | Reference to stop | FK → Stop.ID (Route) |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
+| RouteExecutionID | UNIQUEIDENTIFIER | No | Reference to route execution | FK → RouteExecution.ID (Route) |
+| ProfileID | UNIQUEIDENTIFIER | No | Reference to student profile | FK → Profile.ID (IAM) |
+| BusID | UNIQUEIDENTIFIER | No | Reference to bus | FK → Bus.ID (Bus) |
+| StopID | UNIQUEIDENTIFIER | No | Reference to stop | FK → Stop.ID (Route) |
 | DateTime | TIMESTAMP | Yes | Event date/time (auto-generated) | |
 | Status | STATUS | No | Record status | Default: ACTIVE |
 | BoardingType | BOARDINGTYPE | No | ON_BOARD or OFF_BOARD | Default: ON_BOARD |
@@ -55,10 +55,10 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
-| RouteExecutionID | UUID | No | Reference to route execution | FK → RouteExecution.ID (Route) |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
+| RouteExecutionID | UNIQUEIDENTIFIER | No | Reference to route execution | FK → RouteExecution.ID (Route) |
 | AlertTypeID | TINYINT | No | Reference to alert type | FK → AlertType.ID |
-| ProfileId | UUID | No | Reference to reporting profile | FK → Profile.ID (IAM) |
+| ProfileId | UNIQUEIDENTIFIER | No | Reference to reporting profile | FK → Profile.ID (IAM) |
 | DateTime | DATETIME | Yes | Alert timestamp | |
 | Description | VARCHAR(100) | Yes | Alert description | |
 | Status | STATUS | No | Record status | Default: ACTIVE |
@@ -74,9 +74,9 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| ID | UUID | No | Unique identifier | PK |
-| AlertID | UUID | No | Reference to alert | FK → Alert.ID |
-| ProfileID | UUID | No | Reference to recipient profile | FK → Profile.ID (IAM) |
+| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
+| AlertID | UNIQUEIDENTIFIER | No | Reference to alert | FK → Alert.ID |
+| ProfileID | UNIQUEIDENTIFIER | No | Reference to recipient profile | FK → Profile.ID (IAM) |
 | DateTimeRead | DATETIME | No | When the alert was read | |
 | Status | STATUS | No | Record status | Default: ACTIVE |
 
