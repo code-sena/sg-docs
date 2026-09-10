@@ -21,15 +21,18 @@
 
 | Attribute | Metric | Test condition |
 |-----------|--------|---------------|
-| P95 latency — critical endpoints | < 300ms | Under [N] RPS load |
-| P99 latency — critical endpoints | < 500ms | Under [N] RPS load |
+| P95 latency — critical endpoints | < 300ms | Under 50 RPS per service (peak boarding window 6:30–8:00 AM) |
+| P99 latency — critical endpoints | < 500ms | Under 50 RPS per service (peak boarding window) |
 | P95 latency — non-critical endpoints | < 1000ms | Normal load |
-| Minimum throughput | [N] RPS | Without degradation |
+| Minimum throughput | 50 RPS per service | Without degradation |
+| Boarding/alighting event → guardian notification | P95 < 5 seconds | End-to-end, during peak boarding window |
+| GPS location → live map | P95 < 5 seconds | Continuous tracking |
 | Service startup time | < 30 seconds | Cold start |
 
 **Defined critical endpoints:**
-- `POST /[resource]` — [justification for why it is critical]
-- `GET /[resource]/:id` — [justification]
+- `POST /api/v1/boarding` (QR scan, notification-service) — boarding must register instantly so the driver can confirm the students on the route
+- `GET /api/v1/buses/{busId}/location` (gps-service) — the guardians' live map depends on it
+- `POST /api/v1/auth/login` (iam-service) — first response of every user session
 
 **Load testing tools:**
 - k6, Apache JMeter, Locust, Gatling
@@ -62,7 +65,7 @@ feature deploys are frozen until the next month and stability is prioritized.
 | Gradual load growth | Horizontal auto-scaling activated when CPU > 70% |
 | Sudden spike (Black Friday, etc.) | System scales in < 2 minutes |
 | Load reduction | Scale-down without interrupting active traffic |
-| Horizontal scaling limit | Up to [N] instances per service |
+| Horizontal scaling limit | Up to 10 instances per service |
 
 **Strategy:** Stateless horizontal scaling — each instance does not store state in memory.
 State goes in Redis (sessions, cache) or PostgreSQL (persistent data).
@@ -91,7 +94,8 @@ Code must be reviewed against the OWASP Top 10 on each release.
 Tools: SAST (SonarQube/Snyk), dependency scanning, DAST in staging.
 
 ### Regulatory compliance
-- [GDPR / Habeas Data / PCI-DSS / etc.] — as applicable to the project
+- **Colombia — Ley 1581 de 2012 / Decree 1377/2013** (personal data protection, Habeas Data). Special treatment for **minors' data** (students): parental consent and authorization required for processing.
+- GDPR — applies if the product is offered in the European Union.
 
 ---
 
@@ -99,7 +103,7 @@ Tools: SAST (SonarQube/Snyk), dependency scanning, DAST in staging.
 
 | Pillar | Requirement | Tool |
 |--------|------------|------|
-| Logs | Structured JSON format + Correlation ID | Winston / Logback |
+| Logs | Structured JSON format + Correlation ID | Serilog (ASP.NET) / Logback (Java) / structured JSON |
 | Metrics | RED (Rate, Errors, Duration) per endpoint | Prometheus + Grafana |
 | Traces | End-to-end distributed traces | OpenTelemetry + Jaeger |
 | Alerts | Alert in < 5 min when SLI violates SLO | Alertmanager / PagerDuty |
@@ -144,12 +148,14 @@ Tools: SAST (SonarQube/Snyk), dependency scanning, DAST in staging.
 
 | NFR | Priority (P1/P2/P3) | Validated in CI? | Owner |
 |-----|---------------------|-----------------|-------|
-| Performance | P1 | Yes (k6 in staging) | [Tech Lead] |
-| Availability | P1 | Yes (health checks) | [DevOps] |
-| Security | P1 | Yes (SAST + OWASP) | [Security] |
-| Scalability | P2 | Manual (quarterly) | [DevOps] |
-| Observability | P1 | Yes (smoke test in CI) | [Tech Lead] |
-| Maintainability | P2 | Yes (coverage in CI) | [Team] |
+| Performance | P1 | Yes (k6 in staging) | Tech Lead (Backend) |
+| Availability | P1 | Yes (health checks) | DevOps |
+| Security | P1 | Yes (SAST + OWASP + SonarQube) | Security / Tech Lead |
+| Scalability | P2 | Manual (quarterly) | DevOps |
+| Observability | P1 | Yes (smoke test in CI) | Tech Lead (Platform) |
+| Maintainability | P2 | Yes (coverage in CI) | Core Team |
+| Portability (NFR-007) | P2 | Yes (image build in CI) | DevOps |
+| Disaster Recovery (NFR-008) | P1 | Manual (DR drills) | DevOps / Architect |
 
 ---
 

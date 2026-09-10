@@ -1,8 +1,21 @@
 # User Stories — Backlog
 
-> **What to fill in here:** The product's User Story backlog.
-> Each HU uses the standard format with Acceptance Criteria in Given/When/Then.
-> Refined (Ready) HUs go to the sprint. Unrefined ones are epics or ideas.
+> **Document status:** Living draft — requirements are being refined and are not evidence
+> that the corresponding functionality has been implemented.
+>
+> Each HU uses the standard format with acceptance criteria in Given/When/Then.
+> A story enters a sprint only after refinement and dependency validation.
+
+### How to maintain this backlog
+
+1. The Product Owner updates the story, priority, sprint, and dependencies when scope changes.
+2. The service owner updates proposed API/event details when the design is approved.
+3. The developer updates the story status and links tests when implementation starts or finishes.
+4. A completed story must also update the traceability matrix and affected domain, data, API,
+   service, and operational documents.
+
+> Unless a story is explicitly marked **Done**, fields named "Endpoint(s) implemented" and
+> "Events generated" describe the intended contract, not a verified implementation.
 
 ---
 
@@ -10,8 +23,8 @@
 
 | Cut | Sprint | Total HUs | Refined | In progress | Completed |
 |-----|--------|-----------|---------|-------------|-----------|
-| Cut 1 | Sprint 1-2 | 15 | 0 | 0 | 0 |
-| Cut 2 | Sprint 3-4 | [N] | [N] | [N] | [N] |
+| Cut 1 | Sprint 1-2 | 19 | 0 | 0 | 0 |
+| Cut 2 | Sprint 3-4 | 0 | 0 | 0 | 0 |
 
 ---
 
@@ -25,10 +38,123 @@
 | EP-004 | User Management / Family | Manage users and link students to guardian accounts |
 | EP-005 | Live Tracking | Show the school bus location on a map in real time |
 | EP-006 | Incidents | Report and notify incidents/emergencies that occur during a trip |
+| EP-007 | UI & Personalization | Customize the app theme (colors) and interface language |
 
 ---
 
 ## User Stories
+
+### HU-IAM-001 — Authentication, accounts, and roles (RBAC) {#HU-IAM-001}
+
+**Epic:** EP-004 (User Management / Family)
+
+> **As** a system user (student, driver, guardian, or administrator)
+> **I want** to sign in and access only the features allowed by my role
+> **so that** my information and the school's operations are protected.
+
+**Acceptance Criteria:**
+
+```gherkin
+Scenario 1: Sign in with valid credentials (happy path)
+  Given I have an active account with a role assigned
+  When I enter my credentials
+  Then the system validates them and issues a JWT token
+  And I am able to access only the features allowed by my role (RBAC)
+
+Scenario 2: Invalid credentials (error case)
+  Given my credentials are incorrect or the account is deactivated
+  When I try to sign in
+  Then the system rejects the attempt with the message "Invalid credentials"
+  And no token is issued
+```
+
+**Technical notes:**
+
+> There is no self-registration: the administrator creates the accounts (HU-USER-004)
+> and the system delivers the initial password through a secure channel. The account is
+> composed of `Person` (user-management-service) and `Profile` with `Role` (iam-service).
+> JWT expires in 1 hour, refresh token in 7 days.
+
+- **Responsible service(s):** iam-service
+- **Endpoint(s) implemented:** `POST /api/v1/auth/login`, `POST /api/v1/auth/refresh`, `POST /api/v1/auth/logout`
+- **Events generated:** `SessionStarted`, `SessionEnded`
+- **Required permissions:** public (login), authenticated (refresh/logout)
+
+**Definition of Done (DoD):**
+
+> This HU can only be closed when it meets the team's full DoD.
+> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+
+**Additional checks specific to this HU (if applicable):**
+- [ ] RBAC matrix defined and validated by the team
+- [ ] Initial password flow (generation / secure delivery) documented
+- [ ] Remove this section if there are no additional checks
+
+**Estimation and priority:**
+
+| Field | Value |
+|-------|-------|
+| Story Points | 8 |
+| Priority | High |
+| Target sprint | Sprint 1 |
+| Dependencies | HU-USER-004 (accounts created by the admin) |
+
+---
+
+### HU-ROUTE-001 — Administrator creates and manages school routes (stops and schedules) {#HU-ROUTE-001}
+
+**Epic:** EP-003 (Route & Fleet Management)
+
+> **As** an administrator
+> **I want** to create and edit school routes with their stops in order and their schedules
+> **so that** drivers, students, and families have a defined and consistent itinerary.
+
+**Acceptance Criteria:**
+
+```gherkin
+Scenario 1: Create a route with stops and schedules (happy path)
+  Given the administrator has access to route management
+  When they create route R-01 with its ordered stops and schedules
+  Then the route is registered with its stops and scheduled times
+  And it appears in the route list
+
+Scenario 2: Duplicate route name (error case)
+  Given a route with the same name already exists
+  When the administrator tries to create it again
+  Then the system rejects it with the message "Route already exists"
+```
+
+**Technical notes:**
+
+> A route is composed of `Route` (name, target sector), `Stop` (address, coordinates),
+> `RouteStop` (ordered stops), `RouteSchedule` (day, direction, and time), and
+> `RouteBusAssignments`. Uniqueness is validated by route name.
+
+- **Responsible service(s):** route-service
+- **Endpoint(s) implemented:** `POST /api/v1/routes`, `PUT /api/v1/routes/{id}`, `DELETE /api/v1/routes/{id}`, `GET /api/v1/routes`
+- **Events generated:** `RouteCreated`, `RouteUpdated`, `RouteDeleted`
+- **Required permissions:** administrator (JWT)
+
+**Definition of Done (DoD):**
+
+> This HU can only be closed when it meets the team's full DoD.
+> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+
+**Additional checks specific to this HU (if applicable):**
+- [ ] School/campus/city master data available (school-service)
+- [ ] Stops ordered by itinerary, not by creation order
+- [ ] Remove this section if there are no additional checks
+
+**Estimation and priority:**
+
+| Field | Value |
+|-------|-------|
+| Story Points | 8 |
+| Priority | High |
+| Target sprint | Sprint 1 |
+| Dependencies | HU-IAM-001 (authentication), HU-USER-004 (admin), school-service master data |
+
+---
 
 ### HU-NOTIF-001 — Real-time pickup/drop-off notifications to guardians {#HU-NOTIF-001}
 
@@ -71,7 +197,7 @@ Scenario 2: Student alights the bus (happy path)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] In-app push notification channel configured and tested on a real device
-- [ ] Remove this section if there are no additional checks
+- [ ] Additional checks reviewed by the service owner
 
 **Estimation and priority:**
 
@@ -124,7 +250,7 @@ Scenario 2: Bus without GPS signal (error case)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Google Maps API credentials configured and working
-- [ ] Remove this section if there are no additional checks
+- [ ] Additional checks reviewed by the service owner
 
 **Estimation and priority:**
 
@@ -177,7 +303,7 @@ Scenario 2: Student already linked to another guardian account (error case)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Link history (audit) recorded when a student is assigned
-- [ ] Remove this section if there are no additional checks
+- [ ] Additional checks reviewed by the service owner
 
 **Estimation and priority:**
 
@@ -232,7 +358,7 @@ Scenario 2: Deactivate an existing account
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Initial password flow (generation/secure delivery) defined
-- [ ] Remove this section if there are no additional checks
+- [ ] Additional checks reviewed by the service owner
 
 **Estimation and priority:**
 
@@ -285,7 +411,7 @@ Scenario 2: Bus resumes before the threshold (no alert)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Stop time threshold configurable per route, not hard-coded
-- [ ] Remove this section if there are no additional checks
+- [ ] Additional checks reviewed by the service owner
 
 **Estimation and priority:**
 
@@ -340,7 +466,7 @@ Scenario 2: Student not assigned to this route (error case)
 **Additional checks specific to this HU (if applicable):**
 - [ ] QR scanning tested on real devices in low-light conditions
 - [ ] Offline scenario defined (local queue and retry) and documented
-- [ ] Remove this section if there are no additional checks
+- [ ] Additional checks reviewed by the service owner
 
 **Estimation and priority:**
 
@@ -394,7 +520,7 @@ Scenario 2: Scanning without a previous boarding (error case)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Validation of active boarding before registering the alighting
-- [ ] Remove this section if there are no additional checks
+- [ ] Additional checks reviewed by the service owner
 
 **Estimation and priority:**
 
@@ -447,7 +573,7 @@ Scenario 2: Driver without an assigned route (error case)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Stops sorted by itinerary order, not by creation order
-- [ ] Remove this section if there are no additional checks
+- [ ] Additional checks reviewed by the service owner
 
 **Estimation and priority:**
 
@@ -456,7 +582,7 @@ Scenario 2: Driver without an assigned route (error case)
 | Story Points | 3 |
 | Priority | High |
 | Target sprint | Sprint 2 |
-| Dependencies | HU-ROUTE-001 (route definition), HU-ROUTE-007 (driver assignment) |
+| Dependencies | HU-ROUTE-001 (route definition), HU-BUS-002 (driver assigned to the bus) |
 
 ---
 
@@ -506,7 +632,7 @@ Scenario 3: Start a second concurrent trip (error case)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Block of concurrent active trips per bus
-- [ ] Remove this section if there are no additional checks
+- [ ] Additional checks reviewed by the service owner
 
 **Estimation and priority:**
 
@@ -560,7 +686,7 @@ Scenario 2: Report outside an active trip (error case)
 **Additional checks specific to this HU (if applicable):**
 - [ ] Configurable incident types (not hard-coded)
 - [ ] GPS location attached to the report
-- [ ] Remove this section if there are no additional checks
+- [ ] Additional checks reviewed by the service owner
 
 **Estimation and priority:**
 
@@ -612,7 +738,7 @@ Scenario 2: Child without an assigned route (error case)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Authorization check that the student is linked to the requesting guardian
-- [ ] Remove this section if there are no additional checks
+- [ ] Additional checks reviewed by the service owner
 
 **Estimation and priority:**
 
@@ -665,7 +791,7 @@ Scenario 2: QR not available (error case)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] QR rotation/expiration policy defined and implemented
-- [ ] Remove this section if there are no additional checks
+- [ ] Additional checks reviewed by the service owner
 
 **Estimation and priority:**
 
@@ -718,7 +844,7 @@ Scenario 2: Reassign a deactivated bus to a route that already has a bus (error 
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Unique plate constraint enforced at the data level
-- [ ] Remove this section if there are no additional checks
+- [ ] Additional checks reviewed by the service owner
 
 **Estimation and priority:**
 
@@ -731,38 +857,39 @@ Scenario 2: Reassign a deactivated bus to a route that already has a bus (error 
 
 ---
 
-### HU-ROUTE-007 — Administrator assigns drivers to routes {#HU-ROUTE-007}
+### HU-BUS-002 — Administrator assigns a driver to a bus {#HU-BUS-002}
 
 **Epic:** EP-003 (Route & Fleet Management)
 
 > **As** an administrator
-> **I want** to assign and unassign drivers to routes
-> **so that** every route is covered by an enabled driver according to availability.
+> **I want** to assign and unassign a driver to a bus
+> **so that** each bus has a responsible driver and the routes covered by that bus are served by that driver.
 
 **Acceptance Criteria:**
 
 ```gherkin
 Scenario 1: Successful assignment (happy path)
-  Given an active driver exists and a route has no driver assigned
-  When the administrator assigns the driver to the route
-  Then the route is registered with the driver
-  And the driver sees the route in their app (HU-ROUTE-002)
+  Given an active driver exists and a bus has no driver assigned
+  When the administrator assigns the driver to the bus
+  Then the bus is registered with that driver as responsible
+  And the driver sees the routes covered by their bus in the app (HU-ROUTE-002)
 
-Scenario 2: Driver already assigned to another route with a schedule conflict (error case)
-  Given the driver already has a route assigned at the same time slot
-  When the administrator attempts to assign the driver to another route
-  Then the system rejects the assignment with the message "Driver with schedule conflict"
-  And publishes the DriverAssignedToRoute event
+Scenario 2: Driver already responsible for another bus (error case)
+  Given the driver is already the responsible driver of another bus
+  When the administrator attempts to assign the driver to a different bus
+  Then the system rejects the assignment with the message "Driver already assigned to a bus"
 ```
 
 **Technical notes:**
 
-> Inactive drivers cannot be assigned. The assignment must validate schedule conflicts
-> across the routes assigned to the same driver.
+> The bus is the assignment anchor: a driver is responsible for one bus at a time, until the
+> administrator reassigns or unassigns them (`DriverAssignemts`, bus-service). The driver reaches
+> their routes transitively through the bus assigned to the route (`RouteBusAssignments`,
+> route-service); there is no driver→route assignment table. Inactive drivers cannot be assigned.
 
-- **Responsible service(s):** route-service
-- **Endpoint(s) implemented:** `POST /api/v1/routes/{routeId}/drivers`, `DELETE /api/v1/routes/{routeId}/drivers/{driverId}`
-- **Events generated:** `DriverAssignedToRoute`
+- **Responsible service(s):** bus-service
+- **Endpoint(s) implemented:** `PUT /api/v1/buses/{busId}/driver`, `DELETE /api/v1/buses/{busId}/driver`
+- **Events generated:** `DriverAssignedToBus`, `DriverUnassignedFromBus`
 - **Required permissions:** administrator (JWT)
 
 **Definition of Done (DoD):**
@@ -771,17 +898,17 @@ Scenario 2: Driver already assigned to another route with a schedule conflict (e
 > See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
-- [ ] Schedule-conflict validation implemented per driver
-- [ ] Remove this section if there are no additional checks
+- [ ] 1:1 invariant: a driver is responsible for a single bus at a time
+- [ ] Assignment changes recorded for audit (audit-service)
 
 **Estimation and priority:**
 
 | Field | Value |
 |-------|-------|
-| Story Points | 2 |
+| Story Points | 3 |
 | Priority | High |
 | Target sprint | Sprint 2 |
-| Dependencies | HU-ROUTE-001 (route definition), HU-USER-004 (driver accounts) |
+| Dependencies | HU-USER-004 (driver accounts), HU-BUS-001 (bus fleet) |
 
 ---
 
@@ -826,7 +953,7 @@ Scenario 2: Stop that does not belong to the route (error case)
 **Additional checks specific to this HU (if applicable):**
 - [ ] Validation that stops belong to the route
 - [ ] Uniqueness of one active route per student
-- [ ] Remove this section if there are no additional checks
+- [ ] Additional checks reviewed by the service owner
 
 **Estimation and priority:**
 
@@ -836,6 +963,112 @@ Scenario 2: Stop that does not belong to the route (error case)
 | Priority | High |
 | Target sprint | Sprint 2 |
 | Dependencies | HU-ROUTE-001 (route definition), HU-USER-003/004 (student accounts) |
+
+---
+
+### HU-UI-001 — User customizes the app theme (colors) {#HU-UI-001}
+
+**Epic:** EP-007 (UI & Personalization)
+
+> **As** a user (student, driver, guardian, or administrator)
+> **I want** to customize the theme colors of the app
+> **so that** the application matches my preferences and the school's branding.
+
+**Acceptance Criteria:**
+
+```gherkin
+Scenario 1: Change the theme color (happy path)
+  Given I have an active account
+  When I select a new color for the theme
+  Then the change is applied to all screens of the app
+
+Scenario 2: The preference persists (happy path)
+  Given I selected a theme color
+  When I close and reopen the app
+  Then the selected color is kept
+```
+
+**Technical notes:**
+
+> This is a frontend-only concern: no backend service owns it. The theme is applied
+> by the app base (web admin and mobile apps) and the preference is stored on the
+> client side (local settings of the user's device).
+
+- **Responsible service(s):** Frontend (web admin and mobile apps) — no backend service
+- **Endpoint(s) implemented:** none
+- **Events generated:** none
+- **Required permissions:** authenticated user (any role)
+
+**Definition of Done (DoD):**
+
+> This HU can only be closed when it meets the team's full DoD.
+> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+
+**Additional checks specific to this HU (if applicable):**
+- [ ] Theme contrast passes WCAG accessibility checks
+- [ ] Remove this section if there are no additional checks
+
+**Estimation and priority:**
+
+| Field | Value |
+|-------|-------|
+| Story Points | 2 |
+| Priority | Low |
+| Target sprint | Sprint 5 |
+| Dependencies | HU-IAM-001 (authentication) |
+
+---
+
+### HU-UI-002 — User chooses the interface language {#HU-UI-002}
+
+**Epic:** EP-007 (UI & Personalization)
+
+> **As** a user (student, driver, guardian, or administrator)
+> **I want** to choose the interface language among at least four supported languages
+> **so that** I can use the app in my preferred language.
+
+**Acceptance Criteria:**
+
+```gherkin
+Scenario 1: Select a supported language (happy path)
+  Given I have an active account and the app supports at least four languages
+  When I select one of the supported languages
+  Then the interface labels are loaded from that language's dictionary
+
+Scenario 2: Default language on first use (happy path)
+  Given I have no stored language preference
+  When I open the app for the first time
+  Then the interface is shown in the default language
+```
+
+**Technical notes:**
+
+> This is a frontend-only concern: no backend service owns it. Each app (web admin
+> and mobile) ships its i18n dictionaries and resolves the active language on the
+> client side; the preference is stored per device.
+
+- **Responsible service(s):** Frontend (web admin and mobile apps) — no backend service
+- **Endpoint(s) implemented:** none
+- **Events generated:** none
+- **Required permissions:** authenticated user (any role)
+
+**Definition of Done (DoD):**
+
+> This HU can only be closed when it meets the team's full DoD.
+> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+
+**Additional checks specific to this HU (if applicable):**
+- [ ] All four language dictionaries reviewed by a native speaker
+- [ ] Remove this section if there are no additional checks
+
+**Estimation and priority:**
+
+| Field | Value |
+|-------|-------|
+| Story Points | 2 |
+| Priority | Low |
+| Target sprint | Sprint 5 |
+| Dependencies | HU-IAM-001 (authentication) |
 
 ---
 
