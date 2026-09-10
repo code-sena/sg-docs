@@ -30,7 +30,6 @@ CREATE TABLE Bus (
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
 | Id | UNIQUEIDENTIFIER | Bus identifier | `550e8400-...` |
-| DriverId | UNIQUEIDENTIFIER | Driver profile reference | `550e8400-...` |
 | CampuseId | UNIQUEIDENTIFIER | School campus reference | `550e8400-...` |
 | SoatValidity | DATE | Insurance validity date | `2027-01-31` |
 | GpsDeviceId | UNIQUEIDENTIFIER | GPS device reference | `550e8400-...` |
@@ -96,7 +95,7 @@ CREATE TABLE Model (
 
 ### Table: DriverAssignemts
 
-**Purpose:** Catalogs vehicle models linked to a brand.
+**Purpose:** Assigns a driver profile to a bus, defining a validity range for the assignment.
 
 ```sql
 CREATE TABLE DriverAssignemts (
@@ -112,21 +111,21 @@ CREATE TABLE DriverAssignemts (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UNIQUEIDENTIFIER | Model identifier | `4` |
-| ProfileId | UNIQUEIDENTIFIER | Brand reference | `1` |
-| BusId | UNIQUEIDENTIFIER | Model name | `B340M` |
-| AssignedFrom | DATE | Lifecycle status | `Active` |
-| AssignedTo | DATE | Lifecycle status | `Active` |
+| Id | UNIQUEIDENTIFIER | Assignment identifier | `550e8400-...` |
+| ProfileId | UNIQUEIDENTIFIER | Driver profile correlation (IAM) | `550e8400-...` |
+| BusId | UNIQUEIDENTIFIER | Bus reference | `550e8400-...` |
+| AssignedFrom | DATE | Assignment start date | `2026-01-15` |
+| AssignedTo | DATE | Assignment end date (NULL = currently assigned) | `NULL` |
 
 **Modeling decisions:**
-1. Brand ownership is represented by `BrandID`.
-2. Integer catalog keys minimize storage and simplify lookup.
+1. A driver is responsible for a single bus at a time; the assignment remains open until reassigned or unassigned.
+2. The driver reaches a route transitively through the bus assigned to the route (see `route.md`); no driver→route table exists.
 
 ### Indexes
 
 | Name | Fields | Type | Justification |
 |------|--------|------|---------------|
-| IX_Bus_DriverId | DriverId | Nonclustered | Driver-to-bus lookup |
+| IX_DriverAssignemts_ProfileId | ProfileId | Nonclustered | Driver-to-bus lookup |
 | IX_Bus_SchoolId | SchoolId | Nonclustered | School fleet lookup |
 | IX_Bus_GpsDeviceId | GpsDeviceId | Nonclustered | GPS device lookup |
 | IX_Bus_Plate | Plate | Nonclustered | License plate lookup |
@@ -154,7 +153,7 @@ References to drivers, schools, and devices remain service correlations.
 ```sql
 ALTER TABLE Bus ADD VehicleColor VARCHAR(30) NULL;
 CREATE INDEX IX_Bus_Plate ON Bus (Plate);
-CREATE INDEX IX_Bus_DriverId ON Bus (DriverId);
+CREATE INDEX IX_DriverAssignemts_ProfileId ON DriverAssignemts (ProfileId);
 CREATE INDEX IX_Bus_SchoolId ON Bus (SchoolId);
 CREATE INDEX IX_Bus_GpsDeviceId ON Bus (GpsDeviceId);
 CREATE INDEX IX_Model_BrandId ON Model (BrandId);
