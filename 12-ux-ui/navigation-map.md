@@ -1,108 +1,229 @@
-# Navigation Map
+# Navigation Map - Guardian Escolar
 
-> Defines the screen structure of the system, how screens connect to each other, and what routes
-> exist. It is the reference when frontend and backend discuss what endpoints exist
-> or how to reach a feature.
+> Navigation reference for the Guardian Escolar web frontend. This document reflects the routes declared in `GuardianEscolar/dvlp-front/dvlp-web/src/app/app.routes.ts` and its child routes.
+>
+> **Source:** `GuardianEscolar` project, Angular `dvlp-web` frontend, and ASP.NET Core `dvlp-back` backend.
 
 ---
 
 ## Frontend route structure
 
-> **Instruction:** Fill this tree with your application's real routes.
-> Use the `[method] /route` format for API endpoints where applicable.
-
-```
-/                           → Home / landing page
+```text
+/                               -> Redirects to /home
+├── /home                       -> Public home
 ├── /auth
-│   ├── /login              → Authentication form
-│   ├── /register           → New user registration
-│   └── /forgot-password    → Password recovery
+│   ├── /login                  -> Sign-in
+│   └── /forgot-password        -> Password recovery
+│       ├── /email              -> Request recovery by email
+│       ├── /code               -> Validate recovery code
+│       └── /reset              -> Reset password
 │
-├── /dashboard              → Main panel (authenticated)
-│   ├── /overview           → Summary and key metrics
-│   └── /notifications      → Notification center
+├── /dashboard-admin            -> Administrator dashboard
+├── /admin
+│   ├── /usuarios               -> Student/user management
+│   ├── /padres                 -> Parent management
+│   ├── /conductores            -> Driver management
+│   ├── /familias               -> Family management
+│   ├── /buses                  -> Bus management
+│   ├── /paradas                -> Stop management
+│   ├── /rutas                  -> Route management
+│   ├── /informacion            -> ADMIN and SUPER_ADMIN profile information
+│   ├── /change-email           -> Email change
+│   │   ├── /email              -> Request the associated email change
+│   │   ├── /code-first         -> Validate the first code
+│   │   ├── /reset              -> Enter the new email
+│   │   └── /code-second        -> Validate the final code
+│   ├── /change-password        -> Authenticated password change
+│   │   ├── /email              -> Request the change
+│   │   ├── /code               -> Validate the code
+│   │   └── /reset              -> Set the new password
+│   └── /change-contact         -> Phone/contact change
+│       ├── /telephone          -> Request the assigned phone change
+│       ├── /code-first         -> Validate the first code
+│       ├── /reset              -> Enter the new phone number
+│       └── /code-second        -> Validate the final code
 │
-├── /[resource-a]           → [Resource A] list
-│   ├── /new                → Creation form
-│   └── /:id
-│       ├── /               → Resource detail
-│       └── /edit           → Edit form
+├── /dashboard-superadmin       -> Super administrator dashboard
+├── /superadmin
+│   ├── /admins                 -> Administrator management
+│   └── /schools                -> School management
 │
-├── /[resource-b]           → [Resource B] list
-│   └── /:id                → Detail
-│
-├── /admin                  → Administration panel (role: ADMIN)
-│   ├── /users              → User management
-│   └── /settings           → System configuration
-│
-└── /profile                → Authenticated user's profile
+├── /contact                    -> Public contact
+└── /*                          -> Redirects to /home
 ```
 
----
+### Default routes
+
+| Route | Behavior |
+|-------|----------|
+| `/` | Redirects to `/home` |
+| `/auth/forgot-password` | Redirects to `/auth/forgot-password/email` |
+| `/admin/change-email` | Redirects to `/admin/change-email/email` |
+| `/admin/change-password` | Redirects to `/admin/change-password/email` |
+| `/admin/change-contact` | Redirects to `/admin/change-contact/telephone` |
+| Undefined route | Redirects to `/home` |
 
 ## Screen map
 
-| Screen | Route | Component | Minimum role | Backend service |
-|--------|-------|-----------|--------------|----------------|
-| Home | `/` | `HomePage` | Public | — |
-| Login | `/auth/login` | `LoginPage` | Public | auth-service |
-| Register | `/auth/register` | `RegisterPage` | Public | auth-service |
-| Dashboard | `/dashboard` | `DashboardPage` | USER | [service] |
-| [Resource A] list | `/[resource-a]` | `[ResourceA]ListPage` | USER | [service] |
-| [Resource A] detail | `/[resource-a]/:id` | `[ResourceA]DetailPage` | USER | [service] |
-| Create [Resource A] | `/[resource-a]/new` | `[ResourceA]FormPage` | USER | [service] |
-| Admin panel | `/admin` | `AdminDashboard` | ADMIN | auth-service |
+| Screen | Route | Component | Expected role | Backend module |
+|--------|-------|-----------|---------------|----------------|
+| Home | `/home` | `Home` | Public | — |
+| Sign-in | `/auth/login` | `Login` | Public | `Security` (`POST /api/login`) |
+| Recovery request | `/auth/forgot-password/email` | `Email` | Public | `Security` |
+| Recovery validation | `/auth/forgot-password/code` | `Code` | Public | `Security` |
+| Password reset | `/auth/forgot-password/reset` | `Reset` | Public | `Security` |
+| Administrator dashboard | `/dashboard-admin` | `DashboardAdmin` | `ADMIN` | `Security` + administration modules |
+| Students/users | `/admin/usuarios` | `Estudiantes` | `ADMIN` | `UserManagement` (`/api/person`) |
+| Parents | `/admin/padres` | `Padres` | `ADMIN` | `UserManagement` |
+| Drivers | `/admin/conductores` | `Conductores` | `ADMIN` | `UserManagement` |
+| Families | `/admin/familias` | `Familia` | `ADMIN` | `UserManagement` |
+| Buses | `/admin/buses` | `Buses` | `ADMIN` | `FleetManagement` (`/api/bus`) |
+| Stops | `/admin/paradas` | `Paradas` | `ADMIN` | `RouteManagement` (`/api/stop`) |
+| Routes | `/admin/rutas` | `Rutas` | `ADMIN` | `RouteManagement` (`/api/route`) |
+| Profile information | `/admin/informacion` | `InformationAdmin` | `ADMIN`, `SUPER_ADMIN` | `Security` / `UserManagement` |
+| Email change | `/admin/change-email/*` | `ChangeEmail` + steps | `ADMIN`, `SUPER_ADMIN` | `Security` / `UserManagement` |
+| Password change | `/admin/change-password/*` | `ChangePassword` + steps | `ADMIN`, `SUPER_ADMIN` | `Security` |
+| Contact change | `/admin/change-contact/*` | `ChangeContact` + steps | `ADMIN`, `SUPER_ADMIN` | `UserManagement` |
+| Super administrator dashboard | `/dashboard-superadmin` | `DashboardSuperadmin` | `SUPER_ADMIN` | `Security` + administration modules |
+| Administrators | `/superadmin/admins` | `Admins` | `SUPER_ADMIN` | `UserManagement` / `Security` |
+| Schools | `/superadmin/schools` | `Schools` | `SUPER_ADMIN` | `SchoolManagement` (`/api/school`) |
+| Contact | `/contact` | `Contact` | Public | — |
 
----
+> The listed roles are the expected functional roles based on the separation of dashboards and menus. The current Angular routing does not declare `canActivate` or other guards; effective protection must be validated or implemented before treating these restrictions as frontend enforcement.
+
+## Backend API route map
+
+The backend is implemented as a modular ASP.NET Core API within `dvlp-back`, not as separately deployed services.
+
+| Method | Endpoint | Module | Use |
+|--------|----------|--------|-----|
+| `POST` | `/api/login` | `Security` | Authentication |
+| `GET/POST/PUT/DELETE` | `/api/person` | `UserManagement` | People/users |
+| `GET/POST/PUT/DELETE` | `/api/family` | `UserManagement` | Families |
+| `GET/POST/PUT/DELETE` | `/api/family-member` | `UserManagement` | Family members |
+| `GET/POST/PUT/DELETE` | `/api/driver-license` | `UserManagement` | Driver licenses |
+| `GET/POST/PUT/DELETE` | `/api/bus` | `FleetManagement` | Buses |
+| `GET/POST/PUT/DELETE` | `/api/route` | `RouteManagement` | Routes |
+| `GET/POST/PUT/DELETE` | `/api/stop` | `RouteManagement` | Stops |
+| `GET/POST/PUT/DELETE` | `/api/route-bus-assignments` | `RouteManagement` | Bus-to-route assignments |
+| `GET/POST/PUT/DELETE` | `/api/route-student-assignments` | `RouteManagement` | Student-to-route assignments |
+| `GET/POST/PUT/DELETE` | `/api/school` | `SchoolManagement` | Schools |
+| `GET/POST/PUT/DELETE` | `/api/school-campuse` | `SchoolManagement` | Campuses |
+| `GET/POST/PUT/DELETE` | `/api/course` | `SchoolManagement` | Courses |
+| `GET/POST/PUT/DELETE` | `/api/course-group` | `SchoolManagement` | Course groups |
+
+> The CRUD verbs above correspond to the `ACrudController` base contract. They must be checked against the OpenAPI contracts when they are published.
 
 ## Main user flows
 
-### Flow 1 — [Name of main flow]
+### Flow 1 - Authentication
 
-```
-[Start screen]
-    │
-    ▼ [User action]
-[Screen 2]
-    │
-    ├── [Successful case] ──► [OK result screen]
-    │
-    └── [Error case] ────► [Error screen / feedback]
-```
-
-**Related HUs:** HU-[service]-001, HU-[service]-002
-
-### Flow 2 — Authentication
-
-```
-Landing (/)
-    │
-    ▼ Click "Sign in"
+```text
+Home (/home)
+    |
+    | Select sign-in
+    v
 Login (/auth/login)
-    │
-    ├── Valid credentials ──► Dashboard (/dashboard)
-    │
-    └── Invalid credentials ► Login with error message (max. 5 attempts)
+    |
+    +-- Invalid credentials --> Error message on Login
+    |
+    +-- Admin role ----------> Administrator dashboard (/dashboard-admin)
+    |
+    +-- Other role ----------> Home (/home)
 ```
 
-**Related HUs:** HU-AUTH-001, HU-AUTH-002
+**Observed implementation:** `Login` calls the authentication service and redirects according to the `roles` response. The current code explicitly checks the `admin` role; other roles return to `/home`.
 
----
+### Flow 2 - Password recovery
+
+```text
+Login (/auth/login)
+    |
+    v
+Email (/auth/forgot-password/email)
+    |
+    +-- Valid email ----------> Code (/auth/forgot-password/code)
+    |
+    +-- Invalid email --------> Form validation
+                                  |
+                                  v
+Reset (/auth/forgot-password/reset)
+    |
+    +-- Reset accepted -------> Login (/auth/login)
+```
+
+### Flow 3 - User and transportation administration
+
+```text
+Administrator dashboard (/dashboard-admin)
+    |
+    +--> Users (/admin/usuarios)
+    +--> Parents (/admin/padres)
+    +--> Drivers (/admin/conductores)
+    +--> Families (/admin/familias)
+    +--> Buses (/admin/buses)
+    +--> Stops (/admin/paradas)
+    +--> Routes (/admin/rutas)
+    +--> Profile (/admin/informacion)
+```
+
+### Flow 4 - Super administration
+
+```text
+Super administrator dashboard (/dashboard-superadmin)
+    |
+    +--> Administrators (/superadmin/admins)
+    +--> Schools (/superadmin/schools)
+    +--> Profile and data changes (/admin/informacion)
+```
+
+### Flow 5 - Profile information changes
+
+```text
+Profile information (/admin/informacion)
+    |
+    | Available to ADMIN and SUPER_ADMIN
+    |
+    +--> Email change
+    |       /admin/change-email/email
+    |       -> /code-first -> /reset -> /code-second
+    |
+    +--> Password change
+    |       /admin/change-password/email
+    |       -> /code -> /reset
+    |
+    +--> Contact change
+            /admin/change-contact/telephone
+            -> /code-first -> /reset -> /code-second
+```
 
 ## Navigation rules
 
-| Rule | Description |
-|------|-------------|
-| Authentication | Routes under `/dashboard`, `/[resource]`, `/admin` redirect to `/auth/login` if no session |
-| Authorization | Routes under `/admin` redirect to `/dashboard` if the user does not have ADMIN role |
-| 404 | Undefined routes show the 404 screen with a link to dashboard |
-| Confirmation | Destructive actions (delete, cancel) show a confirmation dialog before executing |
+| Rule | Current behavior |
+|------|------------------|
+| Root route | `/` redirects to `/home`. |
+| Undefined route | The `**` wildcard redirects to `/home`; there is no dedicated 404 screen. |
+| Authentication | Login is connected to `AuthService`. No guards are declared in `app.routes.ts`. |
+| Authorization | Dashboards and menus functionally separate `ADMIN` and `SUPER_ADMIN`, but no role guards are visible in the current routing. |
+| Administrator menu | Exposes users, buses, and profile; parent, driver, family, stop, and route routes exist even though not all appear in the main sidebar. |
+| Super administrator menu | Exposes administrators, schools, and profile; the profile also allows email, password, and contact changes through shared `/admin` routes. |
+| Cancel/back | Form steps navigate to the previous step or `/admin/informacion`; they use explicit navigation or `Location.back()`. |
+| Confirmation | Password reset uses a confirmation component before returning to login. |
 
----
+## Discrepancies and pending decisions
+
+- `/auth/register` does not exist in the current routing.
+- There is no generic `/dashboard`; the application has `/dashboard-admin` and `/dashboard-superadmin`.
+- No frontend notification routes are declared.
+- There is no dedicated 404 screen: unknown routes return to `/home`.
+- There are no `/:id` parameters or explicit detail/edit routes in `app.routes.ts`; current CRUD screens are list or management routes.
+- General governance documentation uses `SUPER_ADMIN`, while the frontend explicitly checks `admin` to decide the dashboard. The role contract must be unified.
 
 ## Correlations
 
-- Design system (visual components) → `12-ux-ui/design-system.md`
-- Wireframes → `12-ux-ui/wireframes/` (if applicable)
-- Frontend API contracts → `07-api/contracts/openapi/`
-- Roles and permissions → `00-governance/security-policy.md`
+- Visual design: `12-ux-ui/design-system.md`
+- Guardian Escolar design system: `12-ux-ui/design-system-guardian-escolar.md`
+- Web frontend: `GuardianEscolar/dvlp-front/dvlp-web/src/app/app.routes.ts`
+- Backend: `GuardianEscolar/dvlp-back/src/backend/`
+- Security and roles: `00-governance/security-policy.md`
+- API contracts: `07-api/contracts/openapi/` when available
