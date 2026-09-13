@@ -1,52 +1,81 @@
-# System Overview
+# Guardian Escolar - System Overview
 
-> **Instructions:** Replace this content with your project's description.
-> This is the first page someone new reads. They must be able to understand the system in 5 minutes.
-> Remove these instructions when the document is complete.
+## What is Guardian Escolar?
 
----
+Guardian Escolar is an academic project developed by SENA ADSO, cohort 3145556, for Neiva, Huila, Colombia. It is a web and mobile platform for managing, monitoring, and improving the safety of school transportation.
 
-## What is [System Name]?
-
-School Guaridian, it is an innovative solution for the real-time control and monitoring of school routes. In an environment where the safety and peace of mind of parents is a priority, this platform becomes much more than a tracking tool: it is a reliable companion that ensures the well-being of students on every journey to and from their educational institutions.
+The platform connects families, students, drivers, administrators, and super administrators around school transportation operations. It centralizes families and guardians, students, vehicles, routes, stops, assignments, notifications, and safety alerts.
 
 ## Problem it solves
 
-**Before the system:** In Colombia, school transportation is essential for thousands of families, but it still lacks effective mechanisms that allow parents to know the real-time status of their children during the journey. The lack of control over students getting on and off the buses creates uncertainty and potential safety risks.
+Families and school operators need reliable information about school transportation. Without a shared platform, it is difficult to know:
 
-**With the system:** In response to this need, “Guardian Escolar” (School Guardian) was created—a technological solution that allows for real-time monitoring of school routes, using QR codes to accurately record student movements. This platform aims to improve communication between parents, schools, and transportation providers, ensuring a safer and more reliable environment for children during their daily commute.
+- Which route and stop belong to each student.
+- Whether a vehicle is active, delayed, or deviating from its route.
+- When a student boards or leaves a vehicle.
+- How to communicate delays, incidents, and safety events to families.
+- Who is responsible for each vehicle, route, assignment, or operational action.
+
+Guardian Escolar addresses this gap with route management, vehicle monitoring, traceability, notifications, and role-based access.
 
 ## Main users
 
-| Role | Description | What they do in the system |
-|------|-------------|--------------------------|
-| Admin | Responsible for managing users, routes, buses, and stops. This person works within the school. | create, update, delete and list |
-| Driver | driver in charge of the route | can drive a bus and scan QR codes |
-| Student | This is our target user, who is provided with real-time location and information on boarding procedures. |  |
-| Father | User who is given information about the route, location and boarding of their respective child. | View route and view notifications |
+| Role | Main responsibilities |
+|------|-----------------------|
+| Parent/Guardian | View their students, assigned routes and stops, vehicle location/status, notifications, and alerts. |
+| Student | Belongs to a family and is associated with routes and stops; participates in boarding and drop-off events. |
+| Driver | Operates an assigned vehicle and route, and is associated with route operations and incidents. |
+| Administrator | Manages the operational data: users, families, drivers, buses, stops, routes, and related assignments. |
+| Superadmin | Has global privileges, including administrator and school management. |
+
+## Core capabilities
+
+- Manage families and guardians.
+- Manage students and their family relationships.
+- Manage drivers, vehicles, routes, stops, and assignments.
+- Allow guardians to consult routes, stops, vehicle location/status, notifications, and alerts.
+- Monitor route progress and record operational events.
+- Support alerts for delays, deviations, incidents, route start/end, and student boarding/drop-off.
+- Provide administration and global super administration dashboards.
+- Support profile information, email, password, and contact changes for `ADMIN` and `SUPER_ADMIN`.
+- Provide a responsive web frontend and a mobile experience.
 
 ## Technology stack
 
-| Layer | Technology | Justification |
-|-------|-----------|---------------|
-| Frontend Web | Angular | It's the ideal choice because it offers a robust architecture geared towards building complex administration panels. Its component system allows you to organize the interface into clear sections (such as route listings, user tables, creation forms, and route maps), making it easier for administrators to perform critical tasks efficiently and without confusion. Furthermore, being backed by Google guarantees constant support and updates, as well as a very active community. |
-| Frontend Mobile | React Native | React Native was chosen to develop the mobile application because it allows for the creation of Android and iOS applications using the same codebase, reducing development time, maintenance costs, and duplication of effort. Furthermore, it boasts a broad ecosystem, excellent documentation, and the ability to use JavaScript/TypeScript and React, technologies widely employed in software development. It also offers adequate performance for most mobile applications and facilitates integration with native functionalities when needed. |
-| Backend | Spring Boot + Asp.Net + Go | for backend construction because they are mature technologies, widely used and with features that allow the development of robust, scalable, secure and high-performance applications. |
-| Database | SQL Server | As a database engine, it stands out for its maturity, stability, security, and comprehensive set of information management tools. It is a suitable solution for applications requiring data consistency, transaction handling, complex queries, access control, and backup and recovery mechanisms. |
-| Message broker | [RabbitMQ / Kafka] | [why] |
-| Infrastructure | Docker | as a tool for building and deploying the application because it allows packaging each component along with its dependencies and configuration into containers, ensuring that the software runs consistently regardless of the environment where it is deployed. |
+- **Web frontend:** Angular 21.
+- **Mobile frontend:** React + Expo.
+- **Backend and services:** .NET + C#.
+- **Database:** PostgreSQL.
+- **Development and containers:** Docker + WSL2.
+- **Additional technology under consideration:** .NET MAUI.
+- **Repository workflow:** Git, including `develop` and `docs` branches.
 
 ## Current status
 
-- **Phase:** In development
-- **Current version:** [v0.1.0]
-- **Last release:** [date]
-- **Next milestone:** [description and date]
+Guardian Escolar is under active academic development. The web frontend contains public, authentication, administration, super administration, and profile areas. The backend is organized as a modular ASP.NET Core application with modules such as Security, UserManagement, FleetManagement, RouteManagement, SchoolManagement, AlertManagement, and BoardingManagement.
 
-## Project contacts
+The mobile frontend uses React + Expo. A Notifications view has recently been created with mocked data, search filters, and highlighted notifications. Some integrations and operational monitoring behaviors remain under development or require confirmation through API contracts.
 
-| Role | Name | Contact |
-|------|------|---------|
-| Tech Lead | [Name] | [email/Slack] |
-| Product Owner | [Name] | [email/Slack] |
-| DevOps | [Name] | [email/Slack] |
+## Product priorities
+
+1. Transportation safety.
+2. Route monitoring and traceability.
+3. Clear communication with families.
+4. Reliable operational management.
+5. Ease of use and accessibility.
+6. Consistent web and mobile experiences.
+
+## Language and documentation
+
+The product is planned for internationalization in Spanish, English, French, and Portuguese. Project documentation covers UX/UI, Navigation Map, Design System, database, microservices, QA, quality planning, terms and conditions, and the project brochure.
+
+## Correlations
+
+- Scope: `scope.md`
+- Domain glossary: `glossary.md`
+- Navigation Map: `../12-ux-ui/navigation-map-guardian-escolar.md`
+- Design System: `../12-ux-ui/design-system-guardian-escolar.md`
+- Product vision: `../03-product/vision.md`
+- Security policy: `../00-governance/security-policy.md`
+- Backend source: `../../GuardianEscolar/dvlp-back/src/backend/`
+- Web frontend source: `../../GuardianEscolar/dvlp-front/dvlp-web/`
