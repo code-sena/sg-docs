@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Guardian Escolar - Idioma</title>
+<!-- Load Tailwind CSS v3 with forms and container queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            appBg: '#F3F6FA',
+            appPrimary: '#1E5AE6',
+            navTitle: '#102A43',
+            cardText: '#1E293B',
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"SF Pro Display"', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-overrides">
+    /* Remove default tap highlight and styling */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    body {
+      background-color: #E2E8F0;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-0 sm:p-4 font-sans text-slate-800">
+<!-- Mobile Device Frame Container -->
+<div class="w-full max-w-[420px] h-[100dvh] sm:h-[844px] bg-[#F3F6FA] flex flex-col justify-between overflow-hidden shadow-2xl relative sm:rounded-[44px] border sm:border-slate-300">
+<!-- Top Scrollable Content -->
+<div class="flex-1 flex flex-col overflow-y-auto">
+<!-- BEGIN: StatusBar -->
+<!-- iOS style top status bar simulation -->
+<header class="pt-3 px-7 flex justify-between items-center text-sm font-semibold text-slate-900 tracking-tight shrink-0 select-none">
+<span class="text-[15px] font-semibold tracking-normal pl-1">2:35</span>
+<div class="flex items-center space-x-1.5 pr-1">
+<!-- Cell Signal Bars -->
+<svg class="w-4 h-3.5 fill-current" viewbox="0 0 17 12">
+<rect height="3.5" rx="0.8" width="2.5" x="0" y="8.5"></rect>
+<rect height="6" rx="0.8" width="2.5" x="4" y="6"></rect>
+<rect height="8.5" rx="0.8" width="2.5" x="8" y="3.5"></rect>
+<rect height="11.5" rx="0.8" width="2.5" x="12" y="0.5"></rect>
+</svg>
+<!-- Wifi Icon -->
+<svg class="w-4 h-3.5 fill-current ml-0.5" viewbox="0 0 16 12">
+<path d="M8 11.2a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8zm-3.8-3.3a5.4 5.4 0 0 1 7.6 0 .8.8 0 0 0 1.1-1.1 6.9 6.9 0 0 0-9.8 0 .8.8 0 1 0 1.1 1.1zm-2.8-2.8a9.4 9.4 0 0 1 13.2 0 .8.8 0 0 0 1.1-1.1 11 11 0 0 0-15.4 0 .8.8 0 0 0 1.1 1.1z"></path>
+</svg>
+<!-- Battery Pill with Level -->
+<div class="flex items-center ml-1">
+<div class="w-6 h-[11.5px] border border-slate-900/60 rounded-[3.5px] p-[1.5px] flex items-center">
+<div class="bg-emerald-500 h-full w-[45%] rounded-[1.5px]"></div>
+</div>
+<div class="w-[1.5px] h-[4px] bg-slate-900/60 rounded-r-sm"></div>
+<span class="text-[10px] ml-1 font-bold">45</span>
+</div>
+</div>
+</header>
+<!-- END: StatusBar -->
+<!-- BEGIN: NavigationBar -->
+<!-- App Header: Back Button & Screen Title -->
+<nav aria-label="Pantalla actual" class="pt-4 pb-3 px-5 flex items-center space-x-4 shrink-0">
+<!-- Back Navigation Button -->
+<button aria-label="Regresar" class="p-1 -ml-1 text-[#0F172A] hover:opacity-70 transition-opacity focus:outline-none" type="button">
+<svg class="w-6 h-6 stroke-[2.4]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Page Title -->
+<h1 class="text-[22px] font-bold text-[#102A43] tracking-tight">Idioma</h1>
+</nav>
+<!-- END: NavigationBar -->
+<!-- BEGIN: LanguageSelectionList -->
+<!-- Language Options Container -->
+<main aria-label="Selecciona un idioma" class="px-5 pt-3 flex flex-col space-y-4" role="radiogroup">
+<!-- Language Card 1: Español (Active / Selected) -->
+<label class="language-card group flex items-center justify-between px-6 py-5 bg-white rounded-[22px] shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-slate-100/80 cursor-pointer transition-all active:scale-[0.99] select-none" data-lang="es">
+<span class="text-[17px] font-medium text-slate-800 tracking-tight">Español</span>
+<div class="relative flex items-center justify-center">
+<input checked="" class="sr-only peer" name="language" type="radio" value="es"/>
+<!-- Custom Radio Ring: Active state has bold dark border -->
+<div class="radio-indicator w-6 h-6 rounded-full border-[2.2px] border-slate-900 transition-colors peer-checked:border-slate-900"></div>
+</div>
+</label>
+<!-- Language Card 2: English -->
+<label class="language-card group flex items-center justify-between px-6 py-5 bg-white rounded-[22px] shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-slate-100/80 cursor-pointer transition-all active:scale-[0.99] select-none" data-lang="en">
+<span class="text-[17px] font-medium text-slate-800 tracking-tight">English</span>
+<div class="relative flex items-center justify-center">
+<input class="sr-only peer" name="language" type="radio" value="en"/>
+<div class="radio-indicator w-6 h-6 rounded-full border-[2px] border-slate-200 transition-colors peer-checked:border-slate-900"></div>
+</div>
+</label>
+<!-- Language Card 3: Français -->
+<label class="language-card group flex items-center justify-between px-6 py-5 bg-white rounded-[22px] shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-slate-100/80 cursor-pointer transition-all active:scale-[0.99] select-none" data-lang="fr">
+<span class="text-[17px] font-medium text-slate-800 tracking-tight">Français</span>
+<div class="relative flex items-center justify-center">
+<input class="sr-only peer" name="language" type="radio" value="fr"/>
+<div class="radio-indicator w-6 h-6 rounded-full border-[2px] border-slate-200 transition-colors peer-checked:border-slate-900"></div>
+</div>
+</label>
+<!-- Language Card 4: Português -->
+<label class="language-card group flex items-center justify-between px-6 py-5 bg-white rounded-[22px] shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-slate-100/80 cursor-pointer transition-all active:scale-[0.99] select-none" data-lang="pt">
+<span class="text-[17px] font-medium text-slate-800 tracking-tight">Português</span>
+<div class="relative flex items-center justify-center">
+<input class="sr-only peer" name="language" type="radio" value="pt"/>
+<div class="radio-indicator w-6 h-6 rounded-full border-[2px] border-slate-200 transition-colors peer-checked:border-slate-900"></div>
+</div>
+</label>
+</main>
+<!-- END: LanguageSelectionList -->
+</div>
+<!-- BEGIN: BottomNavigation -->
+<!-- Bottom Tab Bar -->
+<footer class="bg-[#1D4ED8] shrink-0 pb-7 pt-3 px-6 shadow-lg select-none" data-purpose="bottom-tab-bar">
+<nav class="flex items-center justify-between max-w-sm mx-auto text-white">
+<!-- Tab 1: Ruta -->
+<a class="flex flex-col items-center justify-center flex-1 space-y-1 opacity-90 hover:opacity-100 transition-opacity" href="#ruta">
+<!-- Bus Icon -->
+<svg class="w-6 h-6 fill-current" viewbox="0 0 24 24">
+<path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"></path>
+</svg>
+<span class="text-[12px] font-normal tracking-wide">Ruta</span>
+</a>
+<!-- Tab 2: Ubicación -->
+<a class="flex flex-col items-center justify-center flex-1 space-y-1 opacity-90 hover:opacity-100 transition-opacity" href="#ubicacion">
+<!-- Pin Icon -->
+<svg class="w-6 h-6 fill-current" viewbox="0 0 24 24">
+<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path>
+</svg>
+<span class="text-[12px] font-normal tracking-wide">Ubicación</span>
+</a>
+<!-- Tab 3: Perfil (Active) -->
+<a class="flex flex-col items-center justify-center flex-1 space-y-1 opacity-100" href="#perfil">
+<!-- User / Profile Icon -->
+<svg class="w-6 h-6 fill-current" viewbox="0 0 24 24">
+<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+</svg>
+<span class="text-[12px] font-medium tracking-wide">Perfil</span>
+</a>
+</nav>
+</footer>
+<!-- END: BottomNavigation -->
+</div>
+<!-- Interactive Radio Behavior -->
+<script data-purpose="radio-selection">
+    document.addEventListener('DOMContentLoaded', () => {
+      const radioInputs = document.querySelectorAll('input[name="language"]');
+      const indicators = document.querySelectorAll('.radio-indicator');
+
+      function updateRadios() {
+        radioInputs.forEach((input) => {
+          const indicator = input.parentElement.querySelector('.radio-indicator');
+          if (input.checked) {
+            indicator.classList.remove('border-slate-200');
+            indicator.classList.add('border-slate-900', 'border-[2.2px]');
+          } else {
+            indicator.classList.remove('border-slate-900', 'border-[2.2px]');
+            indicator.classList.add('border-slate-200', 'border-[2px]');
+          }
+        });
+      }
+
+      radioInputs.forEach(input => {
+        input.addEventListener('change', updateRadios);
+      });
+      
+      // Initialize on load
+      updateRadios();
+    });
+  </script>
+</body></html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Notificaciones - Guardian Escolar</title>
+<!-- Tailwind CSS v3 with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            appBg: '#F3F6FA',
+            navyHeading: '#111E38',
+            subText: '#6B7A90',
+            primaryBlue: '#1D64EC',
+            iconBg: '#F0F5FD',
+            starBorder: '#5F6D82',
+            cardBorder: '#E2E8F0'
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Core Styles -->
+<style data-purpose="custom-layout">
+    body {
+      background-color: #ECEEF2;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .app-screen {
+      max-width: 440px;
+      min-height: 100vh;
+      background-color: #F3F6FA;
+      margin: 0 auto;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="flex justify-center items-start min-h-screen">
+<div class="app-screen w-full flex flex-col shadow-xl min-h-screen relative pb-10" data-purpose="mobile-container">
+<!-- BEGIN: TopStatusBar (iOS Native Style Replica) -->
+<header class="w-full bg-[#F3F6FA] pt-3 px-7 pb-1 flex justify-between items-center text-navyHeading select-none" data-purpose="status-bar">
+<!-- Time -->
+<span class="text-[16px] font-semibold tracking-tight">2:34</span>
+<!-- Native Mobile Status Icons (Cell, Wifi, Battery) -->
+<div class="flex items-center space-x-2">
+<!-- Cellular Signal Strength -->
+<svg class="w-[18px] h-[14px]" fill="currentColor" viewbox="0 0 18 14">
+<rect height="4.5" rx="0.8" width="2.8" x="0.5" y="9.5"></rect>
+<rect height="7.5" rx="0.8" width="2.8" x="4.8" y="6.5"></rect>
+<rect height="10.5" rx="0.8" width="2.8" x="9.1" y="3.5"></rect>
+<rect height="13.5" rx="0.8" width="2.8" x="13.4" y="0.5"></rect>
+</svg>
+<!-- Wifi Icon -->
+<svg class="w-[17px] h-[14px]" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21L24 8.98C20.93 5.9 16.69 4 12 4ZM12 8.5C14.7 8.5 17.16 9.54 19.04 11.26L12 18.34L4.96 11.26C6.84 9.54 9.3 8.5 12 8.5Z"></path>
+</svg>
+<!-- Battery with Percentage badge -->
+<div class="flex items-center space-x-0.5">
+<div class="relative flex items-center justify-center bg-[#4CD964] rounded-[5px] px-1.5 h-[17px] text-white text-[10px] font-bold tracking-tighter">
+<span>44</span>
+<!-- Battery nipple -->
+<div class="absolute -right-[3px] top-[4px] w-[2.5px] h-[8px] bg-[#4CD964] rounded-r-sm"></div>
+</div>
+</div>
+</div>
+</header>
+<!-- END: TopStatusBar -->
+<!-- BEGIN: NavigationHeader -->
+<nav class="w-full bg-[#F3F6FA] px-5 pt-3 pb-4 border-b border-[#E3E8F0] flex items-center space-x-4" data-purpose="navigation-bar">
+<button aria-label="Volver atrás" class="p-1 -ml-1 text-navyHeading active:opacity-60 transition-opacity" type="button">
+<svg class="w-6 h-6 stroke-[2.4]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<h1 class="text-[22px] font-bold tracking-tight text-navyHeading">
+        Notificaciones
+      </h1>
+</nav>
+<!-- END: NavigationHeader -->
+<!-- BEGIN: MainContent -->
+<main class="w-full px-4 pt-4 flex-1 flex flex-col" data-purpose="notifications-list-container">
+<!-- Filter Button Row -->
+<div class="w-full flex justify-end mb-4" data-purpose="filter-bar">
+<button class="inline-flex items-center space-x-2 bg-white border border-[#CBD5E1] rounded-xl px-4 py-2 shadow-xs text-navyHeading text-[15px] font-medium active:bg-slate-50 transition-colors" type="button">
+<svg class="w-5 h-5 text-navyHeading" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2" viewbox="0 0 24 24">
+<line x1="4" x2="20" y1="7" y2="7"></line>
+<line x1="7" x2="17" y1="12" y2="12"></line>
+<line x1="10" x2="14" y1="17" y2="17"></line>
+</svg>
+<span class="font-semibold text-[14px]">Filtrar</span>
+</button>
+</div>
+<!-- Notifications List -->
+<div class="flex flex-col space-y-3.5" data-purpose="notification-cards-stack">
+<!-- CARD 1: Ruta iniciada -->
+<article class="bg-white rounded-2xl p-4 border border-[#E9EEF5] shadow-[0_2px_6px_rgba(0,0,0,0.02)] flex items-start space-x-3.5" data-purpose="notification-item">
+<!-- Icon Container -->
+<div class="w-12 h-12 rounded-full bg-iconBg flex items-center justify-center shrink-0">
+<!-- Front-Facing Bus Icon -->
+<svg class="w-6 h-6 text-primaryBlue" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<rect height="16" rx="3" width="16" x="4" y="3"></rect>
+<line x1="4" x2="20" y1="11" y2="11"></line>
+<line x1="12" x2="12" y1="3" y2="11"></line>
+<circle cx="7.5" cy="15.5" fill="currentColor" r="1.2"></circle>
+<circle cx="16.5" cy="15.5" fill="currentColor" r="1.2"></circle>
+<path d="M6 19v2"></path>
+<path d="M18 19v2"></path>
+</svg>
+</div>
+<!-- Card Body -->
+<div class="flex-1 min-w-0 pr-1">
+<h2 class="text-[16px] font-bold text-navyHeading leading-snug">Ruta iniciada</h2>
+<p class="text-[14px] text-subText mt-1 leading-relaxed">El bus de la Ruta Centro inició su recorrido.</p>
+</div>
+<!-- Right Meta: Timestamp & Star -->
+<div class="flex flex-col items-end space-y-1.5 shrink-0 pt-0.5">
+<span class="text-[13px] text-[#8C9BAE]">Ahora</span>
+<button aria-label="Marcar como favorito" class="p-0.5 text-[#64748B] hover:text-navyHeading transition-colors" type="button">
+<svg class="w-5 h-5 fill-none stroke-current stroke-[1.7]" viewbox="0 0 24 24">
+<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+</svg>
+</button>
+</div>
+</article>
+<!-- CARD 2: Ingreso registrado -->
+<article class="bg-white rounded-2xl p-4 border border-[#E9EEF5] shadow-[0_2px_6px_rgba(0,0,0,0.02)] flex items-start space-x-3.5" data-purpose="notification-item">
+<!-- Icon Container -->
+<div class="w-12 h-12 rounded-full bg-iconBg flex items-center justify-center shrink-0">
+<!-- Checked Circle Icon -->
+<svg class="w-6 h-6 text-primaryBlue" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="9"></circle>
+<path d="M8.5 12.5L10.8 14.8L15.5 9.5"></path>
+</svg>
+</div>
+<!-- Card Body -->
+<div class="flex-1 min-w-0 pr-1">
+<h2 class="text-[16px] font-bold text-navyHeading leading-snug">Ingreso registrado</h2>
+<p class="text-[14px] text-subText mt-1 leading-relaxed">Se registró el ingreso del estudiante al bus.</p>
+</div>
+<!-- Right Meta: Timestamp & Star -->
+<div class="flex flex-col items-end space-y-1.5 shrink-0 pt-0.5">
+<span class="text-[13px] text-[#8C9BAE]">Ahora</span>
+<button aria-label="Marcar como favorito" class="p-0.5 text-[#64748B] hover:text-navyHeading transition-colors" type="button">
+<svg class="w-5 h-5 fill-none stroke-current stroke-[1.7]" viewbox="0 0 24 24">
+<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+</svg>
+</button>
+</div>
+</article>
+<!-- CARD 3: Bus próximo -->
+<article class="bg-white rounded-2xl p-4 border border-[#E9EEF5] shadow-[0_2px_6px_rgba(0,0,0,0.02)] flex items-start space-x-3.5" data-purpose="notification-item">
+<!-- Icon Container -->
+<div class="w-12 h-12 rounded-full bg-iconBg flex items-center justify-center shrink-0">
+<!-- Location Pin Icon -->
+<svg class="w-6 h-6 text-primaryBlue" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+<circle cx="12" cy="10" r="3"></circle>
+</svg>
+</div>
+<!-- Card Body -->
+<div class="flex-1 min-w-0 pr-1">
+<h2 class="text-[16px] font-bold text-navyHeading leading-snug">Bus próximo</h2>
+<p class="text-[14px] text-subText mt-1 leading-relaxed">El bus llegará a tu parada en aproximadamente 10 minutos.</p>
+</div>
+<!-- Right Meta: Timestamp & Star -->
+<div class="flex flex-col items-end space-y-1.5 shrink-0 pt-0.5">
+<span class="text-[13px] text-[#8C9BAE]">Ahora</span>
+<button aria-label="Marcar como favorito" class="p-0.5 text-[#64748B] hover:text-navyHeading transition-colors" type="button">
+<svg class="w-5 h-5 fill-none stroke-current stroke-[1.7]" viewbox="0 0 24 24">
+<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+</svg>
+</button>
+</div>
+</article>
+<!-- CARD 4: Descenso registrado -->
+<article class="bg-white rounded-2xl p-4 border border-[#E9EEF5] shadow-[0_2px_6px_rgba(0,0,0,0.02)] flex items-start space-x-3.5" data-purpose="notification-item">
+<!-- Icon Container -->
+<div class="w-12 h-12 rounded-full bg-iconBg flex items-center justify-center shrink-0">
+<!-- Door Exit / Logout Icon -->
+<svg class="w-6 h-6 text-primaryBlue" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<path d="M14 4H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7"></path>
+<polyline points="15 16 19 12 15 8"></polyline>
+<line x1="19" x2="9" y1="12" y2="12"></line>
+</svg>
+</div>
+<!-- Card Body -->
+<div class="flex-1 min-w-0 pr-1">
+<h2 class="text-[16px] font-bold text-navyHeading leading-snug">Descenso registrado</h2>
+<p class="text-[14px] text-subText mt-1 leading-relaxed">Se registró el descenso del estudiante del bus.</p>
+</div>
+<!-- Right Meta: Timestamp & Star -->
+<div class="flex flex-col items-end space-y-1.5 shrink-0 pt-0.5">
+<span class="text-[13px] text-[#8C9BAE]">Ahora</span>
+<button aria-label="Marcar como favorito" class="p-0.5 text-[#64748B] hover:text-navyHeading transition-colors" type="button">
+<svg class="w-5 h-5 fill-none stroke-current stroke-[1.7]" viewbox="0 0 24 24">
+<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+</svg>
+</button>
+</div>
+</article>
+<!-- CARD 5: Desvío de ruta -->
+<article class="bg-white rounded-2xl p-4 border border-[#E9EEF5] shadow-[0_2px_6px_rgba(0,0,0,0.02)] flex items-start space-x-3.5" data-purpose="notification-item">
+<!-- Icon Container -->
+<div class="w-12 h-12 rounded-full bg-iconBg flex items-center justify-center shrink-0">
+<!-- Route Diversion / Forking Path Icon -->
+<svg class="w-6 h-6 text-primaryBlue" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="6" cy="18" r="2.5"></circle>
+<circle cx="18" cy="6" r="2.5"></circle>
+<path d="M6 15.5V9a3 3 0 0 1 3-3h6.5"></path>
+<circle cx="6" cy="6" fill="currentColor" r="1.5"></circle>
+</svg>
+</div>
+<!-- Card Body -->
+<div class="flex-1 min-w-0 pr-1">
+<h2 class="text-[16px] font-bold text-navyHeading leading-snug">Desvío de ruta</h2>
+<p class="text-[14px] text-subText mt-1 leading-relaxed">La ruta presenta un desvío temporal.</p>
+</div>
+<!-- Right Meta: Timestamp & Star -->
+<div class="flex flex-col items-end space-y-1.5 shrink-0 pt-0.5">
+<span class="text-[13px] text-[#8C9BAE]">Ahora</span>
+<button aria-label="Marcar como favorito" class="p-0.5 text-[#64748B] hover:text-navyHeading transition-colors" type="button">
+<svg class="w-5 h-5 fill-none stroke-current stroke-[1.7]" viewbox="0 0 24 24">
+<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+</svg>
+</button>
+</div>
+</article>
+</div>
+</main>
+<!-- END: MainContent -->
+</div>
+</body></html>

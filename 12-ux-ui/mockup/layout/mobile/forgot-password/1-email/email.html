@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Restablecer contraseña</title>
+<!-- Tailwind CSS v3 with forms & container queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration for precise colors and fonts matching the native app -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            appBg: '#F3F6FA',
+            darkBlue: '#0F1E36',
+            brandBlue: '#1D5CDB',
+            inputBorder: '#E2E8F0',
+            labelColor: '#6B7A90',
+            subtextColor: '#57657A',
+            placeholderColor: '#9AA5B5'
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom CSS for mobile frame layout and micro-details -->
+<style data-purpose="mobile-viewport">
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      background-color: #e5e9f0;
+    }
+    .safe-top-padding {
+      padding-top: max(env(safe-area-inset-top), 12px);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-0 sm:p-4 font-sans text-slate-800 antialiased">
+<!-- BEGIN: MobileDeviceFrame -->
+<div class="w-full max-w-[420px] min-h-screen sm:min-h-[852px] sm:h-[852px] bg-appBg flex flex-col sm:rounded-[44px] sm:shadow-2xl sm:border-[8px] sm:border-slate-800 overflow-hidden relative" data-purpose="phone-container">
+<!-- BEGIN: TopBarAndNavigation -->
+<header class="w-full bg-appBg select-none z-10">
+<!-- iOS Status Bar Simulation -->
+<div class="w-full flex justify-between items-center px-8 pt-3 pb-2 safe-top-padding text-darkBlue font-semibold text-[15px]" data-purpose="ios-status-bar">
+<!-- Time indicator -->
+<span class="tracking-tight text-[15px] font-semibold">2:34</span>
+<!-- Status Icons (Cellular, WiFi, Battery) -->
+<div class="flex items-center space-x-2">
+<!-- Cellular signal (4 dots/bars) -->
+<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24">
+<circle cx="3" cy="18" r="2.5"></circle>
+<circle cx="9" cy="15" r="2.5"></circle>
+<circle cx="15" cy="12" r="2.5"></circle>
+<circle cx="21" cy="9" r="2.5"></circle>
+</svg>
+<!-- WiFi icon -->
+<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24">
+<path d="M12 4c-5 0-9.27 2.38-12 6l1.73 2.16C4.09 9.38 7.79 7.5 12 7.5s7.91 1.88 10.27 4.66L24 10c-2.73-3.62-7-6-12-6zm0 6c-3.32 0-6.15 1.58-7.97 4l1.83 2.29C7.2 14.88 9.44 13.5 12 13.5s4.8 1.38 6.14 2.79L20 14c-1.82-2.42-4.68-4-8-4zm0 6c-1.66 0-3.08.79-4 2l4 5 4-5c-.92-1.21-2.34-2-4-2z"></path>
+</svg>
+<!-- Battery icon with percentage -->
+<div class="flex items-center pl-0.5">
+<div class="relative w-6 h-3 border border-darkBlue rounded-[4px] p-0.5 flex items-center">
+<div class="h-full bg-emerald-500 rounded-[2px] w-[44%]"></div>
+<div class="absolute -right-[3.5px] top-[3px] w-[2px] h-[4px] bg-darkBlue rounded-r-sm"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- App Header with Back Button and Title -->
+<div class="w-full flex items-center px-4 py-3 border-b border-transparent" data-purpose="app-navbar">
+<button aria-label="Volver" class="p-2 -ml-1 text-darkBlue rounded-full hover:bg-black/5 active:bg-black/10 transition-colors focus:outline-none" type="button">
+<!-- Back arrow SVG matching reference -->
+<svg class="w-6 h-6 stroke-[2.2] stroke-current fill-none" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24">
+<path d="M19 12H5M12 19l-7-7 7-7"></path>
+</svg>
+</button>
+<h1 class="ml-2 text-[20px] font-bold tracking-tight text-darkBlue">
+          Restablecer contraseña
+        </h1>
+</div>
+</header>
+<!-- END: TopBarAndNavigation -->
+<!-- BEGIN: MainContent -->
+<main class="flex-1 flex flex-col px-7 pt-12 sm:pt-16 pb-8">
+<!-- Informational Header Block -->
+<section class="text-center mb-9" data-purpose="reset-intro">
+<!-- Main prominent heading -->
+<h2 class="text-[32px] sm:text-[34px] leading-[1.18] font-bold text-darkBlue tracking-tight px-4">
+          Restablecer<br/>contraseña
+        </h2>
+<!-- Instructional subtitle -->
+<p class="mt-4 text-[15.5px] leading-snug text-subtextColor max-w-[280px] mx-auto">
+          Ingresa tu correo electrónico para recibir un código de verificación.
+        </p>
+</section>
+<!-- Form Section -->
+<section class="w-full mt-2" data-purpose="reset-form">
+<form action="#" class="w-full space-y-6" method="POST" onsubmit="event.preventDefault();">
+<!-- Email Input Field Group -->
+<div class="space-y-2" data-purpose="input-group">
+<label class="block text-[14px] font-normal text-labelColor ml-0.5" for="email">
+              Correo Electrónico
+            </label>
+<div class="relative">
+<input class="w-full px-4 py-3.5 bg-white border border-inputBorder rounded-xl text-slate-800 placeholder-placeholderColor text-[15px] shadow-[0_1px_2px_rgba(0,0,0,0.02)] focus:bg-white focus:outline-none focus:ring-2 focus:ring-brandBlue/30 focus:border-brandBlue transition duration-150" id="email" name="email" placeholder="Correo electrónico" required="" type="email"/>
+</div>
+</div>
+<!-- Submit Button -->
+<div class="pt-1">
+<button class="w-full py-3.5 px-6 bg-brandBlue hover:bg-blue-700 active:scale-[0.99] text-white font-semibold text-[16px] rounded-full sm:rounded-2xl shadow-[0_4px_12px_rgba(29,92,219,0.25)] transition duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-blue-300" data-purpose="submit-btn" type="submit">
+              Enviar código
+            </button>
+</div>
+</form>
+</section>
+<!-- Bottom Spacer / iOS Home Indicator Safe Area -->
+<div class="mt-auto pt-8 flex justify-center items-center">
+<div class="w-32 h-1 bg-slate-300 rounded-full" data-purpose="ios-home-indicator"></div>
+</div>
+</main>
+<!-- END: MainContent -->
+</div>
+<!-- END: MobileDeviceFrame -->
+</body></html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Guardian Escolar - Mi familia</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              blue: '#1e40af',     /* Royal/Primary Blue */
+              light: '#f4f7fb',    /* Soft cool background */
+              slate: '#1e293b',    /* Title & dark labels */
+              muted: '#64748b',    /* Muted captions */
+              nav: '#1d4ed8'       /* Bottom nav bright blue */
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+<style data-purpose="custom-scroll-and-touch">
+    /* Disable bounce scroll effect for app-like native feel */
+    html, body {
+      overscroll-behavior-y: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 flex justify-center min-h-screen text-slate-800 font-sans antialiased select-none">
+<!-- BEGIN: MobileDeviceFrame -->
+<div class="w-full max-w-md min-h-screen bg-[#f4f7fb] flex flex-col justify-between shadow-2xl relative overflow-x-hidden" data-purpose="mobile-viewport-container">
+<!-- Top Area: Status Bar + App Bar Header -->
+<div class="w-full">
+<!-- BEGIN: iOSStatusBar -->
+<header class="w-full pt-3 pb-1 px-7 flex items-center justify-between text-slate-800 font-medium text-sm" data-purpose="status-bar">
+<!-- Time indicator -->
+<span class="font-semibold tracking-tight text-[15px]">2:34</span>
+<!-- Status Bar Hardware Icons -->
+<div class="flex items-center space-x-1.5">
+<!-- Signal Icon -->
+<svg class="w-4 h-4 fill-current text-slate-900" viewbox="0 0 24 24">
+<path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9zm0 2c3.87 0 7 3.13 7 7 0 1.63-.56 3.13-1.5 4.33L12 19.72l-5.5-3.39A6.98 6.98 0 0 1 5 12c0-3.87 3.13-7 7-7z" opacity="0"></path>
+<circle cx="4" cy="18" r="1.5"></circle>
+<circle cx="8" cy="15" r="1.5"></circle>
+<circle cx="12" cy="12" r="1.5"></circle>
+<circle cx="16" cy="9" r="1.5"></circle>
+</svg>
+<!-- Wifi Icon -->
+<svg class="w-4 h-4 fill-current text-slate-900" viewbox="0 0 24 24">
+<path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4zm0 3.5c3.8 0 7.27 1.44 9.9 3.82L12 19.24 2.1 11.32C4.73 8.94 8.2 7.5 12 7.5z"></path>
+</svg>
+<!-- Battery Pill -->
+<div class="flex items-center bg-emerald-500 text-white rounded-full px-1.5 py-0.5 text-[11px] font-bold space-x-0.5 leading-none">
+<span>45</span>
+<svg class="w-2.5 h-2.5 fill-current" viewbox="0 0 24 24">
+<path d="M11 20V12h-3L13 4v8h3l-5 8z"></path>
+</svg>
+</div>
+</div>
+</header>
+<!-- END: iOSStatusBar -->
+<!-- BEGIN: NavigationHeader -->
+<nav class="px-5 pt-3 pb-4 flex items-center gap-4 bg-[#f4f7fb]" data-purpose="app-navigation-header">
+<button aria-label="Volver" class="p-1 -ml-1 text-slate-800 active:scale-95 transition-transform" type="button">
+<i class="w-6 h-6 stroke-[2.4]" data-lucide="arrow-left"></i>
+</button>
+<h1 class="text-xl font-bold text-[#0f172a] tracking-tight">Mi familia</h1>
+</nav>
+<!-- END: NavigationHeader -->
+<!-- BEGIN: MainContent -->
+<main class="px-5 pt-4 pb-12 flex flex-col gap-6" data-purpose="family-members-content">
+<!-- SECTION: Titular -->
+<section data-purpose="titular-section">
+<h2 class="text-[15px] font-bold text-[#1e293b] mb-3 tracking-tight">Titular</h2>
+<!-- Titular Card -->
+<div class="bg-white rounded-2xl p-4 shadow-[0_1px_3px_rgba(0,0,0,0.03)] border border-slate-100 flex items-center space-x-4" data-purpose="titular-card">
+<!-- Blue Avatar Icon Container -->
+<div class="w-12 h-12 flex-shrink-0 flex items-center justify-center text-blue-700" data-purpose="avatar-wrapper">
+<div class="w-10 h-10 rounded-full border-2 border-blue-700 flex items-center justify-center">
+<i class="w-6 h-6 text-blue-700 stroke-[2.2]" data-lucide="user"></i>
+</div>
+</div>
+<!-- Member Metadata -->
+<div class="flex flex-col">
+<span class="text-xs text-[#64748b] font-medium leading-none mb-1">Nombre</span>
+<span class="text-base font-bold text-[#0f172a] leading-tight">Rol</span>
+</div>
+</div>
+</section>
+<!-- SECTION: Otros Miembros -->
+<section data-purpose="other-members-section">
+<h2 class="text-[15px] font-bold text-[#1e293b] mb-3 tracking-tight">Otros miembros</h2>
+<!-- Members List Container -->
+<div class="flex flex-col space-y-3">
+<!-- Member Item 1 -->
+<div class="bg-white rounded-2xl p-4 shadow-[0_1px_3px_rgba(0,0,0,0.03)] border border-slate-100 flex items-center space-x-4" data-purpose="member-card">
+<div class="w-12 h-12 flex-shrink-0 flex items-center justify-center text-blue-700" data-purpose="avatar-wrapper">
+<div class="w-10 h-10 rounded-full border-2 border-blue-700 flex items-center justify-center">
+<i class="w-6 h-6 text-blue-700 stroke-[2.2]" data-lucide="user"></i>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-xs text-[#64748b] font-medium leading-none mb-1">Nombre</span>
+<span class="text-base font-bold text-[#0f172a] leading-tight">Rol</span>
+</div>
+</div>
+<!-- Member Item 2 -->
+<div class="bg-white rounded-2xl p-4 shadow-[0_1px_3px_rgba(0,0,0,0.03)] border border-slate-100 flex items-center space-x-4" data-purpose="member-card">
+<div class="w-12 h-12 flex-shrink-0 flex items-center justify-center text-blue-700" data-purpose="avatar-wrapper">
+<div class="w-10 h-10 rounded-full border-2 border-blue-700 flex items-center justify-center">
+<i class="w-6 h-6 text-blue-700 stroke-[2.2]" data-lucide="user"></i>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-xs text-[#64748b] font-medium leading-none mb-1">Nombre</span>
+<span class="text-base font-bold text-[#0f172a] leading-tight">Rol</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- END: MainContent -->
+</div>
+<!-- BEGIN: BottomNavigationBar -->
+<footer class="w-full bg-[#1d4ed8] text-white py-2.5 px-6 shadow-lg sticky bottom-0 z-50" data-purpose="bottom-nav-bar">
+<div class="flex items-center justify-around">
+<!-- Nav Item: Ruta -->
+<a class="flex flex-col items-center justify-center group text-white/90 hover:text-white transition-opacity" href="#ruta">
+<i class="w-6 h-6 stroke-[2.2] mb-1" data-lucide="bus"></i>
+<span class="text-[11px] font-medium tracking-wide">Ruta</span>
+</a>
+<!-- Nav Item: Ubicación -->
+<a class="flex flex-col items-center justify-center group text-white/90 hover:text-white transition-opacity" href="#ubicacion">
+<i class="w-6 h-6 stroke-[2.2] mb-1" data-lucide="map-pin"></i>
+<span class="text-[11px] font-medium tracking-wide">Ubicación</span>
+</a>
+<!-- Nav Item: Perfil (Active) -->
+<a class="flex flex-col items-center justify-center group text-white" href="#perfil">
+<i class="w-6 h-6 fill-white stroke-0 mb-1" data-lucide="user"></i>
+<span class="text-[11px] font-medium tracking-wide">Perfil</span>
+</a>
+</div>
+</footer>
+<!-- END: BottomNavigationBar -->
+</div>
+<!-- END: MobileDeviceFrame -->
+<!-- Icon Replacement Script -->
+<script data-purpose="icons-initialization">
+    lucide.createIcons();
+  </script>
+</body></html>

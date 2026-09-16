@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Cerrar Sesión</title>
+<!-- Tailwind CSS CDN with forms and container queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              blue: '#1e5ad6',
+              blueDark: '#1747aa',
+              redIcon: '#e24242',
+              redBg: '#fedfe1',
+              screenBg: '#f2f5f9',
+              darkText: '#101d2d',
+              mutedText: '#64748b',
+              cardBorder: '#dbe2ea'
+            }
+          },
+          fontFamily: {
+            sans: [
+              '-apple-system',
+              'BlinkMacSystemFont',
+              '"SF Pro Text"',
+              '"SF Pro Display"',
+              'system-ui',
+              'Roboto',
+              'Helvetica Neue',
+              'sans-serif'
+            ]
+          }
+        }
+      }
+    };
+  </script>
+<style data-purpose="custom-layout">
+    /* Native iOS smooth tap and safe-area adjustments */
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+  </style>
+</head>
+<body class="h-full bg-slate-900 flex justify-center items-center font-sans antialiased">
+<!-- BEGIN: AppContainer -->
+<!-- iPhone Form Factor Container for Desktop Preview & 100% on Mobile -->
+<div class="relative w-full max-w-[420px] h-full sm:h-[880px] sm:max-h-[95vh] bg-brand-screenBg sm:rounded-[44px] shadow-2xl overflow-hidden flex flex-col justify-between border-slate-800 sm:border-[8px]" data-purpose="mobile-screen-wrapper">
+<!-- Top Area Wrapper (Status Bar + Navigation Bar) -->
+<div class="w-full shrink-0">
+<!-- BEGIN: StatusBar -->
+<!-- iOS Native Status Bar -->
+<div class="w-full pt-3 px-7 pb-1 flex items-center justify-between text-brand-darkText" data-purpose="ios-status-bar">
+<!-- Time Indicator -->
+<span class="text-[15px] font-semibold tracking-tight">2:35</span>
+<!-- Status Icons: Cellular, Wi-Fi, Battery -->
+<div aria-hidden="true" class="flex items-center space-x-1.5">
+<!-- Cellular Signal -->
+<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24">
+<path d="M2 17h3v4H2v-4zm5-4h3v8H7v-8zm5-4h3v12h-3V9zm5-4h3v16h-3V5z"></path>
+</svg>
+<!-- Wi-Fi Icon -->
+<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24">
+<path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98A16.88 16.88 0 0 0 12 4zm0 3.5c3.55 0 6.81 1.34 9.27 3.55L12 19.33 2.73 11.05A13.43 13.43 0 0 1 12 7.5z"></path>
+</svg>
+<!-- Battery with Percentage badge -->
+<div class="flex items-center space-x-0.5 ml-0.5">
+<div class="bg-[#34c759] text-[10px] font-bold text-white px-1.5 py-0.5 rounded-full leading-none flex items-center justify-center">
+              45
+            </div>
+<!-- Battery Outline -->
+<div class="w-5 h-2.5 rounded-[3px] border border-gray-400 p-0.5 flex items-center">
+<div class="h-full w-2.5 bg-black rounded-[1px]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- END: StatusBar -->
+<!-- BEGIN: TopNavigationBar -->
+<!-- Main App Top Bar with Back Arrow and View Title -->
+<header class="w-full px-4 pt-2 pb-3 flex items-center space-x-3 border-b border-transparent" data-purpose="app-header">
+<button aria-label="Volver" class="p-1 -ml-1 text-slate-800 hover:text-slate-600 transition-colors focus:outline-none rounded-full active:bg-slate-200/50" type="button">
+<!-- Left Arrow Icon -->
+<svg class="w-6 h-6 stroke-current stroke-[2.5]" fill="none" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24">
+<line x1="19" x2="5" y1="12" y2="12"></line>
+<polyline points="12 19 5 12 12 5"></polyline>
+</svg>
+</button>
+<h1 class="text-xl font-bold tracking-tight text-brand-darkText">
+          Cerrar sesión
+        </h1>
+</header>
+<!-- END: TopNavigationBar -->
+</div>
+<!-- BEGIN: MainContent -->
+<!-- Centered Modal Confirmation Section -->
+<main class="flex-1 flex flex-col items-center justify-center px-6 -mt-6" data-purpose="dialog-content">
+<!-- Icon Container with Circular Pastel Background -->
+<div class="w-28 h-28 rounded-full bg-brand-redBg flex items-center justify-center mb-7 shadow-sm">
+<!-- Logout Vector Icon -->
+<svg class="w-12 h-12 text-brand-redIcon stroke-current stroke-[2.2]" fill="none" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24">
+<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+<polyline points="16 17 21 12 16 7"></polyline>
+<line x1="21" x2="9" y1="12" y2="12"></line>
+</svg>
+</div>
+<!-- Title -->
+<h2 class="text-2xl sm:text-[28px] font-bold text-brand-darkText tracking-tight mb-3 text-center">
+        Cerrar Sesión
+      </h2>
+<!-- Description Paragraph -->
+<p class="text-brand-mutedText text-base text-center leading-relaxed max-w-[280px] mb-8 font-normal">
+        Vas a salir de tu cuenta en este dispositivo. Podrás volver a iniciar sesión cuando quieras.
+      </p>
+<!-- Action Buttons Container -->
+<div class="w-full max-w-[340px] space-y-3.5 flex flex-col items-center">
+<!-- Primary Action Button: Cerrar sesión -->
+<button class="w-full py-4 px-6 bg-brand-blue hover:bg-brand-blueDark active:scale-[0.98] text-white font-semibold text-base rounded-full shadow-md transition-all duration-150 ease-in-out focus:outline-none focus:ring-4 focus:ring-blue-300 text-center" data-purpose="confirm-logout-button" type="button">
+          Cerrar sesión
+        </button>
+<!-- Secondary Action Button: Cancelar -->
+<button class="w-full py-4 px-6 bg-white hover:bg-slate-50 active:scale-[0.98] text-brand-darkText font-semibold text-base rounded-full border border-slate-300 shadow-sm transition-all duration-150 ease-in-out focus:outline-none focus:ring-4 focus:ring-slate-100 text-center" data-purpose="cancel-logout-button" type="button">
+          Cancelar
+        </button>
+</div>
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: BottomNavigation -->
+<!-- Solid Vibrant Blue Tab Bar -->
+<nav class="w-full bg-brand-blue shrink-0 pt-2 pb-6 px-6" data-purpose="bottom-tab-navigation">
+<div class="max-w-xs mx-auto grid grid-cols-3 text-white">
+<!-- Navigation Tab: Ruta -->
+<button class="flex flex-col items-center justify-center space-y-1 py-1 hover:opacity-90 active:opacity-75 transition-opacity" type="button">
+<!-- Bus Icon -->
+<svg class="w-6 h-6 fill-current" viewbox="0 0 24 24">
+<path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"></path>
+</svg>
+<span class="text-xs font-normal">Ruta</span>
+</button>
+<!-- Navigation Tab: Ubicación -->
+<button class="flex flex-col items-center justify-center space-y-1 py-1 hover:opacity-90 active:opacity-75 transition-opacity" type="button">
+<!-- Map Pin Location Icon -->
+<svg class="w-6 h-6 fill-current" viewbox="0 0 24 24">
+<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"></path>
+</svg>
+<span class="text-xs font-normal">Ubicación</span>
+</button>
+<!-- Navigation Tab: Perfil (Current Active Section) -->
+<button class="flex flex-col items-center justify-center space-y-1 py-1 hover:opacity-90 active:opacity-75 transition-opacity" type="button">
+<!-- User Profile Icon -->
+<svg class="w-6 h-6 fill-current" viewbox="0 0 24 24">
+<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+</svg>
+<span class="text-xs font-medium">Perfil</span>
+</button>
+</div>
+</nav>
+<!-- END: BottomNavigation -->
+</div>
+<!-- END: AppContainer -->
+</body></html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Iniciar Sesión - Guardian Escolar</title>
+<!-- Tailwind CSS CDN with Forms & Container Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            appBg: '#F3F6FA',
+            labelMuted: '#6B7A90',
+            navyDark: '#0D1E3A',
+            brandBlue: '#1D5CD8',
+            brandBlueHover: '#174EB8',
+            inputBorder: '#DFE5EC'
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Styling for specific visual nuances -->
+<style data-purpose="base-layout">
+    body {
+      background-color: #F3F6FA;
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
+<style data-purpose="form-controls">
+    /* Subtle glow and natural appearance matching iOS inputs */
+    .app-input {
+      background-color: #FFFFFF;
+      border: 1px solid #DFE6EF;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
+      transition: all 0.2s ease-in-out;
+    }
+    .app-input:focus {
+      outline: none;
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+    .app-input::placeholder {
+      color: #94A3B8;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between items-center text-slate-800 font-sans antialiased bg-appBg selection:bg-blue-100 selection:text-blue-900">
+<!-- BEGIN: MobileDeviceContainer -->
+<main class="w-full max-w-[430px] min-h-screen flex flex-col justify-start px-6 pt-12 pb-16">
+<!-- BEGIN: TopStatusBarSpace -->
+<!-- Top spacer for safe area & visual balance matching reference -->
+<div aria-hidden="true" class="h-16 sm:h-24 w-full"></div>
+<!-- END: TopStatusBarSpace -->
+<!-- BEGIN: BrandHeader -->
+<div class="flex flex-col items-center text-center mt-2 mb-8" data-purpose="brand-presentation">
+<!-- Shield Logo Icon -->
+<div class="w-20 h-24 mb-5 relative flex items-center justify-center filter drop-shadow-md" data-purpose="shield-logo">
+<svg class="w-full h-full" fill="none" viewbox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<!-- Metallic 3D Border Gradients -->
+<lineargradient id="shieldRim" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#FFFFFF"></stop>
+<stop offset="25%" stop-color="#C5CCD6"></stop>
+<stop offset="50%" stop-color="#7B8794"></stop>
+<stop offset="80%" stop-color="#4B5563"></stop>
+<stop offset="100%" stop-color="#2D3748"></stop>
+</lineargradient>
+<lineargradient id="shieldRimInner" x1="0%" x2="100%" y1="100%" y2="0%">
+<stop offset="0%" stop-color="#4A5568"></stop>
+<stop offset="50%" stop-color="#CBD5E0"></stop>
+<stop offset="100%" stop-color="#FFFFFF"></stop>
+</lineargradient>
+<!-- Red section gradient -->
+<lineargradient id="redGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#FF5C4D"></stop>
+<stop offset="55%" stop-color="#EA2B2B"></stop>
+<stop offset="100%" stop-color="#BD1111"></stop>
+</lineargradient>
+<!-- Silver section gradient -->
+<lineargradient id="silverGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#FFFFFF"></stop>
+<stop offset="60%" stop-color="#E2E8F0"></stop>
+<stop offset="100%" stop-color="#CBD5E1"></stop>
+</lineargradient>
+<!-- Inner subtle drop shadow -->
+<filter height="140%" id="innerDepth" width="140%" x="-20%" y="-20%">
+<fedropshadow dx="1" dy="2" flood-color="#000" flood-opacity="0.3" stddeviation="2"></fedropshadow>
+</filter>
+<!-- Clip path for inside of shield -->
+<clippath id="innerShieldClip">
+<path d="M50 14 C28 14 14 26 14 44 C14 74 36 94 50 104 C64 94 86 74 86 44 C86 26 72 14 50 14 Z"></path>
+</clippath>
+</defs>
+<!-- Outer Shield Bevel Frame -->
+<path d="M50 8 C24 8 8 22 8 44 C8 78 33 102 50 114 C67 102 92 78 92 44 C92 22 76 8 50 8 Z" fill="url(#shieldRim)"></path>
+<!-- Inner Rim Accent -->
+<path d="M50 11 C26 11 11 24 11 44 C11 76 35 99 50 110 C65 99 89 76 89 44 C89 24 74 11 50 11 Z" fill="url(#shieldRimInner)"></path>
+<!-- Rivet accents on shield edge -->
+<circle cx="16" cy="38" fill="#4A5568" r="1.5"></circle>
+<circle cx="21" cy="62" fill="#4A5568" r="1.5"></circle>
+<circle cx="33" cy="88" fill="#4A5568" r="1.5"></circle>
+<circle cx="84" cy="38" fill="#4A5568" r="1.5"></circle>
+<circle cx="79" cy="62" fill="#4A5568" r="1.5"></circle>
+<circle cx="67" cy="88" fill="#4A5568" r="1.5"></circle>
+<!-- Group clipped to internal badge -->
+<g clip-path="url(#innerShieldClip)" filter="url(#innerDepth)">
+<!-- Left Half (Red with Serrated / Zigzag Cut) -->
+<path d="M14 14 L50 14 L50 106 C36 96 14 75 14 44 Z" fill="url(#redGradient)"></path>
+<!-- Right Half (Silver / White) -->
+<path d="M50 14 L86 14 C86 44 64 96 50 106 Z" fill="url(#silverGradient)"></path>
+<!-- Zigzag / Sawtooth Teeth dividing down the center -->
+<path d="M50 14 L36 29 L50 38 L36 49 L50 58 L36 69 L50 78 L38 88 L50 96 L50 14 Z" fill="url(#redGradient)"></path>
+<path d="M50 14 L50 104 L50 96 L38 88 L50 78 L36 69 L50 58 L36 49 L50 38 L36 29 Z" fill="url(#silverGradient)"></path>
+<!-- Glass reflection overlay on top left -->
+<path d="M14 14 Q50 35 50 70 L14 50 Z" fill="white" fill-opacity="0.18"></path>
+</g>
+</svg>
+</div>
+<!-- Main Title Header -->
+<h1 class="text-3xl font-extrabold tracking-tight text-navyDark">
+        Iniciar sesión
+      </h1>
+</div>
+<!-- END: BrandHeader -->
+<!-- BEGIN: LoginForm -->
+<form action="#" class="space-y-4" data-purpose="login-credentials-form" method="POST" onsubmit="event.preventDefault();">
+<!-- Email Field Group -->
+<div class="space-y-1.5">
+<label class="block text-sm font-medium text-labelMuted" for="email">
+          Correo Electrónico
+        </label>
+<div class="relative">
+<input autocomplete="email" class="app-input w-full px-4 py-3.5 rounded-xl text-slate-800 placeholder-slate-400 text-base focus:ring-0" id="email" name="email" placeholder="ejemplo@gmail.com" required="" type="email"/>
+</div>
+</div>
+<!-- Password Field Group -->
+<div class="space-y-1.5 pt-1">
+<label class="block text-sm font-medium text-labelMuted" for="password">
+          Contraseña
+        </label>
+<div class="relative">
+<input autocomplete="current-password" class="app-input w-full px-4 py-3.5 rounded-xl text-slate-800 placeholder-slate-400 tracking-widest text-base focus:ring-0" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+</div>
+</div>
+<!-- Forgot Password Link -->
+<div class="pt-0.5 pb-2">
+<a class="inline-block text-sm font-normal text-brandBlue hover:text-brandBlueHover hover:underline transition-colors" data-purpose="recovery-link" href="#forgot-password">
+          ¿Olvidaste tu contraseña?
+        </a>
+</div>
+<!-- Submit Action Button -->
+<div class="pt-3">
+<button class="w-full py-3.5 px-6 rounded-full bg-brandBlue hover:bg-brandBlueHover active:scale-[0.99] transition duration-150 ease-in-out text-white font-semibold text-base shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/30" data-purpose="submit-button" type="submit">
+          Ingresar
+        </button>
+</div>
+</form>
+<!-- END: LoginForm -->
+</main>
+<!-- END: MobileDeviceContainer -->
+</body></html>

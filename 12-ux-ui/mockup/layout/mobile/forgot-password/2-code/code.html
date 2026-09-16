@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Código de verificación - Guardian Escolar</title>
+<!-- Tailwind CSS CDN with Forms & Container Queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0b1d3a',
+              subtext: '#64748b',
+              blue: '#1d5bd8',
+              hoverBlue: '#174ec2',
+              bgLight: '#f4f7fb',
+              borderLight: '#e2e8f0',
+              inputBg: '#ffffff'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-layout">
+    /* Subtle custom enhancements to match iOS native feel */
+    input[type="text"]::-webkit-outer-spin-button,
+    input[type="text"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .otp-input:focus {
+      outline: none;
+      border-color: #1d5bd8;
+      box-shadow: 0 0 0 1px #1d5bd8;
+    }
+  </style>
+</head>
+<body class="bg-brand-bgLight text-brand-navy min-h-screen flex flex-col justify-between font-sans antialiased select-none">
+<!-- BEGIN: MainContentWrapper -->
+<div class="w-full max-w-md mx-auto min-h-screen flex flex-col bg-brand-bgLight">
+<!-- BEGIN: TopNavigationBar -->
+<header class="w-full pt-4 pb-3 px-4 flex items-center border-b border-transparent" data-purpose="top-navigation-bar">
+<!-- Back Button -->
+<button aria-label="Regresar" class="p-1 -ml-1 text-brand-navy hover:opacity-70 transition-opacity focus:outline-none flex items-center justify-center" onclick="history.back()" type="button">
+<svg aria-hidden="true" class="w-6 h-6 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Navigation Title -->
+<h2 class="ml-3 text-lg font-bold tracking-tight text-brand-navy">
+        Código de verificación
+      </h2>
+</header>
+<!-- END: TopNavigationBar -->
+<!-- BEGIN: VerificationFormSection -->
+<main class="flex-1 px-6 pt-10 pb-6 flex flex-col" data-purpose="verification-body">
+<!-- Primary Heading and Explanatory Instructions -->
+<div class="text-center mb-10" data-purpose="header-container">
+<h1 class="text-3xl font-extrabold text-brand-navy tracking-tight mb-3">
+          Código de verificación
+        </h1>
+<p class="text-base text-brand-subtext max-w-xs mx-auto leading-snug">
+          Ingresa el código enviado a tu correo electrónico.
+        </p>
+</div>
+<!-- Verification Form -->
+<form class="w-full flex flex-col items-center" data-purpose="otp-form" id="otp-form" onsubmit="return false;">
+<!-- BEGIN: OtpInputFields -->
+<!-- 6-digit Code Inputs Grid -->
+<div class="flex justify-between items-center gap-2 sm:gap-2.5 w-full max-w-sm mb-7" data-purpose="otp-inputs-row">
+<input aria-label="Dígito 1 del código" autocomplete="one-time-code" class="otp-input w-12 h-14 sm:w-12 sm:h-14 bg-brand-inputBg text-center text-xl font-bold text-brand-navy rounded-2xl border border-brand-borderLight shadow-sm transition-all focus:bg-white" inputmode="numeric" maxlength="1" pattern="[0-9]*" required="" type="text"/>
+<input aria-label="Dígito 2 del código" class="otp-input w-12 h-14 sm:w-12 sm:h-14 bg-brand-inputBg text-center text-xl font-bold text-brand-navy rounded-2xl border border-brand-borderLight shadow-sm transition-all focus:bg-white" inputmode="numeric" maxlength="1" pattern="[0-9]*" required="" type="text"/>
+<input aria-label="Dígito 3 del código" class="otp-input w-12 h-14 sm:w-12 sm:h-14 bg-brand-inputBg text-center text-xl font-bold text-brand-navy rounded-2xl border border-brand-borderLight shadow-sm transition-all focus:bg-white" inputmode="numeric" maxlength="1" pattern="[0-9]*" required="" type="text"/>
+<input aria-label="Dígito 4 del código" class="otp-input w-12 h-14 sm:w-12 sm:h-14 bg-brand-inputBg text-center text-xl font-bold text-brand-navy rounded-2xl border border-brand-borderLight shadow-sm transition-all focus:bg-white" inputmode="numeric" maxlength="1" pattern="[0-9]*" required="" type="text"/>
+<input aria-label="Dígito 5 del código" class="otp-input w-12 h-14 sm:w-12 sm:h-14 bg-brand-inputBg text-center text-xl font-bold text-brand-navy rounded-2xl border border-brand-borderLight shadow-sm transition-all focus:bg-white" inputmode="numeric" maxlength="1" pattern="[0-9]*" required="" type="text"/>
+<input aria-label="Dígito 6 del código" class="otp-input w-12 h-14 sm:w-12 sm:h-14 bg-brand-inputBg text-center text-xl font-bold text-brand-navy rounded-2xl border border-brand-borderLight shadow-sm transition-all focus:bg-white" inputmode="numeric" maxlength="1" pattern="[0-9]*" required="" type="text"/>
+</div>
+<!-- END: OtpInputFields -->
+<!-- BEGIN: ActionButton -->
+<!-- Primary Verification Button -->
+<button class="w-full max-w-sm bg-brand-blue hover:bg-brand-hoverBlue active:scale-[0.99] text-white text-base font-semibold py-4 rounded-full shadow-md shadow-blue-500/20 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-blue" data-purpose="submit-verification-btn" type="submit">
+          Verificar código
+        </button>
+<!-- END: ActionButton -->
+<!-- BEGIN: ResendCodeOption -->
+<!-- Secondary Resend Action Link -->
+<div class="mt-6 text-center" data-purpose="resend-link-container">
+<p class="text-sm font-medium text-brand-navy">
+            ¿No recibiste el código? 
+            <button class="font-normal text-brand-navy hover:underline focus:outline-none transition-colors" onclick="console.log('Reenviando código...')" type="button">
+              Reenviar
+            </button>
+</p>
+</div>
+<!-- END: ResendCodeOption -->
+</form>
+</main>
+<!-- END: VerificationFormSection -->
+</div>
+<!-- END: MainContentWrapper -->
+<!-- BEGIN: InteractiveScript -->
+<script data-purpose="otp-handling">
+    document.addEventListener('DOMContentLoaded', () => {
+      const inputs = Array.from(document.querySelectorAll('.otp-input'));
+
+      // Automatically handle next/prev focus and pasting OTP codes
+      inputs.forEach((input, index) => {
+        input.addEventListener('input', (e) => {
+          const val = e.target.value;
+          if (val.length >= 1) {
+            e.target.value = val[0]; // Restrict to single digit
+            if (index < inputs.length - 1) {
+              inputs[index + 1].focus();
+            }
+          }
+        });
+
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !e.target.value && index > 0) {
+            inputs[index - 1].focus();
+          }
+        });
+
+        input.addEventListener('paste', (e) => {
+          e.preventDefault();
+          const pasteData = (e.clipboardData || window.clipboardData).getData('text').trim();
+          if (/^\d+$/.test(pasteData)) {
+            const digits = pasteData.slice(0, inputs.length).split('');
+            digits.forEach((digit, i) => {
+              if (inputs[i]) {
+                inputs[i].value = digit;
+              }
+            });
+            const nextFocusIndex = Math.min(digits.length, inputs.length - 1);
+            inputs[nextFocusIndex].focus();
+          }
+        });
+      });
+    });
+  </script>
+<!-- END: InteractiveScript -->
+</body></html>
