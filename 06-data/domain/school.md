@@ -16,13 +16,13 @@
 CREATE TABLE School (
     Id UNIQUEIDENTIFIER PRIMARY KEY,
     CityId UNIQUEIDENTIFIER NOT NULL,
-    Logo BYTE NOT NULL,
+    Logo (PENDING) NOT NULL,
     Name VARCHAR(30) NOT NULL,
     Address VARCHAR(30) NOT NULL,
     Phone INT NOT NULL,
     Email VARCHAR(50) NOT NULL,
-    Website VARCHAR(100) NOT NULL,
-    Theme VARCHAR(20) NOT NULL,
+    Website VARCHAR(100) NULL,
+    Theme VARCHAR(20) NULL,
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
 ```
@@ -33,7 +33,7 @@ CREATE TABLE School (
 |--------|------|-------------|---------|
 | Id | UNIQUEIDENTIFIER | School identifier | `550e8400-...` |
 | CityId | UNIQUEIDENTIFIER | City reference | `550e8400-...` |
-| Logo | BYTE | School logo content | `0x89504E47` |
+| Logo | (PENDING) | School logo content | `0x89504E47` |
 | Name | VARCHAR(30) | School name | `Central School` |
 | Address | VARCHAR(30) | School address | `10 Main St` |
 | Phone | INT | Contact phone | `6015550100` |

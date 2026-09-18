@@ -17,7 +17,7 @@ CREATE TABLE SecuritySettings (
 	Id TINYINT PRIMARY KEY IDENTITY, 
     NameSettings VARCHAR(100) UNIQUE NOT NULL,
 	ValueSettings VARCHAR(100) NOT NULL, 
-    Description VARCHAR(255) NOT NULL
+    Description VARCHAR(150) NOT NULL
 );
 ```
 
@@ -28,7 +28,7 @@ CREATE TABLE SecuritySettings (
 | Id | INT | Setting identifier | `1` |
 | NameSettings | VARCHAR(100) | Setting name | `SessionTimeout` |
 | ValueSettings | VARCHAR(100) | Setting value | `30` |
-| Description | VARCHAR(255) | Setting purpose | `Session lifetime in minutes` |
+| Description | VARCHAR(150) | Setting purpose | `Session lifetime in minutes` |
 
 **Modeling decisions:**
 1. Key-value rows allow new settings without schema changes.
@@ -41,12 +41,12 @@ CREATE TABLE SecuritySettings (
 ```sql
 CREATE TABLE PasswordPolicies (
 	Id TINYINT PRIMARY KEY IDENTITY, 
-    MinLongitude BYTE NOT NULL, 
-    MaxLongitude BYTE NOT NULL,
-	RequiresCapitalLetters BYTE NOT NULL, 
-    RequiresNumbers BYTE NOT NULL,
-	RequiresSymbols BYTE NOT NULL, 
-    ExpirationDays BYTE NOT NULL
+    MinLongitude TINYINT NOT NULL, 
+    MaxLongitude TINYINT NOT NULL,
+	RequiresCapitalLetters TINYINT NOT NULL, 
+    RequiresNumbers TINYINT NOT NULL,
+	RequiresSymbols TINYINT NOT NULL, 
+    ExpirationDays TINYINT NOT NULL
 );
 ```
 
@@ -55,15 +55,15 @@ CREATE TABLE PasswordPolicies (
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
 | Id | INT | Policy identifier | `1` |
-| MinLongitude | BYTE | Minimum password length | `8` |
-| MaxLongitude | BYTE | Maximum password length | `64` |
-| RequiresCapitalLetters | BYTE | Uppercase requirement flag | `1` |
-| RequiresNumbers | BYTE | Number requirement flag | `1` |
-| RequiresSymbols | BYTE | Symbol requirement flag | `0` |
-| ExpirationDays | BYTE | Password validity period | `90` |
+| MinLongitude | TINYINT | Minimum password length | `8` |
+| MaxLongitude | TINYINT | Maximum password length | `64` |
+| RequiresCapitalLetters | TINYINT | Uppercase requirement flag | `1` |
+| RequiresNumbers | TINYINT | Number requirement flag | `1` |
+| RequiresSymbols | TINYINT | Symbol requirement flag | `0` |
+| ExpirationDays | TINYINT | Password validity period | `90` |
 
 **Modeling decisions:**
-1. `BYTE` flags preserve the source model and support compact policy storage.
+1. `TINYINT` flags preserve the source model and support compact policy storage.
 2. Numeric bounds are data so policy changes do not require code changes.
 
 ### Indexes

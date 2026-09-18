@@ -76,7 +76,6 @@ CREATE TABLE RouteStop (
     RouteId UNIQUEIDENTIFIER NOT NULL,
     StopId UNIQUEIDENTIFIER NOT NULL,
     OrderSequence INT NOT NULL,
-    Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
 ```
 
@@ -154,7 +153,7 @@ CREATE TABLE RouteStudentAssignments (
 CREATE TABLE RouteSchedule (
     Id UNIQUEIDENTIFIER PRIMARY KEY,
     RouteBusAssignmentsId UNIQUEIDENTIFIER NOT NULL,
-    DayOfWeek DayOfWeek NOT NULL (DayOfWeek IN ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')) DEFAULT 'Monday',
+    DayOfWeek DayOfWeek NOT NULL CHECK (DayOfWeek IN ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')) DEFAULT 'Monday',
     Direction VARCHAR(10) NOT NULL, 
     StartTime TIME NOT NULL, 
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'

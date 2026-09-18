@@ -48,7 +48,7 @@ CREATE TABLE Audit (
 CREATE TABLE LogErrors (
 	Id BIGINT PRIMARY KEY IDENTITY, 
     TypeError VARCHAR(100) NOT NULL,
-	Description VARCHAR(255) NOT NULL, 
+	Description VARCHAR(150) NOT NULL, 
     IPAddress VARCHAR(50) NOT NULL,
 	OccurredAt DATETIME2 NOT NULL DEFAULT GETDATE()
 );
@@ -60,8 +60,9 @@ CREATE TABLE LogErrors (
 |--------|------|-------------|---------|
 | Id | INT | Error record identifier | `2001` |
 | TypeError | VARCHAR(100) | Error classification | `Timeout` |
-| Description | VARCHAR(255) | Error detail | `GPS provider unavailable` |
+| Description | VARCHAR(150) | Error detail | `GPS provider unavailable` |
 | IPAddress | VARCHAR(50) | Related client address | `192.0.2.10` |
+| OccurredAt | DATETIME2 | Date and time of the event | 2026-09-08T08:00:00Z |
 
 **Modeling decisions:**
 1. Error records remain separate from user actions for operational filtering.

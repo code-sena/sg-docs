@@ -44,7 +44,7 @@ CREATE TABLE Role (
 CREATE TABLE Permissions (
     Id              TINYINT       PRIMARY KEY IDENTITY,
     TypePermissions VARCHAR(100)  NOT NULL,
-    Description     VARCHAR(255)  NOT NULL
+    Description     VARCHAR(150)  NOT NULL
 );
 ```
 
@@ -68,8 +68,8 @@ CREATE TABLE Permissions (
 ```sql
 CREATE TABLE PermissionsRole (
     Id            TINYINT PRIMARY KEY IDENTITY,
-    PermissionsId TINYINT NOT NULL REFERENCES Permissions(ID),
-    RoleId        TINYINT NOT NULL REFERENCES Role(ID)
+    PermissionsId TINYINT NOT NULL REFERENCES Permissions(Id),
+    RoleId        TINYINT NOT NULL REFERENCES Role(Id)
 );
 ```
 
@@ -97,7 +97,7 @@ CREATE TABLE Profile (
     PersonId     UNIQUEIDENTIFIER NOT NULL,
     CampuseId    UNIQUEIDENTIFIER NOT NULL,
     PasswordHash VARCHAR(100) NOT NULL,
-    RoleId       TINYINT      NOT NULL REFERENCES Role(ID),
+    RoleId       TINYINT      NOT NULL REFERENCES Role(Id),
     Status       VARCHAR(20)  NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
 ```
@@ -126,7 +126,7 @@ CREATE TABLE Profile (
 ```sql
 CREATE TABLE SessionProfile (
     Id            INT         PRIMARY KEY IDENTITY,
-    ProfileId     UNIQUEIDENTIFIER NOT NULL REFERENCES Profile(ID),
+    ProfileId     UNIQUEIDENTIFIER NOT NULL REFERENCES Profile(Id),
     DateStart     DATETIME2   NOT NULL,
     DateEnd       DATETIME2   NOT NULL,
     IPAddress     VARCHAR(50) NOT NULL,

@@ -188,7 +188,7 @@ ALTER TABLE Person DROP COLUMN LastName;
 ```mermaid
 erDiagram
 	Family ||--o{ FamilyMember : contains
-	Person ||--o{ DriverLicense : identifies
+	Person ||--o{ Profile : identifies
 	Profile ||--o{ FamilyMember : belongs
 	Profile ||--o{ DriverLicense : holds
 ```

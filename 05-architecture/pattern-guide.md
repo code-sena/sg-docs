@@ -476,7 +476,7 @@ Write (Commands):                        Read (Queries):
 ```sql
 -- Outbox table
 CREATE TABLE outbox (
-  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id          UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
   event_type  VARCHAR(100) NOT NULL,
   payload     JSONB NOT NULL,
   created_at  TIMESTAMPTZ DEFAULT NOW(),
