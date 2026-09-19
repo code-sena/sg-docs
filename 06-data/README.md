@@ -60,7 +60,7 @@ Analysis of the normalization level and justification for denormalizations.
 
 ### `migration-strategy.md`
 Strategy for migrating data between schema versions.
-**Fill in:** migration tool (Flyway, Liquibase, Alembic), rollback policy,
+**Fill in:** migration tool (Liquibase — see ADR-009), rollback policy,
 how to handle migrations with data in production.
 
 ---

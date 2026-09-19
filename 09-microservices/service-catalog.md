@@ -34,24 +34,24 @@
 > All services share a **single SQL Server instance** (ADR-002), each with its own schema for
 > logical isolation. The API Gateway is the only stateless service (uses Redis).
 
-| # | Service | Main responsibility | Port | Schema | DB type | Status |
-|---|---------|-------------------|------|--------|---------|--------|
-| 01 | `api-gateway` | Routing, authentication, rate limiting | 8080 | — (Redis cache) | Cache | 🟡 In development |
-| 02 | `iam-service` | Identity, auth, roles, permissions, sessions | 8081 | `Iam` | Relational (shared) | 🟡 In development |
-| 03 | `user-management-service` | Persons, families, family members, driver licenses | 8082 | `UserManagement` | Relational (shared) | 🟡 In development |
-| 04 | `school-service` | Schools, campuses, courses, cities | 8083 | `School` + `Geographic` | Relational (shared) | 🟡 In development |
-| 05 | `notification-service` | Boarding/alighting events, alerts and recipients | 8084 | `Notification` | Relational (shared) | 🟡 In development |
-| 06 | `bus-service` | Bus fleet, brands, models | 8085 | `Bus` | Relational (shared) | 🟡 In development |
-| 07 | `route-service` | Routes, stops, schedules, executions, assignments | 8086 | `Route` | Relational (shared) | 🟡 In development |
-| 08 | `gps-service` | GPS devices and position history | 8087 | `Gps` | Relational (shared) | 🟡 In development |
-| 09 | `exceptional-service` | Exceptional driver and route usage | 8088 | `Exceptional` | Relational (shared) | 🟡 In development |
-| 10 | `audit-service` | Audit trail and error logs | 8089 | `Audit` | Relational (shared) | 🟡 In development |
-| 11 | `configuration-service` | Security settings and password policies | 8090 | `Configuration` | Relational (shared) | 🟡 In development |
+| # | Service | Main responsibility | Port | Schema | DB type | Stack | Status |
+|---|---------|-------------------|------|--------|---------|-------|--------|
+| 01 | `api-gateway` | Routing, authentication, rate limiting | 8080 | — (Redis cache) |  | C# + ASP.NET | 🟡 In development |
+| 02 | `iam-service` | Identity, auth, roles, permissions, sessions | 8080 | `Iam` | Relational (shared) | Java + Spring Boot | 🟡 In development |
+| 03 | `user-management-service` | Persons, families, family members, driver licenses | 8080 | `UserManagement` | Relational (shared) | C# + ASP.NET | 🟡 In development |
+| 04 | `school-service` | Schools, campuses, courses, cities | 8080 | `School` + `Geographic` | Relational (shared) | C# + ASP.NET | 🟡 In development |
+| 05 | `notification-service` | Boarding/alighting events, alerts and recipients | 8080 | `Notification` | Relational (shared) | Go | 🟡 In development |
+| 06 | `bus-service` | Bus fleet, brands, models | 8080 | `Bus` | Relational (shared) | C# + ASP.NET | 🟡 In development |
+| 07 | `route-service` | Routes, stops, schedules, executions, assignments | 8080 | `Route` | Relational (shared) | C# + ASP.NET | 🟡 In development |
+| 08 | `gps-service` | GPS devices and position history | 8080 | `Gps` | Relational (shared) | Java + Spring Boot | 🟡 In development |
+| 09 | `exceptional-service` | Exceptional driver and route usage | 8080 | `Exceptional` | Relational (shared) | C# + ASP.NET | 🟡 In development |
+| 10 | `audit-service` | Audit trail and error logs | 8080 | `Audit` | Relational (shared) | C# + ASP.NET | 🟡 In development |
+| 11 | `configuration-service` | Security settings and password policies | 8080 | `Configuration` | Relational (shared) | C# + ASP.NET | 🟡 In development |
 
 **Statuses:** 🟢 Active in prod | 🟡 In development | 🔴 Planned | ⏸ Deprecated
 
 > **Data note (ADR-002):** All services share a **single SQL Server instance** (monolithic DB),
-> each with its own schema for logical isolation. Neither PostgreSQL nor MongoDB are used.
+> each with its own schema for logical isolation. The API Gateway uses Redis for ephemeral cache only.
 
 ---
 
@@ -64,6 +64,7 @@
 | **Folder** | `09-microservices/services/01-api-gateway/` |
 | **Responsibility** | Single entry point. Routes, authenticates, and applies rate limiting |
 | **Type** | Infrastructure service (not domain) |
+| **Stack** | C# + ASP.NET |
 | **Port** | 8080 (HTTPS 8443) |
 | **DB** | Redis (token cache, rate limiting) |
 | **Communicates with** | All internal services |
@@ -80,6 +81,7 @@
 |-------|-------|
 | **Folder** | `09-microservices/services/02-iam-service/` |
 | **Responsibility** | Identity and access: auth, JWT, roles/permissions (RBAC), sessions |
+| **Stack** | Java + Spring Boot |
 | **Schema** | `Iam` |
 | **Tables** | Role, Permissions, PermissionsRole, Profile, SessionProfile |
 | **Consumed by** | api-gateway (token verification), all other services |
@@ -93,6 +95,7 @@
 |-------|-------|
 | **Folder** | `09-microservices/services/03-user-management-service/` |
 | **Responsibility** | Persons, families, family members, driver licenses |
+| **Stack** | C# + ASP.NET |
 | **Schema** | `UserManagement` |
 | **Tables** | Person, Family, FamilyMember, DriverLicense |
 
@@ -104,6 +107,7 @@
 |-------|-------|
 | **Folder** | `09-microservices/services/04-school-service/` |
 | **Responsibility** | Schools, campuses, courses, course groups, cities |
+| **Stack** | C# + ASP.NET |
 | **Schema** | `School` + `Geographic` |
 | **Tables** | School, SchoolCampus, Course, CourseGroup, City |
 
@@ -115,6 +119,7 @@
 |-------|-------|
 | **Folder** | `09-microservices/services/05-notification-service/` |
 | **Responsibility** | Boarding/alighting events, alerts, alert types, recipients |
+| **Stack** | Go |
 | **Schema** | `Notification` |
 | **Tables** | Boarding, Alert, AlertType, AlertRecipient |
 
@@ -126,6 +131,7 @@
 |-------|-------|
 | **Folder** | `09-microservices/services/06-bus-service/` |
 | **Responsibility** | Bus fleet, brands, models |
+| **Stack** | C# + ASP.NET |
 | **Schema** | `Bus` |
 | **Tables** | Bus, Brand, Model |
 
@@ -137,6 +143,7 @@
 |-------|-------|
 | **Folder** | `09-microservices/services/07-route-service/` |
 | **Responsibility** | Routes, stops, schedules, executions, assignments |
+| **Stack** | C# + ASP.NET |
 | **Schema** | `Route` |
 | **Tables** | Route, Stop, RouteStop, RouteBusAssignments, RouteStudentAssignments, RouteSchedule, RouteExecution |
 
@@ -148,6 +155,7 @@
 |-------|-------|
 | **Folder** | `09-microservices/services/08-gps-service/` |
 | **Responsibility** | GPS devices and position history |
+| **Stack** | Java + Spring Boot |
 | **Schema** | `Gps` |
 | **Tables** | GpsDevice, GpsLocation |
 
@@ -159,6 +167,7 @@
 |-------|-------|
 | **Folder** | `09-microservices/services/09-exceptional-service/` |
 | **Responsibility** | Exceptional driver and route usage |
+| **Stack** | C# + ASP.NET |
 | **Schema** | `Exceptional` |
 | **Tables** | ExceptionalDriverUsage, ExceptionalRouteUsage |
 
@@ -170,6 +179,7 @@
 |-------|-------|
 | **Folder** | `09-microservices/services/10-audit-service/` |
 | **Responsibility** | Audit trail and error logs |
+| **Stack** | C# + ASP.NET |
 | **Schema** | `Audit` |
 | **Tables** | Audit, LogErrors |
 
@@ -181,6 +191,7 @@
 |-------|-------|
 | **Folder** | `09-microservices/services/11-configuration-service/` |
 | **Responsibility** | Security settings and password policies |
+| **Stack** | C# + ASP.NET |
 | **Schema** | `Configuration` |
 | **Tables** | SecuritySettings, PasswordPolicies |
 
@@ -196,8 +207,15 @@
 | notification-service | iam-service | HTTP/REST | Synchronous | Resolve profile identity for events |
 | notification-service | route-service | HTTP/REST | Synchronous | Reference route executions/stops |
 | notification-service | bus-service | HTTP/REST | Synchronous | Reference bus fleet |
-| [svc-a] | [svc-b] | Event | Asynchronous | Notify of [event] |
-| [svc-b] | [svc-c] | HTTP/REST | Synchronous | Query [data] |
+| route-service | notification-service | Kafka | Asynchronous | Notify route executed events (boarding/alighting) |
+| gps-service | notification-service | Kafka | Asynchronous | Alert on GPS anomalies (route deviation) |
+| notification-service | iam-service | Kafka | Asynchronous | Notify delivery status of alerts |
+| school-service | route-service | gRPC | Synchronous | Query school stop locations |
+| user-management-service | iam-service | gRPC | Synchronous | Resolve person identity for profiles |
+| audit-service | all services | Kafka | Asynchronous | Ingest audit trail from all services |
+| configuration-service | all services | Kafka | Asynchronous | Broadcast security setting changes |
+| exceptional-service | route-service | gRPC | Synchronous | Validate route existence |
+| exceptional-service | bus-service | gRPC | Synchronous | Validate bus and driver assignment |
 
 ---
 

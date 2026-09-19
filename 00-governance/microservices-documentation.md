@@ -53,8 +53,8 @@ Minimum content (use `_template/service/README.md`):
 Minimum content:
 - ER diagram (Mermaid) of the service's tables
 - Description of each table with its columns, types, constraints, and purpose
-- Justification of the chosen DB engine (PostgreSQL, MongoDB, Redis, etc.)
-- Migration strategy (Flyway, Liquibase, or manual scripts)
+- Justification of the chosen DB engine (SQL Server 16)
+- Migration strategy (Liquibase — see ADR-009)
 
 **Rule:** A field whose reason for existing is not obvious MUST have a comment in the diagram.
 
