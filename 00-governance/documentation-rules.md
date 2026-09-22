@@ -71,12 +71,20 @@ ADRs are numbered sequentially: ADR-001-short-title.md.
 |---------|-------|-----------------|
 | `00-governance/` | Tech Lead | Start of each sprint |
 | `02-domain/` | Tech Lead + PO | When the domain changes |
+| `03-product/` | Product Owner | Each sprint |
 | `04-requirements/` | Product Owner | Each sprint |
 | `05-architecture/` | Tech Lead | Each design decision |
+| `06-data/` | Tech Lead | When the data model changes |
 | `07-api/contracts/` | Service-owning developer | Each API change |
+| `08-uml/` | Tech Lead | When a diagram changes |
 | `09-microservices/` | Service-owning developer | Each release |
+| `10-devops/` | Tech Lead | When the pipeline changes |
+| `11-quality/` | Tech Lead | Each sprint |
+| `12-ux-ui/` | Product Owner | Each design change |
 | `13-operations/` | DevOps / On-call | After each incident |
+| `14-training/` | Tech Lead | When onboarding changes |
 | `15-project-control/` | Tech Lead | Weekly review |
+| `99-archive/` | Tech Lead | When documentation is archived |
 
 ---
 

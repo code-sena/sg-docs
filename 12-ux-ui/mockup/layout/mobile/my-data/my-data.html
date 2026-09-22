@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Guardian Escolar - Mis datos</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            },
+            appBg: '#F4F7FB'
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', 'Inter', 'Segoe UI', 'Roboto', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<!-- Layout & Custom Styles -->
+<style data-purpose="custom-styling">
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    /* Safe area padding for mobile iOS home indicator and notch */
+    .safe-top {
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+    .safe-bottom {
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+  </style>
+</head>
+<body class="bg-slate-200 min-h-screen flex justify-center items-center antialiased font-sans text-slate-800">
+<!-- BEGIN: MobileDeviceFrame -->
+<div class="w-full max-w-[430px] min-h-screen bg-appBg flex flex-col justify-between relative shadow-2xl overflow-hidden" data-purpose="mobile-viewport">
+<!-- BEGIN: TopBar -->
+<header class="safe-top bg-appBg pt-3 pb-2 px-5 sticky top-0 z-20" data-purpose="header">
+<div class="flex items-center gap-4 py-2">
+<!-- Back Navigation Button -->
+<button aria-label="Volver" class="p-1 -ml-1 text-slate-900 active:opacity-60 transition-opacity" type="button">
+<svg class="w-7 h-7 stroke-[2.4]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<line x1="19" x2="5" y1="12" y2="12"></line>
+<polyline points="12 19 5 12 12 5"></polyline>
+</svg>
+</button>
+<!-- Page Title -->
+<h1 class="text-2xl font-bold tracking-tight text-slate-900">Mis datos</h1>
+</div>
+</header>
+<!-- END: TopBar -->
+<!-- BEGIN: MainContent -->
+<main class="flex-1 px-5 pt-3 pb-24 space-y-4 overflow-y-auto" data-purpose="content-area">
+<!-- BEGIN: AccountSecurityCard -->
+<!-- First Card: Contact and Security Info -->
+<section class="bg-white rounded-3xl shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-slate-100 divide-y divide-slate-100 overflow-hidden" data-purpose="contact-card">
+<!-- Phone Field -->
+<div class="p-4 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="text-brand-600">
+<svg class="w-7 h-7 stroke-[2]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+</svg>
+</div>
+<div>
+<p class="text-slate-500 text-sm font-normal">Telefono</p>
+<p class="text-slate-900 text-base font-bold tracking-wide mt-0.5">+57 *** *** ****</p>
+</div>
+</div>
+<!-- Edit Button -->
+<button aria-label="Editar teléfono" class="p-2 text-brand-600 hover:text-brand-700 active:scale-95 transition-all" type="button">
+<svg class="w-6 h-6 stroke-[2]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+</svg>
+</button>
+</div>
+<!-- Email Field -->
+<div class="p-4 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="text-brand-600">
+<svg class="w-7 h-7 stroke-[2]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<rect height="16" rx="2" width="20" x="2" y="4"></rect>
+<path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+</svg>
+</div>
+<div class="overflow-hidden">
+<p class="text-slate-500 text-sm font-normal">Correo Electrónico</p>
+<p class="text-slate-900 text-base font-bold truncate mt-0.5">correoejemplo@gmail.com</p>
+</div>
+</div>
+<!-- Edit Button -->
+<button aria-label="Editar correo electrónico" class="p-2 text-brand-600 hover:text-brand-700 active:scale-95 transition-all flex-shrink-0" type="button">
+<svg class="w-6 h-6 stroke-[2]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+</svg>
+</button>
+</div>
+<!-- Password Field -->
+<div class="p-4 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="text-brand-600">
+<svg class="w-7 h-7 stroke-[2]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<rect height="11" rx="2" ry="2" width="18" x="3" y="11"></rect>
+<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+</svg>
+</div>
+<div>
+<p class="text-slate-500 text-sm font-normal">Contraseña</p>
+<p class="text-slate-900 text-lg font-bold tracking-[0.2em] mt-0.5 leading-none">••••••••••</p>
+</div>
+</div>
+</div>
+</section>
+<!-- END: AccountSecurityCard -->
+<!-- BEGIN: AddressLocationCard -->
+<!-- Second Card: Address & City -->
+<section class="bg-white rounded-3xl shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-slate-100 divide-y divide-slate-100 overflow-hidden" data-purpose="location-card">
+<!-- Address Field -->
+<div class="p-4 flex items-center gap-4">
+<div class="text-brand-600">
+<svg class="w-7 h-7 stroke-[2]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+<circle cx="12" cy="10" r="3"></circle>
+</svg>
+</div>
+<div>
+<p class="text-slate-500 text-sm font-normal">Dirección</p>
+<p class="text-slate-900 text-base font-bold mt-0.5">Calle 2 #1W-102</p>
+</div>
+</div>
+<!-- City Field -->
+<div class="p-4 flex items-center gap-4">
+<div class="text-brand-600">
+<svg class="w-7 h-7 stroke-[2]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
+<path d="M6 12H4a2 2 0 0 0-2 2v8"></path>
+<path d="M18 9h2a2 2 0 0 1 2 2v11"></path>
+<path d="M10 6h4"></path>
+<path d="M10 10h4"></path>
+<path d="M10 14h4"></path>
+<path d="M10 18h4"></path>
+</svg>
+</div>
+<div>
+<p class="text-slate-500 text-sm font-normal">Ciudad</p>
+<p class="text-slate-900 text-base font-bold mt-0.5">Neiva</p>
+</div>
+</div>
+</section>
+<!-- END: AddressLocationCard -->
+<!-- BEGIN: SchoolCard -->
+<!-- Third Card: School Information -->
+<section class="bg-white rounded-3xl shadow-[0_2px_8px_rgba(0,0,0,0.03)] border border-slate-100 p-4" data-purpose="school-card">
+<div class="flex items-start gap-4">
+<div class="text-brand-600 mt-1">
+<svg class="w-7 h-7 stroke-[2]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+<path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+</svg>
+</div>
+<div>
+<p class="text-slate-500 text-sm font-normal">Escuela</p>
+<p class="text-slate-900 text-base font-bold mt-0.5">Nombre - Neiva</p>
+<p class="text-slate-400 text-xs font-normal mt-0.5">Dirección</p>
+</div>
+</div>
+</section>
+<!-- END: SchoolCard -->
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: BottomNavigation -->
+<nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-brand-600 text-white safe-bottom shadow-lg z-30" data-purpose="bottom-nav">
+<div class="h-16 px-6 grid grid-cols-3 items-center">
+<!-- Tab: Ruta -->
+<a class="flex flex-col items-center justify-center gap-1 text-white/90 hover:text-white active:scale-95 transition-all" href="#ruta">
+<svg class="w-6 h-6 stroke-[2]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M8 6v6"></path>
+<path d="M16 6v6"></path>
+<path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"></path>
+<circle cx="7" cy="18" r="2"></circle>
+<circle cx="17" cy="18" r="2"></circle>
+</svg>
+<span class="text-xs font-medium">Ruta</span>
+</a>
+<!-- Tab: Ubicación -->
+<a class="flex flex-col items-center justify-center gap-1 text-white/90 hover:text-white active:scale-95 transition-all" href="#ubicacion">
+<svg class="w-6 h-6 stroke-[2]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+<circle cx="12" cy="10" r="3"></circle>
+</svg>
+<span class="text-xs font-medium">Ubicación</span>
+</a>
+<!-- Tab: Perfil (Active) -->
+<a class="flex flex-col items-center justify-center gap-1 text-white active:scale-95 transition-all" href="#perfil">
+<svg class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" fill-rule="evenodd"></path>
+</svg>
+<span class="text-xs font-semibold">Perfil</span>
+</a>
+</div>
+</nav>
+<!-- END: BottomNavigation -->
+</div>
+<!-- END: MobileDeviceFrame -->
+</body></html>

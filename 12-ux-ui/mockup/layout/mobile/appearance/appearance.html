@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Apariencia - Guardian Escolar</title>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            appBlue: '#1d5bd8',
+            appBg: '#f2f5fa',
+            appDarkPreview: '#171a21',
+            appDarkCard: '#212631'
+          }
+        }
+      }
+    }
+  </script>
+<!-- Typography & Layout Styles -->
+<style data-purpose="custom-layout">
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      background-color: #e5e9f0;
+    }
+    /* Subtle custom shadows matching native iOS design */
+    .theme-card-shadow {
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+    }
+  </style>
+</head>
+<body class="flex justify-center min-h-screen text-slate-800 antialiased selection:bg-blue-100">
+<!-- BEGIN: MainMobileContainer -->
+<main class="w-full max-w-[430px] min-h-screen bg-[#f2f5fa] flex flex-col justify-between relative shadow-2xl overflow-x-hidden">
+<!-- BEGIN: TopBar -->
+<header class="pt-8 pb-3 px-5 flex items-center gap-4 bg-[#f2f5fa] sticky top-0 z-20" data-purpose="navigation-header">
+<!-- Back Button -->
+<button aria-label="Volver atrás" class="p-1 -ml-1 text-slate-900 active:scale-95 transition-transform" type="button">
+<svg class="w-6 h-6 stroke-[2.4]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Page Title -->
+<h1 class="text-2xl font-bold tracking-tight text-slate-900">
+        Apariencia
+      </h1>
+</header>
+<!-- END: TopBar -->
+<!-- BEGIN: ContentArea -->
+<div class="px-5 pt-3 pb-28 flex-1 flex flex-col gap-6" data-purpose="settings-content">
+<!-- BEGIN: SectionApariencia -->
+<section aria-labelledby="heading-apariencia" data-purpose="theme-selection">
+<h2 class="text-xs font-bold tracking-wider text-slate-500 uppercase mb-3.5" id="heading-apariencia">
+          Apariencia
+        </h2>
+<!-- Grid of Theme Cards -->
+<div class="grid grid-cols-2 gap-4">
+<!-- Option: Claro (Light) -->
+<div class="theme-card cursor-pointer bg-white rounded-[22px] p-4 flex flex-col items-center border-2 border-[#1d5bd8] theme-card-shadow transition-all duration-200" data-purpose="theme-card-light" id="theme-option-claro" onclick="selectTheme('claro')">
+<!-- Phone Graphic Preview: Light Mode -->
+<div class="w-full aspect-[9/13] max-w-[128px] bg-white rounded-2xl p-0.5 shadow-sm border border-slate-200/80 overflow-hidden flex flex-col mb-4">
+<div class="w-full h-8 bg-[#1d5bd8] rounded-t-[14px]"></div>
+<div class="p-2 space-y-2 flex-1 bg-white">
+<div class="h-3 w-3/4 bg-slate-100 rounded-sm"></div>
+<div class="h-1.5 w-1/2 bg-slate-200/70 rounded-full"></div>
+<div class="h-11 w-full bg-slate-100 rounded-lg mt-2"></div>
+</div>
+</div>
+<!-- Title -->
+<span class="font-bold text-slate-900 text-base mb-2.5">Claro</span>
+<!-- Radio Indicator -->
+<div class="w-6 h-6 rounded-full bg-[#1d5bd8] flex items-center justify-center transition-colors" id="radio-claro">
+<svg class="w-3.5 h-3.5 text-white stroke-[3]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+<!-- Option: Oscuro (Dark) -->
+<div class="theme-card cursor-pointer bg-white rounded-[22px] p-4 flex flex-col items-center border-2 border-transparent theme-card-shadow transition-all duration-200" data-purpose="theme-card-dark" id="theme-option-oscuro" onclick="selectTheme('oscuro')">
+<!-- Phone Graphic Preview: Dark Mode -->
+<div class="w-full aspect-[9/13] max-w-[128px] bg-[#171a21] rounded-2xl p-0.5 shadow-sm border border-slate-800 overflow-hidden flex flex-col mb-4">
+<div class="w-full h-8 bg-[#1d5bd8] rounded-t-[14px]"></div>
+<div class="p-2 space-y-2 flex-1 bg-[#171a21]">
+<div class="h-3 w-3/4 bg-[#232834] rounded-sm"></div>
+<div class="h-1.5 w-1/2 bg-[#2d3443] rounded-full"></div>
+<div class="h-11 w-full bg-[#212631] rounded-lg mt-2"></div>
+</div>
+</div>
+<!-- Title -->
+<span class="font-bold text-slate-900 text-base mb-2.5">Oscuro</span>
+<!-- Radio Indicator -->
+<div class="w-6 h-6 rounded-full border-2 border-slate-200 flex items-center justify-center transition-colors" id="radio-oscuro">
+<svg class="w-3.5 h-3.5 text-white stroke-[3] hidden" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+</div>
+</section>
+<!-- END: SectionApariencia -->
+<!-- BEGIN: SectionColor -->
+<section aria-labelledby="heading-color" data-purpose="accent-color-selection">
+<h2 class="text-xs font-bold tracking-wider text-slate-500 uppercase mb-3.5" id="heading-color">
+          Color
+        </h2>
+<!-- Color Options Grid (2x2) -->
+<div class="grid grid-cols-2 gap-4">
+<!-- Color 1: Azul (Selected by default) -->
+<div class="color-card group cursor-pointer overflow-hidden rounded-[20px] bg-white border-2 border-[#1d5bd8] shadow-sm flex flex-col transition-all duration-200" id="color-card-azul" onclick="selectColor('azul')">
+<!-- Solid Color Header -->
+<div class="h-16 w-full bg-[#1d5bd8]"></div>
+<!-- Card Body / Label -->
+<div class="py-3 px-4 flex items-center justify-center relative min-h-[48px]">
+<span class="font-bold text-slate-800 text-base text-center">Azul</span>
+<div class="absolute right-3.5 w-5 h-5 rounded-full bg-[#1d5bd8] flex items-center justify-center" id="check-azul">
+<svg class="w-3 h-3 text-white stroke-[3]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Color 2: Verde -->
+<div class="color-card group cursor-pointer overflow-hidden rounded-[20px] bg-white border-2 border-transparent shadow-sm flex flex-col transition-all duration-200" id="color-card-verde" onclick="selectColor('verde')">
+<!-- Solid Color Header -->
+<div class="h-16 w-full bg-[#16a34a]"></div>
+<!-- Card Body / Label -->
+<div class="py-3 px-4 flex items-center justify-center relative min-h-[48px]">
+<span class="font-bold text-slate-800 text-base text-center">Verde</span>
+<div class="hidden absolute right-3.5 w-5 h-5 rounded-full bg-[#16a34a] flex items-center justify-center" id="check-verde">
+<svg class="w-3 h-3 text-white stroke-[3]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Color 3: Amarillo -->
+<div class="color-card group cursor-pointer overflow-hidden rounded-[20px] bg-white border-2 border-transparent shadow-sm flex flex-col transition-all duration-200" id="color-card-amarillo" onclick="selectColor('amarillo')">
+<!-- Solid Color Header -->
+<div class="h-16 w-full bg-[#d99411]"></div>
+<!-- Card Body / Label -->
+<div class="py-3 px-4 flex items-center justify-center relative min-h-[48px]">
+<span class="font-bold text-slate-800 text-base text-center">Amarillo</span>
+<div class="hidden absolute right-3.5 w-5 h-5 rounded-full bg-[#d99411] flex items-center justify-center" id="check-amarillo">
+<svg class="w-3 h-3 text-white stroke-[3]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Color 4: Rojo -->
+<div class="color-card group cursor-pointer overflow-hidden rounded-[20px] bg-white border-2 border-transparent shadow-sm flex flex-col transition-all duration-200" id="color-card-rojo" onclick="selectColor('rojo')">
+<!-- Solid Color Header -->
+<div class="h-16 w-full bg-[#ba2419]"></div>
+<!-- Card Body / Label -->
+<div class="py-3 px-4 flex items-center justify-center relative min-h-[48px]">
+<span class="font-bold text-slate-800 text-base text-center">Rojo</span>
+<div class="hidden absolute right-3.5 w-5 h-5 rounded-full bg-[#ba2419] flex items-center justify-center" id="check-rojo">
+<svg class="w-3 h-3 text-white stroke-[3]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: SectionColor -->
+</div>
+<!-- END: ContentArea -->
+<!-- BEGIN: BottomNavigationBar -->
+<nav class="fixed bottom-0 max-w-[430px] w-full bg-[#1d5bd8] text-white pt-2.5 pb-5 px-6 flex justify-around items-center z-30" data-purpose="bottom-tab-navigation">
+<!-- Nav Item: Ruta -->
+<a class="flex flex-col items-center gap-1 opacity-90 hover:opacity-100 transition-opacity" href="#ruta">
+<!-- Bus Icon -->
+<svg class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24">
+<path d="M4 16c0 .88.39 1.67 1 2.22V20a1 1 0 001 1h1a1 1 0 001-1v-1h8v1a1 1 0 001 1h1a1 1 0 001-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"></path>
+</svg>
+<span class="text-xs font-normal tracking-tight">Ruta</span>
+</a>
+<!-- Nav Item: Ubicación -->
+<a class="flex flex-col items-center gap-1 opacity-90 hover:opacity-100 transition-opacity" href="#ubicacion">
+<!-- Location Pin Icon -->
+<svg class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24">
+<path clip-rule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" fill-rule="evenodd"></path>
+</svg>
+<span class="text-xs font-normal tracking-tight">Ubicación</span>
+</a>
+<!-- Nav Item: Perfil (Active) -->
+<a class="flex flex-col items-center gap-1 opacity-100" href="#perfil">
+<!-- User Profile Icon -->
+<svg class="w-6 h-6" fill="currentColor" viewbox="0 0 24 24">
+<path clip-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" fill-rule="evenodd"></path>
+</svg>
+<span class="text-xs font-normal tracking-tight">Perfil</span>
+</a>
+</nav>
+<!-- END: BottomNavigationBar -->
+</main>
+<!-- END: MainMobileContainer -->
+<!-- BEGIN: InteractiveScripts -->
+<script data-purpose="theme-toggle">
+    function selectTheme(type) {
+      const cardClaro = document.getElementById('theme-option-claro');
+      const cardOscuro = document.getElementById('theme-option-oscuro');
+      const radioClaro = document.getElementById('radio-claro');
+      const radioOscuro = document.getElementById('radio-oscuro');
+
+      if (type === 'claro') {
+        // Claro Active
+        cardClaro.classList.add('border-[#1d5bd8]');
+        cardClaro.classList.remove('border-transparent');
+        radioClaro.className = 'w-6 h-6 rounded-full bg-[#1d5bd8] flex items-center justify-center transition-colors';
+        radioClaro.innerHTML = '<svg class="w-3.5 h-3.5 text-white stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path></svg>';
+
+        // Oscuro Inactive
+        cardOscuro.classList.remove('border-[#1d5bd8]');
+        cardOscuro.classList.add('border-transparent');
+        radioOscuro.className = 'w-6 h-6 rounded-full border-2 border-slate-200 flex items-center justify-center transition-colors';
+        radioOscuro.innerHTML = '<svg class="w-3.5 h-3.5 text-white stroke-[3] hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path></svg>';
+      } else {
+        // Oscuro Active
+        cardOscuro.classList.add('border-[#1d5bd8]');
+        cardOscuro.classList.remove('border-transparent');
+        radioOscuro.className = 'w-6 h-6 rounded-full bg-[#1d5bd8] flex items-center justify-center transition-colors';
+        radioOscuro.innerHTML = '<svg class="w-3.5 h-3.5 text-white stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path></svg>';
+
+        // Claro Inactive
+        cardClaro.classList.remove('border-[#1d5bd8]');
+        cardClaro.classList.add('border-transparent');
+        radioClaro.className = 'w-6 h-6 rounded-full border-2 border-slate-200 flex items-center justify-center transition-colors';
+        radioClaro.innerHTML = '<svg class="w-3.5 h-3.5 text-white stroke-[3] hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path></svg>';
+      }
+    }
+
+    function selectColor(colorName) {
+      const colors = [
+        { id: 'azul', hex: '#1d5bd8' },
+        { id: 'verde', hex: '#16a34a' },
+        { id: 'amarillo', hex: '#d99411' },
+        { id: 'rojo', hex: '#ba2419' }
+      ];
+
+      colors.forEach(item => {
+        const card = document.getElementById(`color-card-${item.id}`);
+        const check = document.getElementById(`check-${item.id}`);
+        
+        if (item.id === colorName) {
+          card.style.borderColor = item.hex;
+          card.classList.remove('border-transparent');
+          check.classList.remove('hidden');
+        } else {
+          card.style.borderColor = 'transparent';
+          card.classList.add('border-transparent');
+          check.classList.add('hidden');
+        }
+      });
+    }
+  </script>
+<!-- END: InteractiveScripts -->
+</body></html>

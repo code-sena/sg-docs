@@ -20,7 +20,7 @@
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| id | UUID | No | Unique identifier | PK, auto-generated |
+| id | UNIQUEIDENTIFIER | No | Unique identifier | PK, auto-generated |
 | [field] | [VARCHAR(255) / INT / BOOL / etc.] | [Yes/No] | [description] | [FK/Unique/Check/etc.] |
 | created_at | TIMESTAMP | No | Creation date | Default: NOW() |
 | updated_at | TIMESTAMP | No | Last modification | Update on each UPDATE |

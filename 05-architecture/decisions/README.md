@@ -20,6 +20,13 @@ ADRs document important architectural decisions. Each file = one decision.
 
 | # | Title | Status | Date |
 |---|-------|--------|------|
-| None yet | — | — | — |
+| 001 | Documentation language (English) | Accepted | 2024-01-10 |
+| 002 | Shared Database (Monolithic DB) for all microservices | Accepted | 2026-09-04 |
+| 003 | Monolithic web and mobile client applications | Proposed | 2026-09-04 |
+| 004 | Apache Kafka as the event/message broker | Accepted | 2026-09-04 |
+| 005 | gRPC for synchronous inter-service communication | Proposed | 2026-09-08 |
+| 006 | API Gateway (Kong) as the single entry point | Proposed | 2026-09-08 |
+| 007 | Scalar for interactive API documentation | Proposed | 2026-09-08 |
+| 008 | JWT RS256 for authentication and authorization | Proposed | 2026-09-08 |
 
 > Add rows here as you create ADRs in `records/`

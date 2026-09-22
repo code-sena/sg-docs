@@ -1,7 +1,8 @@
 # Data Models per Service
 
 > **What to fill in here:** The data schema for each microservice.
-> Each service has its own section. Remember: **each service has its own database**.
+> Each service has its own section. Remember: **all services share a single SQL Server
+> instance, each with its own schema** (ADR-002).
 > Schema changes are always done with versioned migrations, never by modifying tables in place.
 
 > **DB engine note:** This document is technology-agnostic. The examples show standard SQL
@@ -13,21 +14,28 @@
 
 ## Data modeling principles
 
-### 1. Database per Service (mandatory)
-No service directly accesses another service's database.
+### 1. Shared Monolithic Database — Schema per Service (ADR-002)
+All services share a **single SQL Server instance**, but each service only owns and
+accesses its **own schema** (logical isolation). No service reads or writes another
+service's schema, and there are never JOINs across schemas.
 Communication between services is always via API or events.
 
+> Deviation from the framework default "Database per Service", justified in
+> `05-architecture/decisions/records/ADR-002-shared-database-monolithic-db.md`.
+> If the data volume or team grows, migrate gradually to separate databases (Strangler Fig).
+
 ```
-✓ Service A → DB A (PostgreSQL)
-✓ Service B → DB B (MongoDB)
-✗ Service A → JOIN with Service B's tables
+✓ Service A → schema_a (SQL Server shared instance)
+✓ Service B → schema_b (SQL Server shared instance)
+✗ Service A → JOIN with Service B's tables (different schema)
+✗ Service A → writes to Service B's schema
 ```
 
 ### 2. Standard audit fields
 All tables include:
 
 ```sql
-id          UUID        PRIMARY KEY  DEFAULT gen_random_uuid(),
+id          UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
 created_at  TIMESTAMPTZ NOT NULL     DEFAULT NOW(),
 updated_at  TIMESTAMPTZ NOT NULL     DEFAULT NOW(),
 deleted_at  TIMESTAMPTZ              -- NULL = active (soft delete)
@@ -40,11 +48,11 @@ This facilitates auditing and recovery.
 ### 4. Naming conventions
 
 ```sql
--- Tables:      snake_case, plural              → orders, order_items, users
--- Columns:     snake_case, descriptive         → unit_price, delivery_date
--- FKs:         [referenced_table]_id           → customer_id, product_id
--- Indexes:     idx_[table]_[column(s)]         → idx_orders_customer_id
--- Timestamps:  always with timezone (TIMESTAMPTZ, not TIMESTAMP)
+-- Tables:      PascalCase, plural              → Orders, OrderItems, Users
+-- Columns:     PascalCase, descriptive         → UnitPrice, delivery_date
+-- FKs:         [referenced_table]Id            → CustomerId, ProductId
+-- Indexes:     IX_<Table>_<Columns>            → IX_Order_CustomerID
+-- DATETIME2:   
 ```
 
 ---
@@ -63,7 +71,7 @@ This facilitates auditing and recovery.
 
 ```sql
 CREATE TABLE [table_name] (
-  id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
+  id              UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
   
   -- Business fields
   [field1]        [TYPE]      NOT NULL,
@@ -71,7 +79,7 @@ CREATE TABLE [table_name] (
   [field3]        [TYPE]      NOT NULL DEFAULT [value],
   
   -- Relationships
-  [reference]_id  UUID        REFERENCES [referenced_table](id) ON DELETE RESTRICT,
+  [reference]_id  UNIQUEIDENTIFIER REFERENCES [referenced_table](id) ON DELETE RESTRICT,
   
   -- Status fields
   status          VARCHAR(50) NOT NULL DEFAULT 'ACTIVE'
@@ -81,8 +89,8 @@ CREATE TABLE [table_name] (
   created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   deleted_at      TIMESTAMPTZ,
-  created_by      UUID,
-  updated_by      UUID
+  created_by      UNIQUEIDENTIFIER,
+  updated_by      UNIQUEIDENTIFIER
 );
 
 -- Indexes
@@ -96,7 +104,7 @@ CREATE INDEX idx_[table]_[search_field] ON [table_name] ([search_field]);
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| id | UUID | Auto-generated unique identifier | `550e8400-...` |
+| id | UNIQUEIDENTIFIER | Auto-generated unique identifier | `550e8400-...` |
 | [field1] | [TYPE] | [Business description] | [Example] |
 | status | VARCHAR(50) | Lifecycle status | `ACTIVE` |
 | created_at | TIMESTAMPTZ | When the record was created | `2024-01-15T10:30:00Z` |
@@ -113,8 +121,8 @@ CREATE INDEX idx_[table]_[search_field] ON [table_name] ([search_field]);
 
 ```sql
 CREATE TABLE [related_table] (
-  id              UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
-  [principal]_id  UUID        NOT NULL REFERENCES [principal_table](id) ON DELETE CASCADE,
+  id              UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
+  [principal]_id  UNIQUEIDENTIFIER NOT NULL REFERENCES [principal_table](id) ON DELETE CASCADE,
   
   -- Fields
   [field]         [TYPE]      NOT NULL,
@@ -205,16 +213,16 @@ Mermaid example:
 erDiagram
     ORDERS ||--o{ ORDER_ITEMS : contains
     ORDERS {
-        uuid id PK
-        uuid customer_id FK
+        uniqueidentifier id PK
+        uniqueidentifier customer_id FK
         varchar status
         decimal total
         timestamptz created_at
     }
     ORDER_ITEMS {
-        uuid id PK
-        uuid order_id FK
-        uuid product_id FK
+        uniqueidentifier id PK
+        uniqueidentifier order_id FK
+        uniqueidentifier product_id FK
         integer quantity
         decimal unit_price
     }

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Políticas de privacidad - Guardian Escolar</title>
+<!-- Tailwind CSS CDN with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            appBlue: '#1657e4',
+            appDarkNavy: '#111d38',
+            appBg: '#f1f5f9',
+            appBorder: '#e2e8f0',
+            primaryBlue: '#1d4ed8'
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Text"', '"SF Pro Display"', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Styles -->
+<style data-purpose="custom-scroll-and-details">
+    /* Remove default disclosure marker */
+    details summary::-webkit-details-marker {
+      display: none;
+    }
+    details summary {
+      list-style: none;
+    }
+    /* Smooth rotation transition for chevron */
+    details[open] summary svg.chevron-icon {
+      transform: rotate(180deg);
+    }
+    /* Safe areas for iOS */
+    .pt-safe {
+      padding-top: env(safe-area-inset-top, 12px);
+    }
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom, 16px);
+    }
+  </style>
+<!-- END: Custom Styles -->
+</head>
+<body class="bg-[#f3f6fb] text-slate-800 font-sans antialiased min-h-screen flex flex-col justify-between select-none">
+<!-- BEGIN: Screen Container -->
+<div class="w-full max-w-md mx-auto min-h-screen flex flex-col justify-between relative bg-[#f3f6fb]" data-purpose="mobile-screen-wrapper">
+<!-- BEGIN: Top Section (Status Bar + Header) -->
+<header class="w-full bg-[#f3f6fb] pt-2" data-purpose="header-container">
+<!-- iOS Status Bar Simulation -->
+<div class="flex justify-between items-center px-7 pt-2 pb-1 text-slate-900 font-semibold text-sm" data-purpose="status-bar">
+<span>2:35</span>
+<div class="flex items-center space-x-2 text-xs">
+<!-- Cellular signal -->
+<svg class="w-4 h-3.5 fill-current" viewbox="0 0 24 24">
+<rect height="6" rx="1" width="3" x="1" y="16"></rect>
+<rect height="10" rx="1" width="3" x="6" y="12"></rect>
+<rect height="14" rx="1" width="3" x="11" y="8"></rect>
+<rect height="18" rx="1" width="3" x="16" y="4"></rect>
+</svg>
+<!-- Wifi -->
+<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24">
+<path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98A16.88 16.88 0 0 0 12 4z"></path>
+</svg>
+<!-- Battery icon with 45% badge -->
+<div class="flex items-center">
+<div class="bg-emerald-500 text-[10px] font-bold text-white px-1.5 py-0.5 rounded-full flex items-center gap-0.5 leading-none shadow-sm">
+<span>45</span>
+<svg class="w-2.5 h-2.5 fill-current" viewbox="0 0 20 20">
+<path d="M11.5 1L2 12h7v7l9.5-11h-7V1z"></path>
+</svg>
+</div>
+</div>
+</div>
+</div>
+<!-- App Bar Header with Back Button and Title -->
+<div class="flex items-center px-4 py-3 gap-3 border-b border-slate-200/50" data-purpose="app-header">
+<button aria-label="Volver" class="p-1 text-slate-900 hover:text-slate-600 transition-colors focus:outline-none" type="button">
+<svg class="w-6 h-6 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<h1 class="text-[21px] font-bold tracking-tight text-[#111d38]">
+          Políticas de privacidad
+        </h1>
+</div>
+</header>
+<!-- END: Top Section -->
+<!-- BEGIN: Accordion List Content -->
+<main class="flex-1 px-4 py-4 overflow-y-auto" data-purpose="accordion-container">
+<div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden divide-y divide-slate-100">
+<!-- 1. Permisos de la aplicación -->
+<details class="group" data-purpose="policy-item">
+<summary class="flex justify-between items-center px-5 py-4 cursor-pointer select-none transition-colors hover:bg-slate-50">
+<span class="text-[15px] font-semibold text-[#18233a] leading-tight">
+              Permisos de la aplicación
+            </span>
+<svg class="chevron-icon w-5 h-5 text-blue-700 transition-transform duration-200 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19.5 8.25l-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</summary>
+<div class="px-5 pb-4 text-xs text-slate-600 leading-relaxed space-y-2 border-t border-slate-50 pt-2 bg-slate-50/40">
+<p><strong>Guardian Escolar</strong> requiere permisos indispensables para su correcto funcionamiento:</p>
+<ul class="list-disc pl-4 space-y-1">
+<li><strong>Ubicación GPS (Segundo plano):</strong> Para permitir el seguimiento en vivo de la ruta escolar entre padres y conductores.</li>
+<li><strong>Cámara:</strong> Empleada únicamente para la lectura rápida de códigos QR de estudiantes al subir o descender de la unidad.</li>
+<li><strong>Notificaciones Push:</strong> Para avisos inmediatos de llegada, retrasos o contingencias de la unidad.</li>
+</ul>
+</div>
+</details>
+<!-- 2. Datos que recolectamos -->
+<details class="group" data-purpose="policy-item">
+<summary class="flex justify-between items-center px-5 py-4 cursor-pointer select-none transition-colors hover:bg-slate-50">
+<span class="text-[15px] font-semibold text-[#18233a] leading-tight">
+              Datos que recolectamos
+            </span>
+<svg class="chevron-icon w-5 h-5 text-blue-700 transition-transform duration-200 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19.5 8.25l-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</summary>
+<div class="px-5 pb-4 text-xs text-slate-600 leading-relaxed space-y-2 border-t border-slate-50 pt-2 bg-slate-50/40">
+<p>Recopilamos información estrictamente necesaria para garantizar la seguridad infantil en el transporte:</p>
+<ul class="list-disc pl-4 space-y-1">
+<li>Datos de tutores: Nombre completo, número telefónico y correo electrónico verificado.</li>
+<li>Datos del alumno: Nombre, colegio, grado asignado e identificador único cifrado.</li>
+<li>Telemetría de la ruta: Coordenadas geográficas en tiempo de tránsito, velocidad promedio y tiempos de abordaje.</li>
+</ul>
+</div>
+</details>
+<!-- 3. Cifrado y protección de datos -->
+<details class="group" data-purpose="policy-item">
+<summary class="flex justify-between items-center px-5 py-4 cursor-pointer select-none transition-colors hover:bg-slate-50">
+<span class="text-[15px] font-semibold text-[#18233a] leading-tight">
+              Cifrado y protección de datos
+            </span>
+<svg class="chevron-icon w-5 h-5 text-blue-700 transition-transform duration-200 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19.5 8.25l-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</summary>
+<div class="px-5 pb-4 text-xs text-slate-600 leading-relaxed space-y-2 border-t border-slate-50 pt-2 bg-slate-50/40">
+<p>La seguridad de la información de menores es nuestra máxima prioridad:</p>
+<ul class="list-disc pl-4 space-y-1">
+<li><strong>En tránsito:</strong> Todas las conexiones utilizan túneles seguros TLS 1.3 con certificados SSL robustos.</li>
+<li><strong>En reposo:</strong> Los registros sensibles se almacenan en bases de datos con encriptación militar estándar AES-256 bits.</li>
+</ul>
+</div>
+</details>
+<!-- 4. Autenticación segura -->
+<details class="group" data-purpose="policy-item">
+<summary class="flex justify-between items-center px-5 py-4 cursor-pointer select-none transition-colors hover:bg-slate-50">
+<span class="text-[15px] font-semibold text-[#18233a] leading-tight">
+              Autenticación segura
+            </span>
+<svg class="chevron-icon w-5 h-5 text-blue-700 transition-transform duration-200 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19.5 8.25l-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</summary>
+<div class="px-5 pb-4 text-xs text-slate-600 leading-relaxed space-y-2 border-t border-slate-50 pt-2 bg-slate-50/40">
+<p>Implementamos mecanismos de autenticación mediante Tokens JSON (JWT) de corta vigencia, soporte de biometría nativa (Face ID / Huella digital) y validación en dos pasos (2FA) para supervisores y administradores escolares.</p>
+</div>
+</details>
+<!-- 5. Acceso según tu rol -->
+<details class="group" data-purpose="policy-item">
+<summary class="flex justify-between items-center px-5 py-4 cursor-pointer select-none transition-colors hover:bg-slate-50">
+<span class="text-[15px] font-semibold text-[#18233a] leading-tight">
+              Acceso según tu rol
+            </span>
+<svg class="chevron-icon w-5 h-5 text-blue-700 transition-transform duration-200 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19.5 8.25l-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</summary>
+<div class="px-5 pb-4 text-xs text-slate-600 leading-relaxed space-y-2 border-t border-slate-50 pt-2 bg-slate-50/40">
+<p>El principio de privilegio mínimo rige nuestra plataforma:</p>
+<ul class="list-disc pl-4 space-y-1">
+<li><strong>Padres/Tutores:</strong> Acceso exclusivo a la ubicación y estado de sus hijos asignados.</li>
+<li><strong>Conductores:</strong> Vista de la lista de paradas y validación de abordaje sin acceso a datos privados adicionales.</li>
+<li><strong>Colegio:</strong> Monitoreo operativo integral de las rutas escolares autorizadas.</li>
+</ul>
+</div>
+</details>
+<!-- 6. Registro por código QR -->
+<details class="group" data-purpose="policy-item">
+<summary class="flex justify-between items-center px-5 py-4 cursor-pointer select-none transition-colors hover:bg-slate-50">
+<span class="text-[15px] font-semibold text-[#18233a] leading-tight">
+              Registro por código QR
+            </span>
+<svg class="chevron-icon w-5 h-5 text-blue-700 transition-transform duration-200 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19.5 8.25l-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</summary>
+<div class="px-5 pb-4 text-xs text-slate-600 leading-relaxed space-y-2 border-t border-slate-50 pt-2 bg-slate-50/40">
+<p>Los códigos QR físicos y digitales son dinámicos o poseen firmas criptográficas que impiden la duplicación fraudulenta. Cada escaneo registra la fecha, hora exacta y ubicación geográfica del abordaje o descenso del escolar.</p>
+</div>
+</details>
+<!-- 7. Retención y eliminación de datos -->
+<details class="group" data-purpose="policy-item">
+<summary class="flex justify-between items-center px-5 py-4 cursor-pointer select-none transition-colors hover:bg-slate-50">
+<span class="text-[15px] font-semibold text-[#18233a] leading-tight">
+              Retención y eliminación de datos
+            </span>
+<svg class="chevron-icon w-5 h-5 text-blue-700 transition-transform duration-200 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19.5 8.25l-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</summary>
+<div class="px-5 pb-4 text-xs text-slate-600 leading-relaxed space-y-2 border-t border-slate-50 pt-2 bg-slate-50/40">
+<p>Los registros de trayectoria y geolocalización histórica se purgan automáticamente tras 90 días naturales. Al culminar el ciclo escolar o retirar la matrícula, los tutores pueden solicitar la eliminación total e inmediata de sus datos personales.</p>
+</div>
+</details>
+<!-- 8. Funcionamiento sin conexión -->
+<details class="group" data-purpose="policy-item">
+<summary class="flex justify-between items-center px-5 py-4 cursor-pointer select-none transition-colors hover:bg-slate-50">
+<span class="text-[15px] font-semibold text-[#18233a] leading-tight">
+              Funcionamiento sin conexión
+            </span>
+<svg class="chevron-icon w-5 h-5 text-blue-700 transition-transform duration-200 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19.5 8.25l-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</summary>
+<div class="px-5 pb-4 text-xs text-slate-600 leading-relaxed space-y-2 border-t border-slate-50 pt-2 bg-slate-50/40">
+<p>En zonas con baja o nula cobertura celular, los escaneos de QR y registros de asistencia se resguardan de manera local y encriptada en el dispositivo móvil, sincronizándose con la nube tan pronto se restablezca la conectividad.</p>
+</div>
+</details>
+<!-- 9. Tus derechos como usuario -->
+<details class="group" data-purpose="policy-item">
+<summary class="flex justify-between items-center px-5 py-4 cursor-pointer select-none transition-colors hover:bg-slate-50">
+<span class="text-[15px] font-semibold text-[#18233a] leading-tight">
+              Tus derechos como usuario
+            </span>
+<svg class="chevron-icon w-5 h-5 text-blue-700 transition-transform duration-200 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19.5 8.25l-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</summary>
+<div class="px-5 pb-4 text-xs text-slate-600 leading-relaxed space-y-2 border-t border-slate-50 pt-2 bg-slate-50/40">
+<p>Como titular de los datos o representante legal del estudiante, tienes derecho a acceder, rectificar, cancelar u oponerte al tratamiento de tu información (Derechos ARCO / Habeas Data) mediante solicitud en el módulo de soporte o contacto institucional del colegio.</p>
+</div>
+</details>
+</div>
+</main>
+<!-- END: Accordion List Content -->
+<!-- BEGIN: Bottom Navigation Bar -->
+<nav class="bg-[#1259e8] text-white flex justify-around items-center pt-3 pb-5 px-6 shadow-lg" data-purpose="bottom-nav">
+<!-- Item: Ruta -->
+<a class="flex flex-col items-center justify-center gap-1 opacity-80 hover:opacity-100 transition-opacity" data-purpose="nav-item" href="#ruta">
+<!-- Bus Icon -->
+<svg class="w-7 h-7 fill-current" viewbox="0 0 24 24">
+<path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"></path>
+</svg>
+<span class="text-[12px] font-normal tracking-wide">Ruta</span>
+</a>
+<!-- Item: Ubicación -->
+<a class="flex flex-col items-center justify-center gap-1 opacity-80 hover:opacity-100 transition-opacity" data-purpose="nav-item" href="#ubicacion">
+<!-- Location Pin Icon -->
+<svg class="w-7 h-7 fill-current" viewbox="0 0 24 24">
+<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path>
+</svg>
+<span class="text-[12px] font-normal tracking-wide">Ubicación</span>
+</a>
+<!-- Item: Perfil (Active) -->
+<a class="flex flex-col items-center justify-center gap-1 opacity-100 transition-opacity" data-purpose="nav-item-active" href="#perfil">
+<!-- User Profile Icon -->
+<svg class="w-7 h-7 fill-current" viewbox="0 0 24 24">
+<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+</svg>
+<span class="text-[12px] font-normal tracking-wide">Perfil</span>
+</a>
+</nav>
+<!-- END: Bottom Navigation Bar -->
+</div>
+<!-- END: Screen Container -->
+<!-- BEGIN: Interactive Accordion Script -->
+<script data-purpose="accordion-mutually-exclusive">
+    // Optional clean UX: Close previous detail item when a new one opens
+    document.querySelectorAll('details').forEach((targetDetail) => {
+      targetDetail.addEventListener('toggle', () => {
+        if (targetDetail.open) {
+          document.querySelectorAll('details').forEach((detail) => {
+            if (detail !== targetDetail && detail.open) {
+              detail.removeAttribute('open');
+            }
+          });
+        }
+      });
+    });
+  </script>
+<!-- END: Interactive Accordion Script -->
+</body></html>

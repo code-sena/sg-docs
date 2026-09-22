@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Mi Perfil - Guardian Escolar</title>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              blue: '#1E5BE4',
+              navy: '#0B1E48',
+              surface: '#F2F5FA',
+              cardBorder: '#EBF0F7'
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"SF Pro Text"', 'Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-layout">
+    /* iOS notch padding and smooth tap states */
+    body {
+      -webkit-tap-highlight-color: transparent;
+    }
+    .safe-bottom {
+      padding-bottom: env(safe-area-inset-bottom, 16px);
+    }
+  </style>
+</head>
+<body class="bg-[#F2F5FA] font-sans antialiased text-slate-800 min-h-screen flex justify-center">
+<!-- BEGIN: MobileDeviceContainer -->
+<main class="w-full max-w-md min-h-screen flex flex-col justify-between relative pb-24" data-purpose="mobile-screen-wrapper">
+<!-- BEGIN: TopStatusBarSpace (Simulated iOS Header Space) -->
+<div class="h-10 w-full" data-purpose="status-bar-spacer"></div>
+<!-- END: TopStatusBarSpace -->
+<div class="px-5 w-full flex-1">
+<!-- BEGIN: HeaderSection -->
+<header class="pt-2 pb-7 text-center" data-purpose="screen-title-container">
+<h1 class="text-[32px] leading-tight font-extrabold text-[#0B1E48] tracking-tight">
+          Mi perfil
+        </h1>
+<p class="text-[15px] text-[#556987] font-normal mt-1.5 tracking-tight">
+          Gestioná tu cuenta y preferencias
+        </p>
+</header>
+<!-- END: HeaderSection -->
+<!-- BEGIN: MenuOptionsList -->
+<section class="space-y-3.5" data-purpose="profile-navigation-links">
+<!-- Option 1: Mis datos -->
+<a class="group flex items-center justify-between bg-white px-5 py-4 rounded-[22px] shadow-[0_2px_8px_rgba(0,0,0,0.015)] border border-[#E9EFF7] active:bg-slate-50 transition-colors" data-purpose="menu-item" href="#mis-datos">
+<div class="flex items-center space-x-4">
+<span class="text-[#1E5BE4] flex items-center justify-center w-6 h-6">
+<!-- User Icon -->
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"></path>
+</svg>
+</span>
+<span class="text-[17px] font-medium text-[#1E293B]">Mis datos</span>
+</div>
+<svg class="w-5 h-5 text-[#94A3B8] stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+<!-- Option 2: Mi familia -->
+<a class="group flex items-center justify-between bg-white px-5 py-4 rounded-[22px] shadow-[0_2px_8px_rgba(0,0,0,0.015)] border border-[#E9EFF7] active:bg-slate-50 transition-colors" data-purpose="menu-item" href="#mi-familia">
+<div class="flex items-center space-x-4">
+<span class="text-[#1E5BE4] flex items-center justify-center w-6 h-6">
+<!-- Family / Users Icon -->
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"></path>
+</svg>
+</span>
+<span class="text-[17px] font-medium text-[#1E293B]">Mi familia</span>
+</div>
+<svg class="w-5 h-5 text-[#94A3B8] stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+<!-- Option 3: Seguridad -->
+<a class="group flex items-center justify-between bg-white px-5 py-4 rounded-[22px] shadow-[0_2px_8px_rgba(0,0,0,0.015)] border border-[#E9EFF7] active:bg-slate-50 transition-colors" data-purpose="menu-item" href="#seguridad">
+<div class="flex items-center space-x-4">
+<span class="text-[#1E5BE4] flex items-center justify-center w-6 h-6">
+<!-- Security / Shield Icon -->
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm0 2.18l6 2.25v4.66c0 4.09-2.6 7.89-6 8.87V4.18z"></path>
+</svg>
+</span>
+<span class="text-[17px] font-medium text-[#1E293B]">Seguridad</span>
+</div>
+<svg class="w-5 h-5 text-[#94A3B8] stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+<!-- Option 4: Apariencia -->
+<a class="group flex items-center justify-between bg-white px-5 py-4 rounded-[22px] shadow-[0_2px_8px_rgba(0,0,0,0.015)] border border-[#E9EFF7] active:bg-slate-50 transition-colors" data-purpose="menu-item" href="#apariencia">
+<div class="flex items-center space-x-4">
+<span class="text-[#1E5BE4] flex items-center justify-center w-6 h-6">
+<!-- Palette Icon -->
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61.38.48.97.77 1.6.77h1.61c1.03 0 1.82.89 1.82 1.92v.32c0 .94.76 1.7 1.7 1.7 4.58 0 8.3-3.72 8.3-8.3C20 8.03 16.97 3 12 3zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"></path>
+</svg>
+</span>
+<span class="text-[17px] font-medium text-[#1E293B]">Apariencia</span>
+</div>
+<svg class="w-5 h-5 text-[#94A3B8] stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+<!-- Option 5: Idioma -->
+<a class="group flex items-center justify-between bg-white px-5 py-4 rounded-[22px] shadow-[0_2px_8px_rgba(0,0,0,0.015)] border border-[#E9EFF7] active:bg-slate-50 transition-colors" data-purpose="menu-item" href="#idioma">
+<div class="flex items-center space-x-4">
+<span class="text-[#1E5BE4] flex items-center justify-center w-6 h-6">
+<!-- Globe Icon -->
+<svg class="w-5 h-5 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="9"></circle>
+<line x1="3" x2="21" y1="12" y2="12"></line>
+<path d="M12 3a14.5 14.5 0 0 1 0 18M12 3a14.5 14.5 0 0 0 0 18"></path>
+</svg>
+</span>
+<span class="text-[17px] font-medium text-[#1E293B]">Idioma</span>
+</div>
+<svg class="w-5 h-5 text-[#94A3B8] stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+<!-- Option 6: Políticas de privacidad -->
+<a class="group flex items-center justify-between bg-white px-5 py-4 rounded-[22px] shadow-[0_2px_8px_rgba(0,0,0,0.015)] border border-[#E9EFF7] active:bg-slate-50 transition-colors" data-purpose="menu-item" href="#privacidad">
+<div class="flex items-center space-x-4">
+<span class="text-[#1E5BE4] flex items-center justify-center w-6 h-6">
+<!-- Lock Icon -->
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"></path>
+</svg>
+</span>
+<span class="text-[17px] font-medium text-[#1E293B]">Políticas de privacidad</span>
+</div>
+<svg class="w-5 h-5 text-[#94A3B8] stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+<!-- Option 7: Sobre nosotros -->
+<a class="group flex items-center justify-between bg-white px-5 py-4 rounded-[22px] shadow-[0_2px_8px_rgba(0,0,0,0.015)] border border-[#E9EFF7] active:bg-slate-50 transition-colors" data-purpose="menu-item" href="#sobre-nosotros">
+<div class="flex items-center space-x-4">
+<span class="text-[#1E5BE4] flex items-center justify-center w-6 h-6">
+<!-- Info Circle Icon -->
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"></path>
+</svg>
+</span>
+<span class="text-[17px] font-medium text-[#1E293B]">Sobre nosotros</span>
+</div>
+<svg class="w-5 h-5 text-[#94A3B8] stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+<!-- Option 8: Cerrar sesión -->
+<a class="group flex items-center justify-between bg-white px-5 py-4 rounded-[22px] shadow-[0_2px_8px_rgba(0,0,0,0.015)] border border-[#E9EFF7] active:bg-red-50/50 transition-colors" data-purpose="logout-item" href="#logout">
+<div class="flex items-center space-x-4">
+<span class="text-red-500 flex items-center justify-center w-6 h-6">
+<!-- Log out Icon -->
+<svg class="w-5 h-5 fill-none stroke-current stroke-2" viewbox="0 0 24 24">
+<path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</span>
+<span class="text-[17px] font-medium text-red-600">Cerrar sesión</span>
+</div>
+<svg class="w-5 h-5 text-red-300 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+</section>
+<!-- END: MenuOptionsList -->
+</div>
+<!-- BEGIN: BottomNavigation -->
+<nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#1855DE] text-white safe-bottom z-50 shadow-[0_-4px_16px_rgba(24,85,222,0.2)]" data-purpose="tab-bar">
+<div class="grid grid-cols-3 h-[62px] items-center text-center">
+<!-- Tab 1: Ruta -->
+<a class="flex flex-col items-center justify-center space-y-1 text-white/80 hover:text-white transition-opacity" href="#ruta">
+<!-- Bus Icon -->
+<svg class="w-6 h-6 fill-current" viewbox="0 0 24 24">
+<path d="M4 16c0 .88.39 1.67 1 2.22V20c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h8v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1.78c.61-.55 1-1.34 1-2.22V6c0-3.5-3.58-4-8-4s-8 .5-8 4v10zm3.5 1c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm9 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-6H6V6h12v5z"></path>
+</svg>
+<span class="text-[11px] font-medium tracking-wide">Ruta</span>
+</a>
+<!-- Tab 2: Ubicación -->
+<a class="flex flex-col items-center justify-center space-y-1 text-white/80 hover:text-white transition-opacity" href="#ubicacion">
+<!-- Map Pin Icon -->
+<svg class="w-6 h-6 fill-current" viewbox="0 0 24 24">
+<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path>
+</svg>
+<span class="text-[11px] font-medium tracking-wide">Ubicación</span>
+</a>
+<!-- Tab 3: Perfil (Active) -->
+<a class="flex flex-col items-center justify-center space-y-1 text-white" href="#perfil">
+<!-- User / Profile Icon -->
+<svg class="w-6 h-6 fill-current" viewbox="0 0 24 24">
+<path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"></path>
+</svg>
+<span class="text-[11px] font-bold tracking-wide">Perfil</span>
+</a>
+</div>
+</nav>
+<!-- END: BottomNavigation -->
+</main>
+<!-- END: MobileDeviceContainer -->
+</body></html>

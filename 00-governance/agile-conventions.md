@@ -9,9 +9,9 @@
 
 | Field | Value |
 |-------|-------|
-| Duration | [1 week / 2 weeks / 3 weeks] |
-| Sprint start | [Monday / Tuesday / Wednesday] |
-| Sprint end | [Friday of week N] |
+| Duration | 3 weeks |
+| Sprint start | Monday |
+| Sprint end | Friday of week 3 |
 | Current sprint | Sprint [N] — [start date] to [end date] |
 | Estimated capacity | [N story points per sprint] |
 
@@ -20,14 +20,14 @@
 ## Ceremonies
 
 ### Sprint Planning
-- **When:** First day of the sprint — [time]
-- **Duration:** Maximum [1h per week of sprint]
+- **When:** First day of the sprint — 12:00
+- **Duration:** Maximum 3h [2h per week of sprint]
 - **Who:** Entire team
 - **Goal:** Select and commit to sprint user stories, break down into technical tasks
-- **Output artifact:** Sprint Backlog updated in [tool: Jira / Linear / GitHub Issues]
+- **Output artifact:** Sprint Backlog updated in Trello
 
 ### Daily Stand-up
-- **When:** Every day — [time]
+- **When:** Every day 12:15
 - **Duration:** Maximum 15 minutes
 - **Format:**
   1. What did I do yesterday?
@@ -36,20 +36,20 @@
 - **Rule:** Technical discussions happen after the daily, not during it
 
 ### Sprint Review
-- **When:** Last day of the sprint — [time]
-- **Duration:** Maximum [30 min]
-- **Who:** Team + Product Owner (+ stakeholders if applicable)
+- **When:** Last day of the sprint 17:00
+- **Duration:** Maximum 30 min
+- **Who:** Team + Product Owner
 - **Goal:** Show what was built and collect feedback
 
 ### Sprint Retrospective
-- **When:** Last day of the sprint — after the review
-- **Duration:** Maximum [45 min]
-- **Format:** [What went well / What to improve / Action commitments]
+- **When:** Last day of the sprint — 17:20
+- **Duration:** Maximum 45 min
+- **Format:** What went well / What to improve / Action commitments
 - **Rule:** Each retro produces at least 1 improvement action with an owner and due date
 
 ### Backlog Refinement
-- **When:** [Wednesday of the second week / mid-sprint]
-- **Duration:** Maximum [1h]
+- **When:** Wednesday of the second week - 14:00
+- **Duration:** Maximum 1h
 - **Goal:** Detail and estimate user stories for the next sprint
 - **Exit criterion:** The user story meets the Definition of Ready
 
@@ -78,8 +78,8 @@
 
 ## Backlog tool
 
-**Tool:** [Jira / Linear / GitHub Projects / Trello]
-**Board URL:** [URL]
+**Tool:** Trello
+**Board URL:** [Trello - Guardian Escolar](https://trello.com/invite/b/69bb113fce8a43e71078f373/ATTIe6594bdc76e984bb91503edb6b6536c825069B6A/proyecto)
 
 ### Board columns
 | Column | Meaning |

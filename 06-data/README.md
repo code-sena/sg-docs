@@ -5,10 +5,13 @@
 
 ## Fundamental principle in microservices
 
-> **Each microservice owns its own data.**
+> **All services share a single SQL Server instance, each with its own schema.**
 
-No service should access another service's database directly. If it needs data from another
-service, it requests it via API or receives it via event. This principle guarantees independence.
+Per ADR-002, this project uses a **shared monolithic database** (one SQL Server) with a
+**separate schema per service** (logical isolation). Each service owns its schema and never
+accesses another service's schema directly. If it needs data from another service, it requests
+it via API or receives it via event. The migration path to a full "Database per Service" is
+documented in ADR-002 (Strangler Fig).
 
 ---
 
@@ -27,7 +30,7 @@ Data models for each microservice.
 ### Table/Collection: [name]
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| id | UUID | No | Unique identifier | PK |
+| id | UNIQUEIDENTIFIER | No | Unique identifier | PK |
 | [field] | [type] | [Yes/No] | [description] | [FK/Unique/etc.] |
 
 ### Indexes
@@ -57,7 +60,7 @@ Analysis of the normalization level and justification for denormalizations.
 
 ### `migration-strategy.md`
 Strategy for migrating data between schema versions.
-**Fill in:** migration tool (Flyway, Liquibase, Alembic), rollback policy,
+**Fill in:** migration tool (Liquibase — see ADR-009), rollback policy,
 how to handle migrations with data in production.
 
 ---

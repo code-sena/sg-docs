@@ -1,64 +1,65 @@
 # Product Vision
 
-> The vision is the team's north star. All sprints, design decisions,
-> and trade-offs are evaluated against this vision.
-> It must be ambitious yet achievable, inspiring but specific.
+> The vision is the team's north star. All sprints, design decisions, and trade-offs are evaluated against this vision.
 
 ---
 
 ## Vision statement
 
-> Use the Geoffrey Moore template:
+**For** parents and guardians of students who use school transportation,
 
-**For** [target customer]
-**who** [has the need / faces the problem]
-**the** [product name]
-**is a** [product category]
-**that** [main benefit / reason to choose]
-**unlike** [competing alternative]
-**our product** [key differentiator].
+**who** need greater visibility and control over their children's journeys and currently have limited real-time information about the transportation service,
+
+**the** **Guardian Escolar**
+
+**is a** school transportation management and monitoring platform
+
+**that** provides real-time visibility of routes, student boarding and drop-off events, and relevant notifications,
+
+**unlike** traditional manual processes or isolated vehicle tracking solutions,
+
+**our product** integrates GPS tracking, QR-based student control, route management, and communication between the institution, drivers, and guardians in a single platform.
 
 ---
 
 ## Team mission
 
-> In 1-2 sentences: why does this team exist? What change in the world does it seek to achieve?
+Our team exists to improve the safety, visibility, and organization of school transportation through technology.
+
+We seek to give institutions, drivers, and guardians reliable information about each journey, creating greater control and confidence throughout the transportation process.
 
 ---
 
 ## Strategic pillars
 
-Pillars are the focus areas that take us from mission to vision.
-They should be few (3-5) and consistent over time.
-
 | Pillar | Description | Success metrics |
 |--------|-------------|----------------|
-| [Pillar 1: e.g. Speed] | [What it means for our product] | [KPIs] |
-| [Pillar 2: e.g. Reliability] | [Description] | [KPIs] |
-| [Pillar 3: e.g. Scale] | [Description] | [KPIs] |
+| **Safety and traceability** | Ensure that student boarding and drop-off events are recorded and associated with the corresponding transportation route. | % of boarding/drop-off events correctly registered |
+| **Real-time visibility** | Provide guardians and authorized users with current information about the location and status of school buses. | % of active routes with GPS data available |
+| **Effective communication** | Notify guardians about relevant events during the student's transportation journey. | % of relevant events generating notifications |
+| **Operational management** | Centralize the administration of students, guardians, drivers, buses, routes, and stops. | % of transportation data managed through the platform |
 
 ---
 
 ## High-level roadmap
 
-> The roadmap shows how the product evolves over time.
-> Horizon 1 (0-3 months): high certainty, detail in HUs
-> Horizon 2 (3-6 months): medium certainty, epics
-> Horizon 3 (6-12 months): low certainty, focus areas
+The product will evolve progressively, prioritizing the validation of the core transportation problem before expanding into more advanced capabilities.
 
-```
-Q1 2024 ──── Q2 2024 ──── Q3 2024 ──── Q4 2024
-     │              │              │              │
-  [MVP]      [Feature A]    [Feature B]   [Scale]
-  Validate    Expand         Deepen        Grow
-  hypothesis  the market     the value
+```text
+H1 (0-3 months) ───── H2 (3-6 months) ───── H3 (6-12 months)
+
+       [MVP]                  [Expansion]              [Scale]
+          │                       │                       │
+     Validate core          Improve experience       Expand capabilities
+     transportation         and operational          and reliability
+        flow                    control
 ```
 
 | Horizon | Period | Objective | Epics / Features | Uncertainty |
-|---------|--------|----------|----------------|-------------|
-| H1 (Now) | [Q1] | [Objective] | [Epic 1, Epic 2] | Low |
-| H2 (Next) | [Q2] | [Objective] | [Epic 3, Area X] | Medium |
-| H3 (Later) | [Q3-Q4] | [Objective] | [Area Y, Area Z] | High |
+|---------|--------|-----------|------------------|-------------|
+| **H1 — Now** | 0-3 months | Validate the core transportation monitoring and control flow. | User management, students, guardians, drivers, buses, routes, stops, QR boarding/drop-off, GPS tracking, basic notifications. | Low |
+| **H2 — Next** | 3-6 months | Improve the experience and operational visibility. | Advanced route monitoring, notification improvements, transportation history, incident management, reports and dashboards. | Medium |
+| **H3 — Later** | 6-12 months | Scale and deepen the value of the platform. | Advanced analytics, optimization of routes, operational indicators, integrations and scalability improvements. | High |
 
 ---
 
@@ -66,25 +67,38 @@ Q1 2024 ──── Q2 2024 ──── Q3 2024 ──── Q4 2024
 
 These principles guide design and prioritization decisions when there are trade-offs.
 
-1. **[Principle 1]:** [description. Example: "New user first — every new feature must be understandable in 2 minutes without onboarding"]
+1. **Safety first:**  
+   Features that improve student safety, identification, traceability, or transportation control take priority over secondary functionality.
 
-2. **[Principle 2]:** [description. Example: "Opinionated about what matters, flexible on the secondary"]
+2. **Information when it matters:**  
+   Users should receive relevant transportation information at the moment it is useful, without unnecessary complexity or excessive notifications.
 
-3. **[Principle 3]:** [description]
+3. **Simple for every user:**  
+   The platform must be easy to understand for guardians, drivers, and administrators, even when they have different technical abilities.
+
+4. **Traceability by default:**  
+   Important transportation events should leave a reliable record that can be consulted when necessary.
+
+5. **Reliable before advanced:**  
+   Core functionality such as GPS tracking, QR registration, routes, and notifications must be reliable before adding more complex features.
 
 ---
 
 ## Product Definition of Done
 
-> The product is "done" when it achieves these OKRs:
+> The product is considered successful when the core school transportation process can be managed and monitored digitally, providing reliable information to the people who need it.
 
-**Objective:** [What we want to achieve]
+**Objective:**  
+Provide a reliable platform that improves visibility, control, and traceability throughout school transportation journeys.
 
 | Key Result | Baseline | Target | Date |
-|------------|---------|--------|------|
-| KR1: [specific metric] | [current value] | [target value] | [date] |
-| KR2: [metric] | [current] | [target] | [date] |
-| KR3: [business metric] | [current] | [target] | [date] |
+|------------|----------|--------|------|
+| **KR1: Boarding and drop-off events correctly registered** | No centralized digital registration | ≥ 95% of events registered through QR | 6 months |
+| **KR2: Active routes with available GPS tracking** | No centralized monitoring | ≥ 95% of active routes | 6 months |
+| **KR3: Relevant transportation events generating notifications** | No centralized measurement | ≥ 95% | 6 months |
+| **KR4: Transportation information managed through the platform** | Distributed/manual processes | ≥ 90% of operational records managed through the platform | 6 months |
+
+> The baselines marked as "No centralized..." should be replaced with real measurements once the pilot and evidence collection are completed.
 
 ---
 

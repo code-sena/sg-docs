@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Restablecer contraseña - Guardian Escolar</title>
+<!-- Tailwind CSS v3 CDN with forms plugin -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              background: '#F4F7FB',
+              primary: '#1D5BD8',
+              hover: '#1950BF',
+              dark: '#0F1E36',
+              label: '#64748B',
+              border: '#E2E8F0',
+            }
+          },
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom styles for iOS look and feel -->
+<style data-purpose="base-styling">
+    body {
+      background-color: #F4F7FB;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    }
+    input:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(29, 91, 216, 0.2);
+    }
+  </style>
+</head>
+<body class="bg-[#F4F7FB] min-h-screen text-[#0F1E36] antialiased flex flex-col justify-between select-none">
+<!-- BEGIN: MobileContainer -->
+<div class="w-full max-w-md mx-auto min-h-screen flex flex-col bg-[#F4F7FB]" data-purpose="screen-wrapper">
+<!-- BEGIN: TopBar -->
+<header class="w-full pt-4 pb-3 px-5 flex items-center gap-3 bg-[#F4F7FB] sticky top-0 z-20" data-purpose="navigation-header">
+<!-- Back button link -->
+<button aria-label="Volver" class="p-1 -ml-1 text-[#0F1E36] active:opacity-60 transition-opacity focus:outline-none" onclick="history.back()" type="button">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.3" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- App / Screen Title -->
+<h1 class="text-xl font-bold tracking-tight text-[#0F1E36] leading-tight">
+        Restablecer contraseña
+      </h1>
+</header>
+<!-- END: TopBar -->
+<!-- BEGIN: MainContent -->
+<main class="flex-1 px-6 pt-10 flex flex-col justify-start">
+<!-- Title & Subtitle Section -->
+<section class="text-center mb-10" data-purpose="header-section">
+<h2 class="text-[34px] leading-[1.15] font-extrabold text-[#0F1E36] tracking-tight">
+          Restablecer<br/>contraseña
+        </h2>
+<p class="mt-4 text-[17px] text-[#64748B] font-normal tracking-normal">
+          Ingresa tu nueva contraseña.
+        </p>
+</section>
+<!-- BEGIN: PasswordResetForm -->
+<form action="#" class="space-y-6" data-purpose="reset-password-form" method="POST" onsubmit="event.preventDefault();">
+<!-- Input Field: Nueva contraseña -->
+<div class="space-y-2">
+<label class="block text-[15px] font-medium text-[#64748B] tracking-normal" for="new_password">
+            Nueva contraseña
+          </label>
+<div class="relative">
+<input autocomplete="new-password" class="w-full h-14 px-4 bg-white border border-[#E2E8F0] rounded-2xl text-[16px] text-[#0F1E36] placeholder-[#94A3B8] transition duration-150 ease-in-out focus:border-[#1D5BD8] focus:bg-white" id="new_password" name="new_password" required="" type="password"/>
+</div>
+</div>
+<!-- Input Field: Confirmación -->
+<div class="space-y-2">
+<label class="block text-[15px] font-medium text-[#64748B] tracking-normal" for="confirm_password">
+            Confirmación
+          </label>
+<div class="relative">
+<input autocomplete="new-password" class="w-full h-14 px-4 bg-white border border-[#E2E8F0] rounded-2xl text-[16px] text-[#0F1E36] placeholder-[#94A3B8] transition duration-150 ease-in-out focus:border-[#1D5BD8] focus:bg-white" id="confirm_password" name="confirm_password" required="" type="password"/>
+</div>
+</div>
+<!-- Submit Button -->
+<div class="pt-4">
+<button class="w-full h-14 bg-[#1D5BD8] hover:bg-[#184ebd] active:scale-[0.98] text-white font-semibold text-[17px] rounded-full shadow-md shadow-blue-500/20 transition duration-200 ease-in-out flex items-center justify-center cursor-pointer" data-purpose="submit-button" type="submit">
+            Restablecer
+          </button>
+</div>
+</form>
+<!-- END: PasswordResetForm -->
+</main>
+<!-- END: MainContent -->
+<!-- Safe area padding spacer at bottom -->
+<div class="h-10"></div>
+</div>
+<!-- END: MobileContainer -->
+<!-- Simple interaction feedback logic -->
+<script data-purpose="form-interactivity">
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.querySelector('form');
+      const newPasswordInput = document.getElementById('new_password');
+      const confirmPasswordInput = document.getElementById('confirm_password');
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const pwd = newPasswordInput.value;
+        const confirmPwd = confirmPasswordInput.value;
+
+        if (!pwd || !confirmPwd) {
+          alert('Por favor, completa ambos campos de contraseña.');
+          return;
+        }
+
+        if (pwd !== confirmPwd) {
+          alert('Las contraseñas no coinciden. Intenta de nuevo.');
+          return;
+        }
+
+        alert('¡Contraseña restablecida con éxito!');
+      });
+    });
+  </script>
+</body></html>

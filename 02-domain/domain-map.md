@@ -14,10 +14,10 @@ It lasts 2–4 hours with the whole team (dev + PO + business expert).
 **Standard colors:**
 | Color | Represents | Example |
 |-------|-----------|---------|
-| 🟠 Orange | **Domain events** (something that happened, past tense) | `AppointmentScheduled`, `PaymentReceived` |
-| 🔵 Blue | **Commands** (action that triggers the event) | `ScheduleAppointment`, `ProcessPayment` |
-| 🟡 Yellow | **Actors** (who executes the command) | `Patient`, `Doctor`, `Admin` |
-| 🩷 Pink | **External systems** or integration points | `Payment Gateway`, `Email SMTP` |
+| 🟠 Orange | **Domain events** (something that happened, past tense) | `RouteCreated`, `BoardingRegistered` |
+| 🔵 Blue | **Commands** (action that triggers the event) | `CreateRoute`, `RegisterBoarding` |
+| 🟡 Yellow | **Actors** (who executes the command) | `Administrator`, `Student`, `Driver` |
+| 🩷 Pink | **External systems** or integration points | `VT03F GPS`, `Notification Provider` |
 
 **Session steps:**
 1. (30 min) Post all events that occur in the business, in chronological order, on the wall
@@ -40,9 +40,12 @@ It lasts 2–4 hours with the whole team (dev + PO + business expert).
 > One paragraph of context about the business and what problem the system solves.
 > Write it without technical terms — it must be readable by a business expert.
 
-```
-[Describe the business domain here. E.g.: "The system manages the complete cycle of
-[X] reservations, from the customer's request through to confirmation and billing."]
+```text
+Guardian Escolar manages the daily transportation of students to and from school.
+It allows schools to organize buses, drivers, routes, stops, students, and families,
+while providing control over student boarding and exit through QR codes. The system
+also monitors school buses in real time and notifies responsible guardians about
+important transportation events, such as student boarding, exit, or loss of GPS signal.
 ```
 
 ---
@@ -58,36 +61,208 @@ has consistent meaning. Each bounded context has its own Ubiquitous Language.
 > - Can be deployed independently
 > - The same term in two different contexts can mean different things
 
-### Bounded Context: [Name — e.g.: User Management]
+### Bounded Context: User Management
 
 | Field | Value |
 |-------|-------|
-| **Name** | [ContextName] |
-| **Responsibility** | [What this context captures in one sentence] |
-| **Owning team** | [Responsible team or person] |
-| **Microservice(s)** | [service-name, service2-name] |
-| **Database** | [PostgreSQL / MongoDB / Redis / etc.] |
-| **Ubiquitous Language** | [Key business terms in this context] |
+| **Name** | User Management |
+| **Responsibility** | Manages people, families, family members, and driver-related information |
+| **Owning team** | Guardian Escolar Development Team |
+| **Microservice(s)** | `user-management-service` |
+| **Database** | SQL Server |
+| **Ubiquitous Language** | Person, Family, Family Member, Driver, Driver License |
 
 **Context-specific terms (Ubiquitous Language):**
 
 | Term | Meaning in THIS context | Different in another context? |
 |------|------------------------|-------------------------------|
-| [User] | [Person with an active account] | [Yes — in Billing it's "Client"] |
-| [Account] | [Set of credentials] | [No] |
+| Person | A real person registered in the school transportation system | Yes — Security uses the person's profile |
+| Family | A group of people related to a student | Yes — Boarding focuses on the student's transportation relationship |
+| Driver | A person who can be associated with transportation operations | Yes — Bus context focuses on the driver assigned to a bus |
+| Family Member | A person associated with a family | No |
+| Driver License | Information that validates a driver's authorization | No |
 
 ---
 
-### Bounded Context: [Name — e.g.: Order Management]
+### Bounded Context: Security
 
 | Field | Value |
 |-------|-------|
-| **Name** | [ContextName] |
-| **Responsibility** | |
-| **Owning team** | |
-| **Microservice(s)** | |
-| **Database** | |
-| **Ubiquitous Language** | |
+| **Name** | Security |
+| **Responsibility** | Manages authentication, authorization, profiles, roles, permissions, sessions, and security policies |
+| **Owning team** | Guardian Escolar Development Team |
+| **Microservice(s)** | `security-service` |
+| **Database** | SQL Server |
+| **Ubiquitous Language** | Profile, Role, Permission, Session, Authentication, Authorization |
+
+---
+
+### Bounded Context: School Management
+
+| Field | Value |
+|-------|-------|
+| **Name** | School Management |
+| **Responsibility** | Manages schools, campuses, courses, and course groups |
+| **Owning team** | Guardian Escolar Development Team |
+| **Microservice(s)** | `school-service` |
+| **Database** | SQL Server |
+| **Ubiquitous Language** | School, Campus, Course, Course Group |
+
+---
+
+### Bounded Context: Geography
+
+| Field | Value |
+|-------|-------|
+| **Name** | Geography |
+| **Responsibility** | Manages geographic information required by schools and transportation stops |
+| **Owning team** | Guardian Escolar Development Team |
+| **Microservice(s)** | `geography-service` |
+| **Database** | SQL Server |
+| **Ubiquitous Language** | City, Location, Geographic Reference |
+
+---
+
+### Bounded Context: Bus Management
+
+| Field | Value |
+|-------|-------|
+| **Name** | Bus Management |
+| **Responsibility** | Manages buses, brands, models, drivers, schools, and GPS device associations |
+| **Owning team** | Guardian Escolar Development Team |
+| **Microservice(s)** | `bus-service` |
+| **Database** | SQL Server |
+| **Ubiquitous Language** | Bus, Brand, Model, Driver, GPS Device, Assignment |
+
+**Context-specific terms (Ubiquitous Language):**
+
+| Term | Meaning in THIS context | Different in another context? |
+|------|------------------------|-------------------------------|
+| Bus | A school transportation vehicle registered in the system | Yes — Route uses the bus as a route resource |
+| Driver | The person assigned to operate a bus | Yes — User Management manages the person's information |
+| GPS Device | Tracking hardware associated with a bus | Yes — GPS context manages its technical data and locations |
+| Assignment | Relationship between a bus and its operational information | Yes — Route uses assignment specifically for a route |
+
+---
+
+### Bounded Context: Route Management
+
+| Field | Value |
+|-------|-------|
+| **Name** | Route Management |
+| **Responsibility** | Manages school routes, route stops, assigned buses, and students assigned to routes |
+| **Owning team** | Guardian Escolar Development Team |
+| **Microservice(s)** | `route-service` |
+| **Database** | SQL Server |
+| **Ubiquitous Language** | Route, Stop, Route Stop, Route Assignment, Student Assignment |
+
+**Context-specific terms (Ubiquitous Language):**
+
+| Term | Meaning in THIS context | Different in another context? |
+|------|------------------------|-------------------------------|
+| Route | A planned sequence of transportation stops for a school | Yes — GPS uses route information for tracking |
+| Stop | A predefined place where students can board or exit | Yes — Boarding uses it as the place of a boarding event |
+| Route Assignment | Relationship between a route and a bus or student | No |
+| Student Assignment | Relationship between a student and a route | Yes — Boarding uses the result for boarding validation |
+
+---
+
+### Bounded Context: GPS Tracking
+
+| Field | Value |
+|-------|-------|
+| **Name** | GPS Tracking |
+| **Responsibility** | Receives, processes, and manages the real-time location information of school buses |
+| **Owning team** | Guardian Escolar Development Team |
+| **Microservice(s)** | `gps-service` |
+| **Database** | SQL Server |
+| **Ubiquitous Language** | GPS Device, GPS Location, Latitude, Longitude, Speed, Course, GPS Signal, Location Received |
+
+**Context-specific terms (Ubiquitous Language):**
+
+| Term | Meaning in THIS context | Different in another context? |
+|------|------------------------|-------------------------------|
+| GPS Device | A physical tracking device installed in a bus | Yes — Bus Management treats it as an associated device |
+| GPS Location | A geographic position received from the tracking device | Yes — Route uses geographic information differently |
+| GPS Signal | The availability of valid location information | No |
+| Location Received | A location successfully received from the GPS device | No |
+
+> The GPS context integrates with the VT03F device through TCP communication. The device sends location information such as latitude, longitude, speed, course, and GPS timestamp.
+
+---
+
+### Bounded Context: Boarding
+
+| Field | Value |
+|-------|-------|
+| **Name** | Boarding |
+| **Responsibility** | Controls and records student boarding and exit operations using QR codes |
+| **Owning team** | Guardian Escolar Development Team |
+| **Microservice(s)** | `boarding-service` |
+| **Database** | SQL Server |
+| **Ubiquitous Language** | QR Code, QR Scan, Boarding, Student, Bus, Stop, On Board, Off Board |
+
+**Context-specific terms (Ubiquitous Language):**
+
+| Term | Meaning in THIS context | Different in another context? |
+|------|------------------------|-------------------------------|
+| Student | A person authorized to use school transportation | Yes — User Management manages the person's information |
+| Boarding | The business event of a student entering or leaving a bus | No |
+| QR Code | Identifier used to validate a student's transportation operation | No |
+| Stop | The location where the boarding operation occurs | Yes — Route manages the stop as part of a route |
+| Bus | The vehicle involved in the boarding operation | Yes — Bus Management manages the vehicle itself |
+
+---
+
+### Bounded Context: Alerts
+
+| Field | Value |
+|-------|-------|
+| **Name** | Alerts |
+| **Responsibility** | Detects and manages relevant transportation alerts generated by system events |
+| **Owning team** | Guardian Escolar Development Team |
+| **Microservice(s)** | `alert-service` |
+| **Database** | SQL Server |
+| **Ubiquitous Language** | Alert, Alert Type, Saved Alert, GPS Signal Loss, Route Deviation, Exceptional Usage |
+
+---
+
+### Bounded Context: Exceptional Usage
+
+| Field | Value |
+|-------|-------|
+| **Name** | Exceptional Usage |
+| **Responsibility** | Detects and records exceptional driver and route usage situations |
+| **Owning team** | Guardian Escolar Development Team |
+| **Microservice(s)** | `exceptional-usage-service` |
+| **Database** | SQL Server |
+| **Ubiquitous Language** | Exceptional Driver Usage, Exceptional Route Usage, Driver, Route, Exception |
+
+---
+
+### Bounded Context: Audit
+
+| Field | Value |
+|-------|-------|
+| **Name** | Audit |
+| **Responsibility** | Records relevant system actions and errors for traceability and accountability |
+| **Owning team** | Guardian Escolar Development Team |
+| **Microservice(s)** | `audit-service` |
+| **Database** | SQL Server |
+| **Ubiquitous Language** | Audit, Audit Record, Error Log, User Action, Traceability |
+
+---
+
+### Bounded Context: Configuration
+
+| Field | Value |
+|-------|-------|
+| **Name** | Configuration |
+| **Responsibility** | Manages system-wide security and password configuration policies |
+| **Owning team** | Guardian Escolar Development Team |
+| **Microservice(s)** | `configuration-service` |
+| **Database** | SQL Server |
+| **Ubiquitous Language** | Password Policy, Security Setting, Configuration |
 
 ---
 
@@ -96,41 +271,107 @@ has consistent meaning. Each bounded context has its own Ubiquitous Language.
 The Context Map shows relationships between bounded contexts. Relationships define
 how contexts communicate and who holds the "power" in the integration.
 
-```
-┌─────────────────────┐        ┌──────────────────────┐
-│  [Context A]        │        │  [Context B]         │
-│                     │──────▶│                      │
-│  Domain:            │  D→C  │  Domain:             │
-│  [responsibility]   │       │  [responsibility]    │
-└─────────────────────┘       └──────────────────────┘
-                                        │
-                               D→C      │
-                                        ▼
-                              ┌──────────────────────┐
-                              │  [Context C]         │
-                              │                      │
-                              │  [responsibility]    │
-                              └──────────────────────┘
+```text
+                         ┌─────────────────────────┐
+                         │   Security Context      │
+                         │                         │
+                         │ Authentication, Roles,  │
+                         │ Permissions, Sessions   │
+                         └────────────┬────────────┘
+                                      │
+                                  U → D
+                                      │
+                                      ▼
+                         ┌─────────────────────────┐
+                         │  User Management        │
+                         │                         │
+                         │ People, Families,       │
+                         │ Drivers                 │
+                         └────────────┬────────────┘
+                                      │
+                     ┌────────────────┼────────────────┐
+                     │                │                │
+                   U → D            U → D            U → D
+                     │                │                │
+                     ▼                ▼                ▼
+              ┌─────────────┐  ┌─────────────┐  ┌─────────────┐
+              │   School    │  │    Bus      │  │ Geography   │
+              │ Management  │  │ Management  │  │             │
+              └──────┬──────┘  └──────┬──────┘  └──────┬──────┘
+                     │                │                │
+                     └────────┬───────┴────────┬───────┘
+                              │                │
+                            U → D            U → D
+                              │                │
+                              ▼                ▼
+                       ┌─────────────┐  ┌─────────────┐
+                       │    Route    │  │     GPS     │
+                       │ Management  │  │   Tracking  │
+                       └──────┬──────┘  └──────┬──────┘
+                              │                │
+                              │                │
+                              └───────┬────────┘
+                                      │
+                                    U → D
+                                      │
+                                      ▼
+                              ┌─────────────┐
+                              │  Boarding   │
+                              │             │
+                              │ QR +        │
+                              │ Boarding    │
+                              └──────┬──────┘
+                                     │
+                                   U → D
+                                     │
+                                     ▼
+                              ┌─────────────┐
+                              │   Alerts    │
+                              │             │
+                              │ Detection + │
+                              │ Management  │
+                              └──────┬──────┘
+                                     │
+                                   U → D
+                                     │
+                                     ▼
+                              ┌─────────────┐
+                              │ Notification│
+                              │   Channel   │
+                              └─────────────┘
 ```
 
 ### Context relationship types
 
 | Type | Symbol | Description | Example |
 |------|--------|-------------|---------|
-| **Upstream → Downstream** | `U → D` | U provides, D consumes. D depends on U. | Auth → Orders |
-| **Shared Kernel** | `SK` | Two teams share part of the model | Shared User ID |
-| **Customer/Supplier** | `C/S` | Supplier (U) negotiates with Customer (D) | Inventory → Sales |
-| **Conformist** | `CONF` | D adopts U's model without negotiating | Legacy integration |
-| **Anti-Corruption Layer** | `ACL` | D translates U's model to protect itself | Gateway → External API |
-| **Open Host Service** | `OHS` | U publishes a published protocol | Event Bus, REST API |
-| **Published Language** | `PL` | Explicit shared language | OpenAPI spec, events |
+| **Upstream → Downstream** | `U → D` | U provides, D consumes. D depends on U. | Route Management → Boarding |
+| **Shared Kernel** | `SK` | Two teams share part of the model | Shared identifiers such as Profile ID |
+| **Customer/Supplier** | `C/S` | Supplier (U) negotiates with Customer (D) | Route Management → Boarding |
+| **Conformist** | `CONF` | D adopts U's model without negotiating | Legacy GPS integration |
+| **Anti-Corruption Layer** | `ACL` | D translates U's model to protect itself | GPS → External Tracking Format |
+| **Open Host Service** | `OHS` | U publishes a published protocol | REST API / Event Bus |
+| **Published Language** | `PL` | Explicit shared language | Domain Events / API contracts |
 
 ### Relationships table
 
 | Context A | Relationship | Context B | Communication channel | Contract |
 |-----------|-------------|-----------|----------------------|---------|
-| [Context A] | U → D | [Context B] | REST / Event | OpenAPI / AsyncAPI |
-| [Context B] | ACL | [Context C] | Adapter | Internal interface |
+| Security | U → D | User Management | REST / Event | OpenAPI / Events |
+| User Management | U → D | School Management | Event | Published Event |
+| User Management | U → D | Bus Management | Event | Published Event |
+| School Management | U → D | Route Management | REST / Event | OpenAPI / Events |
+| Geography | U → D | School Management | REST / Event | OpenAPI / Events |
+| Geography | U → D | Route Management | REST / Event | OpenAPI / Events |
+| Bus Management | U → D | Route Management | REST / Event | OpenAPI / Events |
+| Bus Management | U → D | GPS Tracking | Event | Published Event |
+| Route Management | U → D | Boarding | Event | `RouteCreated`, `StudentAssignedToRoute`, `RouteStopAdded` |
+| GPS Tracking | U → D | Alerts | Event | `GpsLocationReceived`, `GpsSignalLost` |
+| Boarding | U → D | Alerts | Event | `BoardingRegistered` |
+| Exceptional Usage | U → D | Alerts | Event | `ExceptionalDriverDetected`, `ExceptionalRouteDetected` |
+| Alerts | U → D | Notification | Event | `AlertCreated` |
+| All relevant contexts | U → D | Audit | Event | Domain Events |
+| VT03F GPS | U → D | GPS Tracking | TCP | GPS device protocol |
 
 ---
 
@@ -140,17 +381,26 @@ DDD classifies subdomains by their strategic value:
 
 | Type | Description | Investment | Example |
 |------|-------------|-----------|---------|
-| **Core Domain** | Where the business competitive advantage lies. What differentiates us. | MAXIMUM — build, don't buy | Matching algorithm |
-| **Supporting Subdomain** | Necessary for the core but not differentiating. Can be outsourced. | MEDIUM | Order management |
-| **Generic Subdomain** | Commodity. Off-the-shelf solution exists. | MINIMUM — buy/use OSS | Authentication, emails |
+| **Core Domain** | Where the business competitive advantage lies. What differentiates us. | MAXIMUM — build, don't buy | Real-time school transportation monitoring and student safety |
+| **Supporting Subdomain** | Necessary for the core but not differentiating. Can be outsourced. | MEDIUM | Route and bus management |
+| **Generic Subdomain** | Commodity. Off-the-shelf solution exists. | MINIMUM — buy/use OSS | Authentication, notifications, auditing |
 
 ### Classification of this project's bounded contexts
 
 | Bounded Context | Type | Justification |
 |----------------|------|---------------|
-| [Context A] | Core | [why it is the heart of the business] |
-| [Context B] | Supporting | [why it supports without being differentiating] |
-| [Context C] | Generic | [standard solution available] |
+| GPS Tracking | Core | Real-time bus tracking is one of the main capabilities that differentiates Guardian Escolar and provides transportation visibility |
+| Boarding | Core | QR-based student boarding and exit control directly supports student safety and transportation traceability |
+| Route Management | Supporting | Routes are essential for transportation operations but are not the main differentiating capability |
+| Bus Management | Supporting | Bus and driver information is necessary to operate transportation services |
+| User Management | Supporting | People and family information supports the main transportation processes |
+| School Management | Supporting | School information is required to organize transportation |
+| Alerts | Supporting | Alerts support the core transportation monitoring and safety processes |
+| Exceptional Usage | Supporting | Exceptional driver and route situations support operational control |
+| Geography | Generic | Geographic information such as cities is a common domain capability |
+| Security | Generic | Authentication, roles, permissions, and sessions are common capabilities with standard solutions available |
+| Audit | Generic | Audit logging is a common technical/business requirement |
+| Configuration | Generic | Security and password configuration are supporting capabilities that can use standard mechanisms |
 
 ---
 
@@ -158,18 +408,28 @@ DDD classifies subdomains by their strategic value:
 
 ### How were these decisions made?
 
-> Document the Event Storming session or the process you used to arrive at the map.
-> If you changed the map, explain why.
+> The bounded contexts were identified from the project's functional requirements,
+> database model, domain events, and the migration from the existing monolithic system
+> toward independently deployable microservices.
 
-- **Event Storming session:** [date], [participants]
-- **Tool used:** [Miro / Lucidchart / physical whiteboard]
-- **Map iterations:** v1 (date), v2 (date)
+- **Event Storming session:** To be completed with the development team and domain experts
+- **Tool used:** Miro / physical whiteboard
+- **Map iterations:** v1 — initial domain decomposition, v2 — microservice migration refinement
 
 ### Key decisions and discarded alternatives
 
 | Decision | Discarded alternative | Reason |
 |----------|----------------------|--------|
-| [Separate Context A and B] | [Have them in one] | [Business logic is different and they evolve at different rates] |
+| Separate Security from User Management | Keep authentication and user information in one context | Authentication and authorization have different responsibilities from business user management |
+| Separate GPS Tracking from Bus Management | Keep GPS logic inside Bus Management | GPS has its own protocol, real-time processing, location history, and signal-loss rules |
+| Separate Boarding from Route Management | Manage QR boarding inside Route Management | Boarding represents a different business process with its own events and rules |
+| Separate Alerts from GPS and Boarding | Generate notifications directly inside GPS or Boarding | Alerts are a cross-cutting business capability that can consume events from several contexts |
+| Separate School Management from Route Management | Keep schools and routes in the same context | School administration and transportation route planning have different business responsibilities |
+| Keep Geography as a separate context | Duplicate city information in School and Route | Avoids unnecessary duplication of geographic reference data |
+| Use domain events for cross-context notifications | Use direct database access between services | Microservices must not depend on another service's database |
+| Keep each bounded context with its own database | Share one database across all services | Independent persistence reduces coupling and allows services to evolve independently |
+| Treat the VT03F as an external integration | Put GPS device protocol logic in other contexts | The TCP/device protocol belongs to the GPS Tracking context |
+| Keep QR identity inside Boarding | Create a separate QR microservice | The current domain does not justify an independent bounded context only for QR generation |
 
 ---
 
