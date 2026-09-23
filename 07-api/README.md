@@ -1,5 +1,8 @@
 # 07 — API Contracts
 
+> **Interactive docs:** **Scalar** is the chosen portal (ADR-007) — not Swagger UI.
+> Contracts in `contracts/openapi/` are rendered by Scalar in dev/CI.
+
 > **What is this?** The formal specification of how microservices communicate with each other
 > and with the outside world. The contract is the promise a service makes to its consumers.
 
