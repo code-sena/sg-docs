@@ -1,6 +1,6 @@
 # Design system - Guardian Escolar
 
-> Visual system for the Guardian Escolar Angular `dvlp-web` frontend. This document defines the tokens and patterns for the screens described in [navigation-map-guardian-escolar.md](navigation-map-guardian-escolar.md).
+> Visual system for the Guardian Escolar Angular web frontend frontend. This document defines the tokens and patterns for the screens described in [navigation-map-guardian-escolar.md](navigation-map.md).
 >
 > **Rule:** reuse shared project components first. Create a new variant only when no equivalent pattern exists here.
 
@@ -27,7 +27,7 @@ Visual contexts:
 
 ## Design tokens
 
-Tokens are defined in `GuardianEscolar/dvlp-front/dvlp-web/src/styles.css`. New components must consume CSS variables to support theme switching.
+Tokens are defined in web frontend application. New components must consume CSS variables to support theme switching.
 
 ### Base colors
 
@@ -317,9 +317,9 @@ Visible messages should be managed through `TranslateModule` when an equivalent 
 
 - Base design system: `12-ux-ui/design-system.md`
 - Navigation map: `12-ux-ui/navigation-map-guardian-escolar.md`
-- Angular routes: `GuardianEscolar/dvlp-front/dvlp-web/src/app/app.routes.ts`
-- Tokens: `GuardianEscolar/dvlp-front/dvlp-web/src/styles.css`
-- Material theme: `GuardianEscolar/dvlp-front/dvlp-web/src/material-theme.scss`
-- Navigation components: `GuardianEscolar/dvlp-front/dvlp-web/src/app/shared/components/navbar/`
-- Card components: `GuardianEscolar/dvlp-front/dvlp-web/src/app/shared/components/cards/`
-- Modal components: `GuardianEscolar/dvlp-front/dvlp-web/src/app/shared/components/modal/`
+- Angular routes: web frontend application
+- Tokens: web frontend application
+- Material theme: web frontend application
+- Navigation components: web frontend application
+- Card components: web frontend application
+- Modal components: web frontend application

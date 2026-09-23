@@ -1,8 +1,8 @@
 # Navigation Map - Guardian Escolar
 
-> Navigation reference for the Guardian Escolar web frontend. This document reflects the routes declared in `GuardianEscolar/dvlp-front/dvlp-web/src/app/app.routes.ts` and its child routes.
+> Navigation reference for the Guardian Escolar web frontend. This document reflects the routes declared in web frontend application and its child routes.
 >
-> **Source:** `GuardianEscolar` project, Angular `dvlp-web` frontend, and ASP.NET Core `dvlp-back` backend.
+> **Source:** `GuardianEscolar` project, Angular web frontend frontend, and microservices backend (`backend/ms-*`).
 
 ---
 
@@ -20,7 +20,7 @@
 │
 ├── /dashboard-admin            -> Administrator dashboard
 ├── /admin
-│   ├── /usuarios               -> Student/user management
+│   ├── /usuarios               -> Student/user management (route path mirrors app code)
 │   ├── /padres                 -> Parent management
 │   ├── /conductores            -> Driver management
 │   ├── /familias               -> Family management
@@ -73,13 +73,13 @@
 | Recovery validation | `/auth/forgot-password/code` | `Code` | Public | `Security` |
 | Password reset | `/auth/forgot-password/reset` | `Reset` | Public | `Security` |
 | Administrator dashboard | `/dashboard-admin` | `DashboardAdmin` | `ADMIN` | `Security` + administration modules |
-| Students/users | `/admin/usuarios` | `Estudiantes` | `ADMIN` | `UserManagement` (`/api/person`) |
-| Parents | `/admin/padres` | `Padres` | `ADMIN` | `UserManagement` |
-| Drivers | `/admin/conductores` | `Conductores` | `ADMIN` | `UserManagement` |
-| Families | `/admin/familias` | `Familia` | `ADMIN` | `UserManagement` |
+| Students/users | `/admin/usuarios` | `Students` (app: `Estudiantes`) | `ADMIN` | `UserManagement` (`/api/person`) |
+| Parents | `/admin/padres` | `Parents` (app: `Padres`) | `ADMIN` | `UserManagement` |
+| Drivers | `/admin/conductores` | `Drivers` (app: `Conductores`) | `ADMIN` | `UserManagement` |
+| Families | `/admin/familias` | `Families` (app: `Familia`) | `ADMIN` | `UserManagement` |
 | Buses | `/admin/buses` | `Buses` | `ADMIN` | `FleetManagement` (`/api/bus`) |
-| Stops | `/admin/paradas` | `Paradas` | `ADMIN` | `RouteManagement` (`/api/stop`) |
-| Routes | `/admin/rutas` | `Rutas` | `ADMIN` | `RouteManagement` (`/api/route`) |
+| Stops | `/admin/paradas` | `Stops` (app: `Paradas`) | `ADMIN` | `RouteManagement` (`/api/stop`) |
+| Routes | `/admin/rutas` | `Routes` (app: `Rutas`) | `ADMIN` | `RouteManagement` (`/api/route`) |
 | Profile information | `/admin/informacion` | `InformationAdmin` | `ADMIN`, `SUPER_ADMIN` | `Security` / `UserManagement` |
 | Email change | `/admin/change-email/*` | `ChangeEmail` + steps | `ADMIN`, `SUPER_ADMIN` | `Security` / `UserManagement` |
 | Password change | `/admin/change-password/*` | `ChangePassword` + steps | `ADMIN`, `SUPER_ADMIN` | `Security` |
@@ -93,7 +93,7 @@
 
 ## Backend API route map
 
-The backend is implemented as a modular ASP.NET Core API within `dvlp-back`, not as separately deployed services.
+The backend is a set of microservices behind the API Gateway (see `09-microservices/service-catalog.md`); legacy microservices backend module layout maps to those services.
 
 | Method | Endpoint | Module | Use |
 |--------|----------|--------|-----|
@@ -223,7 +223,7 @@ Profile information (/admin/informacion)
 
 - Visual design: `12-ux-ui/design-system.md`
 - Guardian Escolar design system: `12-ux-ui/design-system-guardian-escolar.md`
-- Web frontend: `GuardianEscolar/dvlp-front/dvlp-web/src/app/app.routes.ts`
-- Backend: `GuardianEscolar/dvlp-back/src/backend/`
+- Web frontend: web frontend application
+- Backend: `../backend/` (microservices)
 - Security and roles: `00-governance/security-policy.md`
 - API contracts: `07-api/contracts/openapi/` when available
