@@ -71,7 +71,7 @@ src/
 
     // Data infrastructure (choose one)
     "typeorm": "^0.3.x",        // ORM
-    "pg": "^8.x",               // PostgreSQL driver
+    "mssql": "^11.x",           // SQL Server driver
     // "mongoose": "^8.x",       // If you use MongoDB
     // "ioredis": "^5.x",        // If you use Redis
 

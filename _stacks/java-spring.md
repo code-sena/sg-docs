@@ -93,10 +93,10 @@ src/
   </dependency>
 
   <!-- ─── DB engine (choose the one matching the project) ─────── -->
-  <!-- PostgreSQL -->
+  <!-- SQL Server -->
   <dependency>
-    <groupId>org.postgresql</groupId>
-    <artifactId>postgresql</artifactId>
+    <groupId>com.microsoft.sqlserver</groupId>
+    <artifactId>sqlserverql</artifactId>
     <scope>runtime</scope>
   </dependency>
 
@@ -121,7 +121,7 @@ src/
   </dependency>
   <dependency>
     <groupId>org.testcontainers</groupId>
-    <artifactId>postgresql</artifactId>
+    <artifactId>sqlserverql</artifactId>
     <scope>test</scope>
   </dependency>
 </dependencies>
