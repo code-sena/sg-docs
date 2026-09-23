@@ -45,10 +45,9 @@ Verify these ports are free before starting:
 
 | Port | Service | Description |
 |------|---------|-------------|
-| 8080 | api-gateway | Main entry point |
-| 3001 | auth-service | Authentication service |
-| 300X | [service-name] | [description] |
-| 5432 | PostgreSQL | Relational database |
+| 8000 | api-gateway (Kong OSS) | Public entry point |
+| 8080 | business services | each microservice (Docker DNS by name) |
+| 1433 | SQL Server | Relational database (monolith instance) |
 | 6379 | Redis | Cache and message queue |
 | 5672 | RabbitMQ | Message broker (AMQP) |
 | 15672 | RabbitMQ Management | RabbitMQ web interface |
@@ -88,7 +87,7 @@ cp .env.example .env
 
 | Variable | Description | Value for local |
 |----------|-------------|----------------|
-| `DATABASE_URL` | PostgreSQL connection | `postgresql://dev:dev@localhost:5432/dev` |
+| `ConnectionStrings__Default` / `MSSQL_*` | SQL Server connection | `Server=localhost,1433;Database=school_guardian;User Id=sa;Password=***;TrustServerCertificate=True` |
 | `REDIS_URL` | Redis connection | `redis://localhost:6379` |
 | `JWT_SECRET` | Key for signing JWT | `[generate with: openssl rand -base64 32]` |
 | `[VARIABLE]` | [description] | [example value] |
@@ -148,8 +147,8 @@ The command should show all containers in `healthy` or `running` state.
 ### Step 7: Verify it works
 
 ```bash
-# Health check of the API Gateway
-curl http://localhost:8080/health
+# Health check of the API Gateway (Kong OSS)
+curl http://localhost:8000/health
 
 # Expected response:
 # {"status": "ok", "timestamp": "2024-01-15T10:30:00Z"}
@@ -184,8 +183,8 @@ git commit -m "feat(scope): description"
 
 ```bash
 # Find which process is using the port
-lsof -i :5432    # macOS/Linux
-netstat -ano | findstr :5432  # Windows
+lsof -i :1433    # macOS/Linux
+netstat -ano | findstr :1433  # Windows
 
 # Kill the process (replace PID)
 kill -9 [PID]    # macOS/Linux
@@ -206,10 +205,10 @@ docker compose up -d
 ### "Database connection refused"
 
 ```bash
-# Verify PostgreSQL is running
+# Verify SQL Server is running
 docker compose ps | grep postgres
 
-# View PostgreSQL logs
+# View SQL Server logs
 docker compose logs postgres
 ```
 
@@ -266,10 +265,10 @@ npm run build:docker        # Build local Docker image
 
 | Service | URL | Credentials (local only) |
 |---------|-----|--------------------------|
-| API Gateway | http://localhost:8080 | |
+| API Gateway (Kong OSS) | http://localhost:8000 | |
 | RabbitMQ UI | http://localhost:15672 | guest / guest |
-| [Tool] | http://localhost:[port] | [user / pass] |
-| Swagger UI | http://localhost:3001/api-docs | |
+| Adminer (DB) | http://localhost:8090 | sa / *** |
+| Scalar API docs | http://localhost:8000/docs | |
 
 ---
 
