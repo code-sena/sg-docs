@@ -1,57 +1,58 @@
 # School
 
-> Manages school, campus, course, and geographic (city) data.
-
----
-
-## Responsibility
-
-Handles school registry, campus locations, course and course-group organization, and city (geographic) reference data.
-
----
+> Schools, campuses, courses, course groups, and cities (Geographic).
 
 ## Location in the architecture
 
 | Field | Value |
 |-------|-------|
 | Number in catalog | 04 |
-| Local port | 8083 |
-| Repository | [Repo URL] |
-| DB engine | SQL Server (schemas `School`, `Geographic`) |
-| Status | In development |
-
----
+| Local port | 8080 |
+| Stack | C# + ASP.NET |
+| SQL Server schema | `School + Geographic` |
+| Repository | One folder per service under `backend/` (reached by Docker DNS name, not by host path) |
+| Communicates with | — |
+| Consumed by | api-gateway (all client traffic) |
 
 ## Responsibilities (what this service DOES)
 
-- School data management (CRUD)
-- School campus management
-- Course and course group management
-- City (geographic) reference data
+- CRUD schools and campuses
+- Manage courses and course groups
+- Own City catalog (Geographic schema)
+- Provide school/location reference data to route-service
 
 ## Out of scope (what it does NOT do)
 
-- Student personal data — delegated to User Management
-- Stop/route data — delegated to Route service
+- Route geometry/stops → route-service
+- Student enrollment → user-management-service
 
----
+## Main endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/schools` | List schools |
+| POST | `/schools` | Create school |
+| GET | `/schools/{id}` | Get school |
+| PUT | `/schools/{id}` | Update school |
+| GET | `/campuses` | List campuses |
+| POST | `/campuses` | Create campus |
+| GET | `/courses` | List courses |
+| POST | `/courses` | Create course |
+| GET | `/cities` | List cities |
+| POST | `/cities` | Create city |
 
 ## How to run it locally
 
 ```bash
-# From the project root
 docker compose up -d school-service
-
-# Verify
-curl http://localhost:8083/health
+curl http://localhost:8080/health
 ```
-
----
 
 ## Related documents
 
-- [data-model.md](./data-model.md) — DB schema
-- [events.md](./events.md) — Events it publishes and consumes
-- [decisions.md](./decisions.md) — Internal design decisions
-- [runbook.md](./runbook.md) — Operation in production
+- [data-model.md](./data-model.md) — schema `School + Geographic`; tables: School, SchoolCampus, Course, CourseGroup, City
+- [events.md](./events.md) — publishes/consumes
+- [decisions.md](./decisions.md) — service-level decisions
+- [runbook.md](./runbook.md) — production operations
 - [API Contract](../../../07-api/contracts/openapi/school-service.yaml)
+- Catalog → `09-microservices/service-catalog.md`

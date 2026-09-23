@@ -53,7 +53,7 @@ All services must produce JSON logs with these minimum fields:
 {
   "timestamp": "2024-01-15T10:30:00.123Z",
   "level": "INFO",
-  "service": "auth-service",
+  "service": "iam-service",
   "version": "1.3.0",
   "environment": "production",
   "correlationId": "550e8400-e29b-41d4-a716-446655440000",
@@ -86,7 +86,7 @@ All services must produce JSON logs with these minimum fields:
 | `DEBUG` | Development info. Disabled in production | "SQL query executed: SELECT..." |
 | `INFO` | Normal business events | "Order #123 created" |
 | `WARN` | Abnormal but not failure | "Token about to expire", "Retry #2" |
-| `ERROR` | Error that requires attention | "Failed to connect to PostgreSQL" |
+| `ERROR` | Error that requires attention | "Failed to connect to SQL Server" |
 | `FATAL` | Error that brings down the service | "Cannot start: port in use" |
 
 ### What NOT to log
@@ -185,7 +185,7 @@ External request
 [Order Service]  creates child span: abc123 / 003
      │
      ▼
-[PostgreSQL DB]  creates child span: abc123 / 004 (automatic instrumentation)
+[SQL Server]  creates child span: abc123 / 004 (automatic instrumentation)
 ```
 
 ### Implementation with OpenTelemetry
@@ -200,7 +200,7 @@ const sdk = new NodeSDK({
     url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
   }),
   instrumentations: [
-    // Automatically instruments: HTTP, Express, PostgreSQL, Redis
+    // Automatically instruments: HTTP, Express, SQL Server, Redis
     getNodeAutoInstrumentations(),
   ],
 });
@@ -213,7 +213,7 @@ sdk.start();
 ```typescript
 import { trace } from '@opentelemetry/api';
 
-const tracer = trace.getTracer('auth-service');
+const tracer = trace.getTracer('iam-service');
 
 async function authenticateUser(email: string): Promise<Token> {
   return tracer.startActiveSpan('authenticate-user', async (span) => {

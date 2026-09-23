@@ -11,7 +11,7 @@
 ```
                           ┌─────────────────┐
   External clients        │   API Gateway   │
-  (Web, Mobile, API)  ──▶ │   :8080         │
+  (Web, Mobile, API)  ──▶ │   :8000         │
                           └────────┬────────┘
                                    │ routes by path
                                    ▼
@@ -32,11 +32,11 @@
 ## Service registry
 
 > All services share a **single SQL Server instance** (ADR-002), each with its own schema for
-> logical isolation. The API Gateway is the only stateless service (uses Redis).
+> logical isolation. All services listen on host port **8080**; on the Docker network they are reached by service name (DNS), so host port collisions do not occur. The API Gateway is Kong OSS (language-neutral) and is the only stateless service (uses Redis).
 
 | # | Service | Main responsibility | Port | Schema | DB type | Stack | Status |
 |---|---------|-------------------|------|--------|---------|-------|--------|
-| 01 | `api-gateway` | Routing, authentication, rate limiting | 8080 | — (Redis cache) |  | C# + ASP.NET | 🟡 In development |
+| 01 | `api-gateway` | Routing, authentication, rate limiting | 8000 | — (Redis cache) | Redis (ephemeral) | Kong OSS | 🟡 In development |
 | 02 | `iam-service` | Identity, auth, roles, permissions, sessions | 8080 | `Iam` | Relational (shared) | Java + Spring Boot | 🟡 In development |
 | 03 | `user-management-service` | Persons, families, family members, driver licenses | 8080 | `UserManagement` | Relational (shared) | C# + ASP.NET | 🟡 In development |
 | 04 | `school-service` | Schools, campuses, courses, cities | 8080 | `School` + `Geographic` | Relational (shared) | C# + ASP.NET | 🟡 In development |
@@ -64,8 +64,8 @@
 | **Folder** | `09-microservices/services/01-api-gateway/` |
 | **Responsibility** | Single entry point. Routes, authenticates, and applies rate limiting |
 | **Type** | Infrastructure service (not domain) |
-| **Stack** | C# + ASP.NET |
-| **Port** | 8080 (HTTPS 8443) |
+| **Stack** | Kong OSS |
+| **Port** | 8000 (HTTPS 8443) |
 | **DB** | Redis (token cache, rate limiting) |
 | **Communicates with** | All internal services |
 | **Externally exposed** | Yes — it is the only entry point |
@@ -95,7 +95,7 @@
 |-------|-------|
 | **Folder** | `09-microservices/services/03-user-management-service/` |
 | **Responsibility** | Persons, families, family members, driver licenses |
-| **Stack** | C# + ASP.NET |
+| **Stack** | Kong OSS |
 | **Schema** | `UserManagement` |
 | **Tables** | Person, Family, FamilyMember, DriverLicense |
 
@@ -107,7 +107,7 @@
 |-------|-------|
 | **Folder** | `09-microservices/services/04-school-service/` |
 | **Responsibility** | Schools, campuses, courses, course groups, cities |
-| **Stack** | C# + ASP.NET |
+| **Stack** | Kong OSS |
 | **Schema** | `School` + `Geographic` |
 | **Tables** | School, SchoolCampus, Course, CourseGroup, City |
 
@@ -131,7 +131,7 @@
 |-------|-------|
 | **Folder** | `09-microservices/services/06-bus-service/` |
 | **Responsibility** | Bus fleet, brands, models |
-| **Stack** | C# + ASP.NET |
+| **Stack** | Kong OSS |
 | **Schema** | `Bus` |
 | **Tables** | Bus, Brand, Model |
 
@@ -143,7 +143,7 @@
 |-------|-------|
 | **Folder** | `09-microservices/services/07-route-service/` |
 | **Responsibility** | Routes, stops, schedules, executions, assignments |
-| **Stack** | C# + ASP.NET |
+| **Stack** | Kong OSS |
 | **Schema** | `Route` |
 | **Tables** | Route, Stop, RouteStop, RouteBusAssignments, RouteStudentAssignments, RouteSchedule, RouteExecution |
 
@@ -167,7 +167,7 @@
 |-------|-------|
 | **Folder** | `09-microservices/services/09-exceptional-service/` |
 | **Responsibility** | Exceptional driver and route usage |
-| **Stack** | C# + ASP.NET |
+| **Stack** | Kong OSS |
 | **Schema** | `Exceptional` |
 | **Tables** | ExceptionalDriverUsage, ExceptionalRouteUsage |
 
@@ -179,7 +179,7 @@
 |-------|-------|
 | **Folder** | `09-microservices/services/10-audit-service/` |
 | **Responsibility** | Audit trail and error logs |
-| **Stack** | C# + ASP.NET |
+| **Stack** | Kong OSS |
 | **Schema** | `Audit` |
 | **Tables** | Audit, LogErrors |
 
@@ -191,13 +191,15 @@
 |-------|-------|
 | **Folder** | `09-microservices/services/11-configuration-service/` |
 | **Responsibility** | Security settings and password policies |
-| **Stack** | C# + ASP.NET |
+| **Stack** | Kong OSS |
 | **Schema** | `Configuration` |
 | **Tables** | SecuritySettings, PasswordPolicies |
 
 ---
 
 ## Service communication matrix
+
+> **Channels:** synchronous **gRPC** (ADR-005) and asynchronous **Kafka** (ADR-004). Client-facing REST goes only through the Kong gateway.
 
 > Who calls whom and through which channel.
 

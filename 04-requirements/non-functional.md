@@ -68,7 +68,7 @@ feature deploys are frozen until the next month and stability is prioritized.
 | Horizontal scaling limit | Up to 10 instances per service |
 
 **Strategy:** Stateless horizontal scaling — each instance does not store state in memory.
-State goes in Redis (sessions, cache) or PostgreSQL (persistent data).
+State goes in Redis (sessions, cache) or SQL Server (persistent data — ADR-002).
 
 ---
 

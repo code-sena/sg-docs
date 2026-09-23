@@ -29,7 +29,7 @@
 | Superadmin | Global administrative role with access to administrator and school management, plus the shared profile flows. | `SUPER_ADMIN` | Uses `/dashboard-superadmin` and `/superadmin/*`. |
 | Authentication | Process of verifying a user's credentials before access. | Sign-in, login | Backend Security module exposes `POST /api/login`. |
 | Authorization | Process of deciding whether an authenticated role can access an operation or screen. | Access control | Current Angular routing does not declare `canActivate`; backend or guards must enforce it. |
-| Security module | Backend module responsible for authentication and security-related behavior. | Security | Part of the modular ASP.NET Core backend. |
+| IAM service | Microservice for authentication, JWT, RBAC, sessions. | IAM | `09-microservices/services/02-iam-service/` (ADR-008). |
 | UserManagement | Backend module for people, families, family members, drivers, and related user data. | User management | Includes endpoints such as `/api/person` and `/api/family`. |
 | FleetManagement | Backend module for buses and fleet-related operations. | Fleet management | Includes `/api/bus`. |
 | RouteManagement | Backend module for routes, stops, and assignment relationships. | Route management | Includes `/api/route`, `/api/stop`, and assignment endpoints. |
@@ -50,12 +50,12 @@
 | Theme | Visual token set controlling colors, surfaces, navigation, and action states. | Light/dark theme | Current accents are blue, green, yellow, and red. |
 | Responsive design | Layout behavior that adapts to desktop, tablet, and mobile screens. | Responsive UI | Required for web and mobile experiences. |
 | Internationalization | Support for multiple interface languages. | i18n | Planned languages: Spanish, English, French, and Portuguese. |
-| Angular | Web frontend framework used by `dvlp-web`. | Angular 21 | Current web version is Angular 21. |
+| Angular | Web frontend framework used by web frontend. | Angular 21 | Current web version is Angular 21. |
 | React | JavaScript library used as the basis of the mobile frontend. | React | Used together with Expo. |
 | Expo | React platform and tooling used for the mobile application. | Expo | Current mobile stack. |
-| .NET | Microsoft platform used for backend/services. | .NET | Backend is implemented with C#. |
-| C# | Programming language used by the backend. | C Sharp | Used in the ASP.NET Core API. |
-| PostgreSQL | Relational database used for persistent application data. | PostgreSQL database | Main persistence technology. |
+| .NET | Microsoft platform used by several backend services. | .NET | C# microservices in the polyglot stack. |
+| C# | Language used by several microservices. | C Sharp | user-management, school, bus, route, exceptional, audit, configuration. |
+| SQL Server | Relational database used for persistent application data (ADR-002). | SQL Server | Main persistence; one instance, schema per service. |
 | Docker | Container technology used in project development and deployment workflows. | Containerization | Used with WSL2. |
 | WSL2 | Windows subsystem used to support the development environment. | Windows Subsystem for Linux 2 | Part of the local development setup. |
 | SENA ADSO | Academic program under which Guardian Escolar is developed. | Análisis y Desarrollo de Software | Cohort/ficha: 3145556. |

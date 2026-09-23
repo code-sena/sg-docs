@@ -1,190 +1,235 @@
 # System Architecture Overview
 
-> **What to fill in here:** The architectural view is the technical snapshot of the system.
-> It includes the C4 system and container diagram, service list, and architectural principles.
-> This document is created after the main ADRs and guides the implementation.
+> Technical snapshot of School Guardian: style, C4 views, service map, principles,
+> patterns, and cross-cutting concerns. Kept in sync with ADRs and the
+> microservices catalog.
+
+**Status:** Living document · **Last aligned:** 2026-09-22
+**Sources of truth:** [ADR register](./decisions/README.md) · [service catalog](../09-microservices/service-catalog.md)
 
 ---
 
 ## 1. Adopted architectural style
 
-**Style:** [Microservices / Microservices + Event-Driven / Modular Monolith / etc.]
+**Style:** **Microservices + Event-Driven** (polyglot services behind a single API Gateway).
 
-**Justification:** [Why this style for this project and these requirements]
+**Justification:**
+- Domain splits cleanly into bounded contexts (identity, fleet, routes, school, alerts…).
+- Teams/services can ship independently despite a small initial team (3).
+- Async events (boarding, GPS, alerts) fit real-time school-transport flows better
+  than monolith background jobs.
+- Polyglot stacks let each service use the best-fit runtime already known by the
+  team (C#, Java, Go) while sharing one SQL Server instance for cost (ADR-002).
 
-**Reference ADR:** [`ADR-001-architectural-style.md`](decisions/records/)
+**Edge:** clients → **Kong OSS :8000** → business services **:8080** (Docker DNS by service name).
 
----
+**In-service communication:** synchronous **gRPC** (ADR-005) + asynchronous **Kafka** (ADR-004).
 
-## 2. C4 Diagram — System Level (Context)
+**Reference ADRs:**
+- Communication: [ADR-004 Kafka](./decisions/records/ADR-004-kafka-message-broker.md), [ADR-005 gRPC](./decisions/records/ADR-005-grpc-inter-service-communication.md)
+- Edge: [ADR-006 API Gateway (Kong OSS)](./decisions/records/ADR-006-api-gateway.md)
+- Data: [ADR-002 Shared DB schema-per-service](./decisions/records/ADR-002-shared-database-monolithic-db.md)
+- Auth: [ADR-008 JWT RS256](./decisions/records/ADR-008-jwt-rs256-authentication.md)
 
-> Shows how the system fits in the world. External actors and external systems.
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        System [Name]                                │
-│                                                                     │
-│  ┌─────────────┐    ┌─────────────┐    ┌────────────────────────┐  │
-│  │ [Service A] │    │ [Service B] │    │ [Service C]            │  │
-│  │             │    │             │    │                        │  │
-│  │ Port: 3001  │    │ Port: 3002  │    │ Port: 3003             │  │
-│  └──────┬──────┘    └──────┬──────┘    └──────────┬─────────────┘  │
-│         │                  │                       │                │
-│         └──────────────────┴───────────────────────┘                │
-│                            │ Message Bus                             │
-└────────────────────────────│────────────────────────────────────────┘
-                             │
-                  ┌──────────┴──────────┐
-                  │                     │
-         ┌────────▼──────┐    ┌─────────▼──────┐
-         │ API Gateway   │    │ Admin Dashboard │
-         │               │    │                 │
-         └────────┬──────┘    └─────────────────┘
-                  │
-         ┌────────▼──────────────┐
-         │    External clients   │
-         │  (Web, Mobile, API)   │
-         └───────────────────────┘
-```
+> Note: legacy contexts describing a "modular ASP.NET Core monolith" refer to
+> the original codebase shape; the target and catalog state is 11 microservices
+> (see [clarifications](../00-governance/documentation-rules.md)).
 
 ---
 
-## 3. C4 Diagram — Container Level
-
-> Shows the processes, databases, and main communication channels.
-
-```
-Replace this block with the project-specific diagram.
-
-Recommended tools:
-- PlantUML (see 08-uml/diagrams/source/)
-- Mermaid (natively supported on GitHub)
-- draw.io / Lucidchart
-```
-
-**Mermaid example:**
+## 2. C4 — System context (Level 1)
 
 ```mermaid
-graph TB
-  subgraph "System [Name]"
-    GW[API Gateway<br/>:8080]
-    SA[Service A<br/>:3001]
-    SB[Service B<br/>:3002]
-    BUS[(Message Bus<br/>Kafka)]
-    DBS[(SQL Server<br/>shared instance)]
-  end
+flowchart LR
+  actorF["Family / Guardian<br/>(mobile)"]
+  actorD["Driver<br/>(mobile)"]
+  actorA["School Admin<br/>(web)"]
+  actorS["Super Admin<br/>(web)"]
+  actorG["GPS device / provider"]
 
-  WEB[Web App] --> GW
-  MOB[Mobile] --> GW
-  GW --> SA
-  GW --> SB
-  SA --> DBS
-  SB --> DBS
-  SA --> BUS
-  BUS --> SB
+  system["School Guardian<br/>School transport platform"]
+
+  extMail["Email / Push provider"]
+  extMap["Map / geocoding"]
+
+  actorF --> system
+  actorD --> system
+  actorA --> system
+  actorS --> system
+  actorG -->|"positions"| system
+  system --> extMail
+  system --> extMap
 ```
+
+**External actors:** families, drivers, administrators, super administrators, GPS providers.
+**External systems:** notification channels (email/push), mapping/geocoding (optional),
+identity documents (offline verification out of scope for MVP).
 
 ---
 
-## 4. Service catalog
+## 3. C4 — Container level (Level 2)
 
-| # | Service | Responsibility | Port | DB | Communication type |
-|---|---------|---------------|------|-----|-------------------|
-| 1 | api-gateway | Routing, auth, rate limiting | 8080 | Redis (cache) | HTTP Proxy |
-| 2 | iam-service | Registration, login, JWT tokens | 3001 | SQL Server (schema `identity`) | REST + Events |
-| 3 | [xxx-service] | [responsibility] | 300X | SQL Server (schema `[xxx]`) | [REST/Async] |
+```mermaid
+flowchart TB
+  web["Web SPA<br/>Angular 21"]
+  mob["Mobile app<br/>React + Expo"]
+  gw["API Gateway :8000<br/>Kong OSS · JWT · rate limit"]
 
-> All services share a single SQL Server instance, each with its own schema (see ADR-002).
-> Full detail per service in `09-microservices/service-catalog.md`
+  subgraph services["Microservices (shared SQL Server, schema per service)"]
+    iam["iam-service:8080<br/>Java + Spring Boot"]
+    um["user-management-service:8080<br/>C#"]
+    sch["school-service:8080<br/>C#"]
+    notif["notification-service:8080<br/>Go"]
+    bus["bus-service:8080<br/>C#"]
+    rt["route-service:8080<br/>C#"]
+    gps["gps-service:8080<br/>Java + Spring Boot"]
+    exc["exceptional-service:8080<br/>C#"]
+    aud["audit-service:8080<br/>C#"]
+    cfg["configuration-service:8080<br/>C#"]
+  end
+
+  kafka["Apache Kafka<br/>events"]
+  redis["Redis<br/>session cache / rate limit"]
+  db[("SQL Server<br/>schemas: Iam, UserManagement,<br/>School, Geographic, Notification,<br/>Bus, Route, Gps, Exceptional,<br/>Audit, Configuration")]
+
+  web --> gw
+  mob --> gw
+  gw --> iam & um & sch & notif & bus & rt & gps & exc & aud & cfg
+  gw --- redis
+  iam & notif & rt & gps & aud & cfg --> kafka
+  kafka --> notif & aud & cfg & rt & gps
+  services --> db
+```
+
+| Container | Responsibility | Notes |
+|-----------|----------------|-------|
+| Web SPA | Admin & super-admin UI | Angular 21 |
+| Mobile | Guardian/driver UX | React + Expo |
+| API Gateway | Single entry, JWT, routing, rate limit | Stateless + Redis |
+| 11 microservices | Bounded contexts | Polyglot; details in catalog |
+| Kafka | Async domain events | ADR-004 |
+| SQL Server | Persistence | One instance, schema per service (ADR-002) |
+| Redis | Ephemeral state | Tokens cache, rate limits |
+
+Full registry, ports, stacks: [`09-microservices/service-catalog.md`](../09-microservices/service-catalog.md).
+
+---
+
+## 4. Service catalog (summary)
+
+| # | Service | Stack | Schema | Port |
+|---|---------|-------|--------|------|
+| 01 | api-gateway (Kong OSS) | Kong OSS | — (Redis only) | **8000** |
+| 02 | iam-service | Java + Spring Boot | `Iam` | 8080 |
+| 03 | user-management-service | C# + ASP.NET | `UserManagement` | 8080 |
+| 04 | school-service | C# + ASP.NET | `School` + `Geographic` | 8080 |
+| 05 | notification-service | Go | `Notification` | 8080 |
+| 06 | bus-service | C# + ASP.NET | `Bus` | 8080 |
+| 07 | route-service | C# + ASP.NET | `Route` | 8080 |
+| 08 | gps-service | Java + Spring Boot | `Gps` | 8080 |
+| 09 | exceptional-service | C# + ASP.NET | `Exceptional` | 8080 |
+| 10 | audit-service | C# + ASP.NET | `Audit` | 8080 |
+| 11 | configuration-service | C# + ASP.NET | `Configuration` | 8080 |
+
+> **Count authority:** 11 services. Older ADR text mentioning "7 microservices"
+> predates the split and must not be used for capacity or routing math.
 
 ---
 
 ## 5. Architectural principles
 
-These principles guide the project's technical decisions. Before making an important decision,
-verify it is consistent with these principles.
-
 ### P1: API-First
-Design the API contract (OpenAPI) before implementing the service.
-Contracts are the source of truth for consumers.
+Contracts live in `07-api/contracts/openapi/` before implementation.
+Guidelines: [`07-api/guidelines.md`](../07-api/guidelines.md).
 
 ### P2: Shared Monolithic Database — Schema per Service
-A single SQL Server instance is shared by all microservices, but each service only owns
-and accesses its **own schema** (logical isolation). No service reads or writes another
-service's schema, and inter-service communication is always through API or events
-(never JOINs across schemas).
-
-> Deviation from the framework default "Database per Service", justified in
-> ADR-002. If the data volume or team grows, migrate gradually to separate
-> databases (Strangler Fig).
+One SQL Server instance, logical isolation per service, no cross-schema JOINs
+or FKs. Rules: [`09-microservices/service-boundary-rules.md`](../09-microservices/service-boundary-rules.md).
+Deviation from "database-per-service" is intentional and recorded in ADR-002.
 
 ### P3: Fail Fast, Recover Gracefully
-Detect errors early (validation at the edge). When an external service fails,
-use Circuit Breaker to prevent cascades. Always define a fallback.
+Validate at the edge; health endpoints; circuit breakers on gRPC; consumers
+idempotent; gateway returns 503 when critical upstreams are down.
 
 ### P4: Observability by Design
-From day 1: structured JSON logs, metrics with Prometheus,
-distributed traces with Jaeger/Zipkin. It is not optional or a story for "later".
+`X-Correlation-Id` end-to-end, structured logs, metrics + traces
+(`13-operations/observability.md`), RED/USE dashboards per service.
 
-### P5: [Additional principle name]
-[Description]
+### P5: Security by Default
+JWT RS256 at the gateway (ADR-008), RBAC deny-by-default, least-privilege DB
+logins per schema, secrets out of Git, audit trail for sensitive actions.
 
 ---
 
 ## 6. Adopted architectural patterns
 
-| Pattern | Adopted | Reference |
-|---------|---------|-----------|
-| API Gateway | Yes | `05-architecture/pattern-guide.md` |
-| Database per Service | No | ADR-002 (deviation: shared DB, schema per service) |
-| CQRS | No (review in Q3) | |
-| Event Sourcing | No | |
-| Circuit Breaker | Yes | ADR-00X |
-| Saga (choreographed) | Yes | ADR-00X |
-| Outbox Pattern | Yes | ADR-00X |
+| Pattern | Where used | ADR / guide |
+|---------|------------|-------------|
+| API Gateway (edge) | All client traffic | ADR-006 |
+| CQRS-lite (read models) | Dashboards aggregating events | pattern-guide |
+| Event-driven choreography (Kafka) | Boarding, alerts, audit ingest | ADR-004 |
+| Sync RPC (gRPC) | Service-to-service queries/commands | ADR-005 |
+| Saga / compensations | Multi-service assignments | service `events.md` |
+| Hexagonal (ports & adapters) | Java services (iam, gps) | [hexagonal-architecture.md](./hexagonal-architecture.md) |
+| Idempotent consumers | Kafka handlers | boundary rules |
+| Strangler Fig | Future monolith→service migrations | ADR-002 evolution path |
+
+Deeper catalogue: [pattern-guide.md](./pattern-guide.md).
 
 ---
 
 ## 7. Cross-cutting concerns
 
-Transversal concerns that apply to ALL services:
-
-| Concern | Adopted solution | Where it is configured |
-|---------|----------------|------------------------|
-| Authentication / Authorization | JWT + validation in API Gateway | `00-governance/security-policy.md` |
-| Logging | Structured JSON + Correlation ID | Shared logger in internal lib |
-| Tracing | OpenTelemetry → Jaeger | Middleware in each service |
-| Health Checks | GET /health (liveness) + GET /health/ready (readiness) | Service template |
-| Error format | Standard ErrorResponse | `07-api/contracts/openapi/_shared.yaml` |
-| Rate Limiting | At the API Gateway | Kong/NGINX configuration |
-| CORS | Configured in API Gateway | |
-| Circuit Breaker | Resiliency4j / opossum per service | Pattern in `pattern-guide.md` |
+| Concern | Approach |
+|---------|----------|
+| Authentication | JWT RS256 via gateway (ADR-008) — [auth doc](../07-api/authentication.md) |
+| Authorization | RBAC in `iam-service`; permissions in token |
+| Config | Env vars per compose; centralized later (config service for *business* settings) |
+| Logging | JSON structured + correlation id |
+| Tracing | OpenTelemetry-compatible spans across HTTP/gRPC/Kafka |
+| Migrations | Liquibase per service (ADR-009) |
+| API docs | **Scalar** UI over OpenAPI (ADR-007) — replaces Swagger UI |
+| Rate limiting | Gateway (Redis counters) |
+| Secrets | Environment / secret manager — never committed |
+| i18n | UI Spanish-first; EN/FR/PT planned (product i18n) |
 
 ---
 
 ## 8. Registered architectural technical debt
 
-| ID | Description | Impact | Priority | Target sprint |
-|----|-------------|--------|---------|--------------|
-| AT-001 | [description] | [high/medium/low] | [P1/P2/P3] | [Sprint X] |
-
-> See also: `15-project-control/technical-backlog.md`
+| Debt | Impact | Mitigation / next step |
+|------|--------|------------------------|
+| Host port 8080 shared by design (Docker DNS by service name) | Confusing when running outside compose | Document: always call services by container name on the Docker network; host mapping is per-service override only if needed |
+| Legacy "modular monolith" wording in UX/context docs | Confusion about deployables | Rewrite references to microservices catalog |
+| Legacy contract filenames vs canonical `iam-service` naming | Broken contract links | Canonical name `iam-service`; keep legacy aliases only as redirects until renamed |
+| Single shared SQL Server | No physical isolation | Schema guards + login-per-schema; revisit on scale |
+| OpenAPI coverage incomplete for services 03–11 | Contract drift | Generate from template per service (see `07-api/README.md`) |
+| ADR-003 still **Proposed** | Decision ambiguity on monolithic web/mobile client | Team acceptance pass → Accepted |
 
 ---
 
 ## 9. Planned evolution
 
-| Version | Architectural change | Motivation | Estimated date |
-|---------|---------------------|------------|----------------|
-| v2.0 | [e.g.: Migrate to gRPC for internal communication] | [Latency] | [Q4 2024] |
+1. **Complete contracts** for all 11 services + Scalar portal (ADR-007).
+2. **Observability baseline:** metrics, traces, SLOs (`13-operations/`).
+3. **Scale-out path:** if one schema dominates load → extract to own instance
+   (Strangler Fig, ADR-002).
+4. **Optional:** BFF for web/mobile aggregates if chatty composition appears.
+5. **Multi-tenant readiness:** school_id isolation review before first external
+   customer beyond pilot (Neiva, Huila).
 
 ---
 
 ## Key correlations
 
-- Domain bounded contexts → `02-domain/domain-map.md`
-- Specific decision ADRs → `05-architecture/decisions/`
-- Hexagonal architecture per service → `05-architecture/hexagonal-architecture.md`
-- Applied patterns → `05-architecture/pattern-guide.md`
-- Per-service detail → `09-microservices/service-catalog.md`
-- UML diagrams → `08-uml/`
+| Artifact | Path |
+|----------|------|
+| ADRs | `05-architecture/decisions/records/` |
+| Patterns | `05-architecture/pattern-guide.md` |
+| Hexagonal guide | `05-architecture/hexagonal-architecture.md` |
+| Service catalog | `09-microservices/service-catalog.md` |
+| Boundary rules | `09-microservices/service-boundary-rules.md` |
+| Data ownership | `09-microservices/data-ownership-matrix.md` |
+| OpenAPI | `07-api/contracts/openapi/` |
+| C4 sources | `08-uml/diagrams/source/` |
+| Domain map | `02-domain/domain-map.md` |

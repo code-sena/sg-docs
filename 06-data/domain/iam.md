@@ -197,7 +197,6 @@ ALTER TABLE Profile DROP COLUMN PasswordHash;
 | Engine | Use when... | Avoid when... |
 |--------|------------|---------------|
 | **SQL Server** | ACID transactions, RBAC relationships, and shared schemas | Ephemeral counters or unstructured event streams |
-| **PostgreSQL** | ACID transactions, complex relationships, JSONB, full-text search | Deeply nested documents |
 | **MongoDB** | Flexible documents and catalog-style data | Complex transactions across collections |
 | **Redis** | Cache, sessions, TTL state, and counters | Source of truth for identity or authorization |
 | **Elasticsearch** | Full-text search, analytics, and logs | Authoritative identity data |

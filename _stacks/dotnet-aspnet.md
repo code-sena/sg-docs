@@ -73,7 +73,7 @@ dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer   # JWT tokens
 dotnet add package Swashbuckle.AspNetCore                          # Swagger UI + API docs
 
 # Data infrastructure — Entity Framework Core
-dotnet add package Microsoft.EntityFrameworkCore.SqlServer          # or Npgsql provider
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer          # or Microsoft.Data.SqlClient provider
 dotnet add package Microsoft.EntityFrameworkCore.Design             # migrations tooling
 
 # Validation (primary adapter)

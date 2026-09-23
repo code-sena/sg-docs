@@ -83,7 +83,7 @@ Scenario 2: Invalid credentials (error case)
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] RBAC matrix defined and validated by the team
@@ -138,7 +138,7 @@ Scenario 2: Duplicate route name (error case)
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] School/campus/city master data available (school-service)
@@ -193,7 +193,7 @@ Scenario 2: Student alights the bus (happy path)
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] In-app push notification channel configured and tested on a real device
@@ -246,7 +246,7 @@ Scenario 2: Bus without GPS signal (error case)
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Google Maps API credentials configured and working
@@ -299,7 +299,7 @@ Scenario 2: Student already linked to another guardian account (error case)
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Link history (audit) recorded when a student is assigned
@@ -354,7 +354,7 @@ Scenario 2: Deactivate an existing account
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Initial password flow (generation/secure delivery) defined
@@ -407,7 +407,7 @@ Scenario 2: Bus resumes before the threshold (no alert)
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Stop time threshold configurable per route, not hard-coded
@@ -461,7 +461,7 @@ Scenario 2: Student not assigned to this route (error case)
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] QR scanning tested on real devices in low-light conditions
@@ -516,7 +516,7 @@ Scenario 2: Scanning without a previous boarding (error case)
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Validation of active boarding before registering the alighting
@@ -569,7 +569,7 @@ Scenario 2: Driver without an assigned route (error case)
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Stops sorted by itinerary order, not by creation order
@@ -628,7 +628,7 @@ Scenario 3: Start a second concurrent trip (error case)
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Block of concurrent active trips per bus
@@ -681,7 +681,7 @@ Scenario 2: Report outside an active trip (error case)
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Configurable incident types (not hard-coded)
@@ -734,7 +734,7 @@ Scenario 2: Child without an assigned route (error case)
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Authorization check that the student is linked to the requesting guardian
@@ -787,7 +787,7 @@ Scenario 2: QR not available (error case)
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] QR rotation/expiration policy defined and implemented
@@ -840,7 +840,7 @@ Scenario 2: Reassign a deactivated bus to a route that already has a bus (error 
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Unique plate constraint enforced at the data level
@@ -895,7 +895,7 @@ Scenario 2: Driver already responsible for another bus (error case)
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] 1:1 invariant: a driver is responsible for a single bus at a time
@@ -948,7 +948,7 @@ Scenario 2: Stop that does not belong to the route (error case)
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Validation that stops belong to the route
@@ -1002,7 +1002,7 @@ Scenario 2: The preference persists (happy path)
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] Theme contrast passes WCAG accessibility checks
@@ -1055,7 +1055,7 @@ Scenario 2: Default language on first use (happy path)
 **Definition of Done (DoD):**
 
 > This HU can only be closed when it meets the team's full DoD.
-> See: [`00-governance/definition-of-done.md`](../../00-governance/definition-of-done.md)
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] All four language dictionaries reviewed by a native speaker

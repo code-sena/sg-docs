@@ -89,7 +89,7 @@ pydantic-settings = "^2.x"   # For reading typed environment variables
 
 # Persistence (secondary adapter) — choose based on the project's engine
 sqlalchemy = {extras = ["asyncio"], version = "^2.x"}
-asyncpg = "^0.29"            # Async driver for PostgreSQL
+pyodbc = "^5.1"              # SQL Server driver (ODBC)
 # motor = "^3.x"             # If you use MongoDB
 
 # Migrations
@@ -103,7 +103,7 @@ structlog = "^24.x"          # Structured logging
 pytest = "^8.x"
 pytest-asyncio = "^0.23"
 httpx = "^0.27"              # HTTP client for integration tests with FastAPI
-testcontainers = {extras = ["postgresql"], version = "^4.x"}
+testcontainers = {extras = ["mssqlserver"], version = "^4.x"}
 ```
 
 ---
@@ -222,7 +222,7 @@ def test_creates_and_persists_appointment():
 poetry install
 
 # Run locally
-uvicorn main:app --reload --port 8081
+uvicorn main:app --reload --port 8080
 
 # Tests
 pytest                           # all tests

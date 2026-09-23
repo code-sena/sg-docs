@@ -110,7 +110,6 @@ ALTER TABLE SecuritySettings DROP COLUMN NameSettings;
 | Engine | Use when... | Avoid when... |
 |--------|------------|---------------|
 | **SQL Server** | Durable settings, password policies, and transactional configuration | Ephemeral counters or cache-only state |
-| **PostgreSQL** | ACID transactions, complex relationships, JSONB, full-text search | Deeply nested documents |
 | **MongoDB** | Flexible configuration documents | Complex transactions across collections |
 | **Redis** | Cache, sessions, TTL state, and counters | Authoritative security configuration |
 | **Elasticsearch** | Search and analytics over configuration history | Source of truth for settings |

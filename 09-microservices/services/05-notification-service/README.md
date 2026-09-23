@@ -1,58 +1,56 @@
 # Notification
 
-> Manages boarding/alighting events and alerts (with their types and recipients).
-
----
-
-## Responsibility
-
-Handles boarding and alighting events reported during route executions, plus alerts, their types, and recipient read tracking.
-
----
+> Boarding/alighting events, alerts, alert types, and recipients.
 
 ## Location in the architecture
 
 | Field | Value |
 |-------|-------|
 | Number in catalog | 05 |
-| Local port | 8084 |
-| Repository | [Repo URL] |
-| DB engine | SQL Server |
-| Status | In development |
-
----
+| Local port | 8080 |
+| Stack | Go |
+| SQL Server schema | `Notification` |
+| Repository | One folder per service under `backend/` (reached by Docker DNS name, not by host path) |
+| Communicates with | iam-service (profile identity), route-service (executions/stops), bus-service (fleet reference) |
+| Consumed by | api-gateway (all client traffic) |
 
 ## Responsibilities (what this service DOES)
 
-- Record boarding events (student boards bus)
-- Record alighting events (student leaves bus)
-- Alert management (CRUD)
-- Alert type definitions
-- Alert recipient tracking (read status)
+- Record boarding/alighting scans (QR)
+- Create and fan-out alerts
+- Manage alert types and recipient lists
+- Consume route/gps events to trigger notifications
 
 ## Out of scope (what it does NOT do)
 
-- Route scheduling — delegated to Route service
-- Fleet management — delegated to Bus service
+- Route execution ownership → route-service
+- Device position storage → gps-service
+- User contact data → user-management/iam
 
----
+## Main endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/boarding` | Register boarding/alighting |
+| GET | `/boarding` | List boarding events |
+| GET | `/alerts` | List alerts |
+| POST | `/alerts` | Create alert |
+| PATCH | `/alerts/{id}/status` | Update alert status |
+| GET | `/alert-types` | List alert types |
+| GET | `/recipients` | List recipients |
 
 ## How to run it locally
 
 ```bash
-# From the project root
 docker compose up -d notification-service
-
-# Verify
-curl http://localhost:8084/health
+curl http://localhost:8080/health
 ```
-
----
 
 ## Related documents
 
-- [data-model.md](./data-model.md) — DB schema
-- [events.md](./events.md) — Events it publishes and consumes
-- [decisions.md](./decisions.md) — Internal design decisions
-- [runbook.md](./runbook.md) — Operation in production
+- [data-model.md](./data-model.md) — schema `Notification`; tables: Boarding, Alert, AlertType, AlertRecipient
+- [events.md](./events.md) — publishes/consumes
+- [decisions.md](./decisions.md) — service-level decisions
+- [runbook.md](./runbook.md) — production operations
 - [API Contract](../../../07-api/contracts/openapi/notification-service.yaml)
+- Catalog → `09-microservices/service-catalog.md`

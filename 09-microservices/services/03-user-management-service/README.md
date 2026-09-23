@@ -1,57 +1,58 @@
 # User Management
 
-> Manages person data, family relationships, and driver licenses.
-
----
-
-## Responsibility
-
-Handles personal information (name, ID, contact), family groupings, family member relationships, and driver license records for bus drivers.
-
----
+> Persons, families, family members, and driver licenses.
 
 ## Location in the architecture
 
 | Field | Value |
 |-------|-------|
 | Number in catalog | 03 |
-| Local port | 8082 |
-| Repository | [Repo URL] |
-| DB engine | SQL Server (schema `UserManagement`) |
-| Status | In development |
-
----
+| Local port | 8080 |
+| Stack | C# + ASP.NET |
+| SQL Server schema | `UserManagement` |
+| Repository | One folder per service under `backend/` (reached by Docker DNS name, not by host path) |
+| Communicates with | iam-service (resolve Profile identity) |
+| Consumed by | api-gateway (all client traffic) |
 
 ## Responsibilities (what this service DOES)
 
-- Person data management (CRUD)
-- Family group management
-- Family member relationships (parent/student)
-- Driver license records
+- CRUD for persons (students, guardians, drivers, admins)
+- Manage families and family-member links
+- Manage driver licenses
+- Emit user.* events for downstream projections
 
 ## Out of scope (what it does NOT do)
 
-- Authentication and profiles — delegated to IAM
-- School data — delegated to School service
+- Credentials/roles/sessions → iam-service
+- Route assignments → route-service / bus-service
 
----
+## Main endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/persons` | List persons |
+| POST | `/persons` | Create person |
+| GET | `/persons/{id}` | Get person |
+| PUT | `/persons/{id}` | Update person |
+| DELETE | `/persons/{id}` | Soft delete person |
+| GET | `/families` | List families |
+| POST | `/families` | Create family |
+| POST | `/families/{id}/members` | Link member to family |
+| GET | `/driver-licenses` | List driver licenses |
+| POST | `/driver-licenses` | Create driver license |
 
 ## How to run it locally
 
 ```bash
-# From the project root
 docker compose up -d user-management-service
-
-# Verify
-curl http://localhost:8082/health
+curl http://localhost:8080/health
 ```
-
----
 
 ## Related documents
 
-- [data-model.md](./data-model.md) — DB schema
-- [events.md](./events.md) — Events it publishes and consumes
-- [decisions.md](./decisions.md) — Internal design decisions
-- [runbook.md](./runbook.md) — Operation in production
+- [data-model.md](./data-model.md) — schema `UserManagement`; tables: Person, Family, FamilyMember, DriverLicense
+- [events.md](./events.md) — publishes/consumes
+- [decisions.md](./decisions.md) — service-level decisions
+- [runbook.md](./runbook.md) — production operations
 - [API Contract](../../../07-api/contracts/openapi/user-management-service.yaml)
+- Catalog → `09-microservices/service-catalog.md`

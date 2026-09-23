@@ -92,12 +92,12 @@ it('total should be the sum of items × quantity', () => {
 
 ```typescript
 // tests/integration/setup.ts
-import { PostgreSqlContainer } from '@testcontainers/postgresql';
+import { MsSqlContainer } from '@testcontainers/mssqlserver';
 
-let pgContainer: StartedPostgreSqlContainer;
+let pgContainer: StartedMsSqlContainer;
 
 beforeAll(async () => {
-  pgContainer = await new PostgreSqlContainer('postgres:15')
+  pgContainer = await new MsSqlContainer('postgres:15')
     .withDatabase('test_db')
     .withUsername('test')
     .withPassword('test')
@@ -169,7 +169,7 @@ it('POST /orders returns 201 with the correct schema', async () => {
 
 | # | Flow | Services involved |
 |---|------|------------------|
-| 1 | User registration and login | auth-service |
+| 1 | User registration and login | iam-service |
 | 2 | [Main business flow] | [services] |
 | 3 | [Critical error flow] | [services] |
 

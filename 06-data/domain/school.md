@@ -150,7 +150,6 @@ ALTER TABLE School DROP COLUMN Name;
 | Engine | Use when... | Avoid when... |
 |--------|------------|---------------|
 | **SQL Server** | ACID transactions, school hierarchy, and geographic references | Ephemeral counters or unstructured documents |
-| **PostgreSQL** | ACID transactions, complex relationships, JSONB, full-text search | Deeply nested documents |
 | **MongoDB** | Flexible documents and catalog-style data | Complex transactions across collections |
 | **Redis** | Cache, sessions, TTL state, and counters | Source of truth for schools or enrollments |
 | **Elasticsearch** | Full-text search, analytics, and logs | Authoritative school data |
