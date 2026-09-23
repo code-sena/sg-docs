@@ -2,7 +2,7 @@
 
 > **What to fill in here:** The registry of all system diagrams.
 > Diagrams go in `08-uml/diagrams/source/` as PlantUML or Mermaid files.
-> Exported renders go in `08-uml/diagrams/rendered/`.
+> Exported renders go in `08-uml/diagrams/exports/`.
 
 ---
 
@@ -28,7 +28,7 @@
 Examples:
   c1-system-context.puml
   c2-container-diagram.puml
-  c3-auth-service.puml
+  c3-iam-service.puml
   seq-create-order.puml
   erd-orders-service.mmd
   state-order-lifecycle.puml
@@ -42,15 +42,15 @@ Examples:
 
 | ID | Name | Type | Tool | Source file | Description |
 |----|------|------|------|-------------|-------------|
-| C4-01 | System Context | C4 L1 | PlantUML | `source/c1-system-context.puml` | The system and its external actors |
-| C4-02 | Container Diagram | C4 L2 | PlantUML | `source/c2-container-diagram.puml` | All services and DBs |
-| C4-03 | [Service A] Components | C4 L3 | PlantUML | `source/c3-service-a.puml` | Internal components of the service |
+| C4-01 | System Context | C4 L1 | PlantUML | `source/c1-system-context.puml` 📝 *(not exported yet — create under `diagrams/source/`)* | The system and its external actors |
+| C4-02 | Container Diagram | C4 L2 | PlantUML | `source/c2-container-diagram.puml` 📝 *(not exported yet — create under `diagrams/source/`)* | All services and DBs |
+| C4-03 | [Service A] Components | C4 L3 | PlantUML | `source/c3-service-a.puml` 📝 *(not exported yet — create under `diagrams/source/`)* | Internal components of the service |
 
 ### Sequence diagrams
 
 | ID | Name | Tool | Source file | Description |
 |----|------|------|-------------|-------------|
-| SEQ-01 | Login flow | PlantUML | `source/seq-login.puml` | Registration → Login → JWT |
+| SEQ-01 | Login flow | PlantUML | `source/seq-login.puml` 📝 *(not exported yet — create under `diagrams/source/`)* | Registration → Login → JWT |
 | SEQ-02 | [Main flow] | PlantUML | `source/seq-[name].puml` | [Description] |
 | SEQ-03 | [Error flow] | PlantUML | `source/seq-[name]-error.puml` | [Error scenario] |
 
@@ -58,14 +58,14 @@ Examples:
 
 | ID | Name | Tool | Source file | Description |
 |----|------|------|-------------|-------------|
-| ST-01 | Order lifecycle | PlantUML | `source/state-order.puml` | Order states and transitions |
+| ST-01 | Order lifecycle | PlantUML | `source/state-order.puml` 📝 *(not exported yet — create under `diagrams/source/`)* | Order states and transitions |
 
 ### ER diagrams (data)
 
 | ID | Name | Tool | Source file | Service |
 |----|------|------|-------------|---------|
-| ERD-01 | Orders DB | Mermaid | `source/erd-orders.mmd` | order-service |
-| ERD-02 | Auth DB | Mermaid | `source/erd-auth.mmd` | auth-service |
+| ERD-01 | Orders DB | Mermaid | `source/erd-orders.mmd` 📝 *(not exported yet — create under `diagrams/source/`)* | order-service |
+| ERD-02 | Auth DB | Mermaid | `source/erd-auth.mmd` 📝 *(not exported yet — create under `diagrams/source/`)* | iam-service |
 
 ---
 
@@ -175,7 +175,7 @@ find 08-uml/diagrams/source -name "*.puml" -exec plantuml -tsvg -o ../rendered {
 
 # Or with Docker (without installing PlantUML locally)
 docker run --rm -v $(pwd):/data ghcr.io/plantuml/plantuml:latest \
-  -tsvg -o /data/08-uml/diagrams/rendered /data/08-uml/diagrams/source/*.puml
+  -tsvg -o /data/08-uml/diagrams/exports /data/08-uml/diagrams/source/*.puml
 ```
 
 ---
