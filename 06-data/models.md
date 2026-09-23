@@ -51,18 +51,20 @@ This facilitates auditing and recovery.
 -- Tables:      PascalCase, plural              → Orders, OrderItems, Users
 -- Columns:     PascalCase, descriptive         → UnitPrice, delivery_date
 -- FKs:         [referenced_table]Id            → CustomerId, ProductId
--- Indexes:     IX_<Table>_<Columns>            → IX_Order_CustomerID
+-- Indexes:     IDX_<Table>_<Columns>           → IDX_Order_CustomerID
 -- DATETIME2:   
 ```
 
 ---
 
+
 ## Service: [service-name]
 
-**DB Engine:** PostgreSQL 15 / MongoDB 7 / Redis 7 — [justification for the choice]
+**Database:** [schema_name]
 
 **Engine justification:**
-- [Why this engine for this service. E.g.: "PostgreSQL for ACID support in financial transactions"]
+- [Why this engine for this service. E.g.: "SQL Server — shared instance with schema isola
+tion per ADR-002"]
 - [Which engine features are used: JSONB, full-text search, geo, etc.]
 
 ### Table: [table_name]
@@ -71,69 +73,40 @@ This facilitates auditing and recovery.
 
 ```sql
 CREATE TABLE [table_name] (
-  id              UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
-  
-  -- Business fields
-  [field1]        [TYPE]      NOT NULL,
-  [field2]        [TYPE],
-  [field3]        [TYPE]      NOT NULL DEFAULT [value],
-  
-  -- Relationships
-  [reference]_id  UNIQUEIDENTIFIER REFERENCES [referenced_table](id) ON DELETE RESTRICT,
-  
-  -- Status fields
-  status          VARCHAR(50) NOT NULL DEFAULT 'ACTIVE'
-                  CHECK (status IN ('ACTIVE', 'INACTIVE', 'CANCELLED')),
-  
-  -- Audit (in all tables)
-  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  deleted_at      TIMESTAMPTZ,
-  created_by      UNIQUEIDENTIFIER,
-  updated_by      UNIQUEIDENTIFIER
+    -- ...
 );
 
--- Indexes
 CREATE INDEX idx_[table]_[field] ON [table_name] ([field]);
 CREATE INDEX idx_[table]_deleted ON [table_name] (deleted_at) WHERE deleted_at IS NULL;
--- For frequent searches:
+-- Partial / filtered index when useful:
 CREATE INDEX idx_[table]_[search_field] ON [table_name] ([search_field]);
 ```
 
 **Data dictionary:**
 
-| Column | Type | Description | Example |
-|--------|------|-------------|---------|
-| id | UNIQUEIDENTIFIER | Auto-generated unique identifier | `550e8400-...` |
-| [field1] | [TYPE] | [Business description] | [Example] |
-| status | VARCHAR(50) | Lifecycle status | `ACTIVE` |
-| created_at | TIMESTAMPTZ | When the record was created | `2024-01-15T10:30:00Z` |
-| deleted_at | TIMESTAMPTZ | NULL = active; with value = deleted | `NULL` |
+| Column | Type | Nullable | Description |
+|--------|------|----------|-------------|
+| id | UUID | NO | PK |
+| ... | ... | ... | ... |
 
 **Modeling decisions:**
+
 1. [Why field X is NOT NULL and not nullable]
 2. [Why soft delete is used instead of hard delete]
 3. [Why the status field has that set of values]
 
----
-
 ### Table: [related_table]
+
+**Purpose:** [What this table records — relationships, lookup, child rows]
 
 ```sql
 CREATE TABLE [related_table] (
-  id              UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
-  [principal]_id  UNIQUEIDENTIFIER NOT NULL REFERENCES [principal_table](id) ON DELETE CASCADE,
-  
-  -- Fields
-  [field]         [TYPE]      NOT NULL,
-  
-  -- Audit
-  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  deleted_at      TIMESTAMPTZ
+    id          UUID PRIMARY KEY,
+    [table_name]_id UUID NOT NULL REFERENCES [table_name](id),
+    -- ...
 );
 
-CREATE INDEX idx_[related_table]_[principal]_id ON [related_table] ([principal]_id);
+CREATE INDEX idx_[related]_[table_name] ON [related_table]([table_name]_id);
 ```
 
 ---
@@ -145,49 +118,29 @@ CREATE INDEX idx_[related_table]_[principal]_id ON [related_table] ([principal]_
 **File naming convention:**
 
 ```
-V{version_number}__{snake_case_description}.sql
-
-Examples:
-  V001__create_orders_table.sql
-  V002__add_status_to_orders.sql
-  V003__create_index_orders_customer_id.sql
+V1__create_orders.sql
+V2__add_order_status.sql
 ```
 
 **Migration rules:**
 
-```
-✓ Migrations are ALWAYS forward-only
-✓ One migration per logical change
-✓ Seed data goes in separate migrations with prefix S: S001__seed_...
-✗ Never modify a migration already executed in any environment
-✗ Never do DROP COLUMN / DROP TABLE in a migration if there is code in production that uses it
-    (process: 1-deprecate in code → 2-cleanup migration in the next release)
-```
+1. Migrations are immutable once applied in shared environments.
+2. Never edit a deployed changeset body — add a new version.
+3. Prefer expand → backfill → contract for breaking changes.
+4. Every schema change ships with the owning service (Liquibase under `database/ms-*-db` when following ADR-009).
 
 **Compatible schema changes (non-breaking):**
 
-```sql
--- Add nullable column → always safe
-ALTER TABLE orders ADD COLUMN notes TEXT;
-
--- Add NOT NULL column with DEFAULT → safe if DEFAULT is valid
-ALTER TABLE orders ADD COLUMN priority VARCHAR(20) NOT NULL DEFAULT 'NORMAL';
-
--- Create new index → safe (in production use CONCURRENTLY)
-CREATE INDEX CONCURRENTLY idx_orders_date ON orders (created_at);
-```
+- Add nullable column
+- Add table
+- Add index
+- Widen type carefully (locks / duration)
 
 **Incompatible changes (require 2-phase migration):**
 
-```sql
--- Rename column → 2 phases:
--- Phase 1 (release N): Add new column, copy data, update code to use both
-ALTER TABLE orders ADD COLUMN delivery_date TIMESTAMPTZ;
-UPDATE orders SET delivery_date = fecha_entrega;
-
--- Phase 2 (release N+1): Remove old column (code no longer uses it)
-ALTER TABLE orders DROP COLUMN fecha_entrega;
-```
+- Rename / drop column still read by running containers
+- Type change that old code cannot parse
+- Split table with dual-write window
 
 ---
 
@@ -195,45 +148,38 @@ ALTER TABLE orders DROP COLUMN fecha_entrega;
 
 | Engine | Use when... | Avoid when... |
 |--------|------------|---------------|
-| **PostgreSQL** | ACID transactions, complex relationships, JSONB, full-text | Deeply nested documents, graphs |
-| **MongoDB** | Flexible documents, product catalogs, catalogs | Complex transactions across collections |
-| **Redis** | Cache, sessions, lightweight queues, counters | Source of truth, critical data |
-| **Elasticsearch** | Full-text search, analytics, logs | Source of truth (it's an index, not a DB) |
-| **InfluxDB / TimescaleDB** | Time series, metrics, IoT | Transactional business data |
+| **SQL Server** | ACID transactions, RBAC relationships, and shared schemas | Ephemeral counters or unstructured event streams |
+| **MongoDB** | Flexible documents and catalog-style data | Complex transactions across collections |
+| **Redis** | Cache, sessions, TTL state, and counters | Source of truth for identity or authorization |
+| **Elasticsearch** | Full-text search, analytics, and logs | Authoritative identity data |
 
 ---
 
 ## Relationship diagram (per service)
 
-```
-Replace with an ER diagram of the service using your preferred tool's notation.
+Use Mermaid ER or PlantUML; export under `08-uml/diagrams/`.
 
-Mermaid example:
-\```mermaid
+```mermaid
 erDiagram
-    ORDERS ||--o{ ORDER_ITEMS : contains
-    ORDERS {
-        uniqueidentifier id PK
-        uniqueidentifier customer_id FK
-        varchar status
-        decimal total
-        timestamptz created_at
+    [table_name] ||--o{ [related_table] : has
+    [table_name] {
+        UUID id PK
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ deleted_at
     }
-    ORDER_ITEMS {
-        uniqueidentifier id PK
-        uniqueidentifier order_id FK
-        uniqueidentifier product_id FK
-        integer quantity
-        decimal unit_price
-    }
-\```
 ```
 
 ---
 
 ## Correlations
 
-- Domain entities that map to these tables → `02-domain/entities-and-rules.md`
-- Saga and Outbox pattern for distributed consistency → `05-architecture/pattern-guide.md`
-- Data for each service in detail → `09-microservices/services/XX/data-model.md`
-- How data is accessed via API → `07-api/contracts/openapi/`
+| Document | Relationship |
+|----------|--------------|
+| `domain/*.md` | Filled model **per schema** (copy structure from this scaffold) |
+| `data-dictionary.md` | Ambiguous / PII field meanings |
+| `modeling-conventions.md` | Naming, keys, timestamps |
+| `normalization-assessment.md` | Intentional denormalization |
+| `migration-strategy.md` | Liquibase / expand-contract |
+| `07-api/contracts/` | What each service exposes |
+| `08-uml/` | ER / sequence diagrams |
+| `09-microservices/services/*/data-model.md` | Service-owned summary |

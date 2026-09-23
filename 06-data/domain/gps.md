@@ -114,7 +114,6 @@ ALTER TABLE GpsLocation DROP COLUMN DateTime;
 | Engine | Use when... | Avoid when... |
 |--------|------------|---------------|
 | **SQL Server** | Durable device registry and relational position history | Extremely high-volume time series without partitioning |
-| **PostgreSQL** | ACID transactions, complex relationships, JSONB, full-text search | Deeply nested documents |
 | **MongoDB** | Flexible telemetry documents and catalogs | Complex transactions across collections |
 | **Redis** | Latest-position cache, TTL state, and counters | Durable location history |
 | **Elasticsearch** | Search and analytics over operational telemetry | Authoritative device state |

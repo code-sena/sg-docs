@@ -116,7 +116,6 @@ ALTER TABLE ExceptionalDriverUsage DROP COLUMN DateTime;
 | Engine | Use when... | Avoid when... |
 |--------|------------|---------------|
 | **SQL Server** | ACID exception records and indexed operational references | Ephemeral counters or unstructured documents |
-| **PostgreSQL** | ACID transactions, complex relationships, JSONB, full-text search | Deeply nested documents |
 | **MongoDB** | Flexible exception documents | Complex transactions across collections |
 | **Redis** | Cache, sessions, TTL state, and counters | Authoritative exception history |
 | **Elasticsearch** | Search, analytics, and operational logs | Source of truth for exceptions |

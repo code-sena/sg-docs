@@ -117,7 +117,6 @@ ALTER TABLE Audit DROP COLUMN Date;
 | Engine | Use when... | Avoid when... |
 |--------|------------|---------------|
 | **SQL Server** | Durable append-only audit evidence and indexed investigations | Ephemeral counters or cache-only state |
-| **PostgreSQL** | ACID transactions, complex relationships, JSONB, full-text search | Deeply nested documents |
 | **MongoDB** | Flexible log documents and catalogs | Complex transactions across collections |
 | **Redis** | Cache, sessions, TTL state, and counters | Durable audit evidence |
 | **Elasticsearch** | Full-text search, analytics, and log exploration | Authoritative audit storage |
