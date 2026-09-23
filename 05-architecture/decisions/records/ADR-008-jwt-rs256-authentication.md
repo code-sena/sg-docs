@@ -2,7 +2,7 @@
 
 - **ID:** ADR-008
 - **Date:** 2026-09-08
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authors:** [Team]
 
 ---
@@ -25,8 +25,8 @@ School Guardian needs to authenticate users (parents, drivers, administrators) a
 **We decided:** to use **JWT with RS256 algorithm** (RSA signature) for authentication and authorization.
 
 **Justification:**
-- RS256 uses a key pair (public/private): only auth-service holds the private key, all others validate with the public key — no shared secrets.
-- Stateless validation: the API Gateway and each service validate the JWT locally without calling auth-service.
+- RS256 uses a key pair (public/private): only iam-service holds the private key, all others validate with the public key — no shared secrets.
+- Stateless validation: the API Gateway and each service validate the JWT locally without calling iam-service.
 - Native support across all stacks: `System.IdentityModel.Tokens.Jwt` (C#), `jwt-go` (Go), `java-jwt` (Java).
 - The payload carries useful claims: `sub` (user ID), `role`, `permissions`, `exp`.
 - JWKS endpoint (`/.well-known/jwks.json`) enables key rotation without redeploy.
@@ -48,7 +48,7 @@ School Guardian needs to authenticate users (parents, drivers, administrators) a
 
 ```
 1. Client → POST /auth/login (credentials)
-2. auth-service → generates JWT (RS256) + refresh token
+2. iam-service → generates JWT (RS256) + refresh token
 3. Client → sends JWT in Authorization: Bearer <token>
 4. API Gateway → validates RSA signature, claims, exp → allows or rejects
 5. API Gateway → forwards with headers: X-User-Id, X-User-Role, X-Correlation-Id
@@ -83,11 +83,11 @@ School Guardian needs to authenticate users (parents, drivers, administrators) a
 - Tokens are not immediately invalidable on logout (mitigated with short TTL + Redis blacklist for refresh tokens).
 
 **Impact on the system:**
-- Affected services: auth-service (generates tokens), API Gateway (validates), all services (read claims).
+- Affected services: iam-service (generates tokens), API Gateway (validates), all services (read claims).
 - Documents that must be updated:
   - `05-architecture/overview.md` (auth flow)
-  - `09-microservices/service-catalog.md` (auth-service detail)
-  - `07-api/contracts/openapi/auth-service.yaml` (JWT endpoints)
+  - `09-microservices/service-catalog.md` (iam-service detail)
+  - `07-api/contracts/openapi/iam-service.yaml` (JWT endpoints)
   - `00-governance/security-policy.md` (auth strategy)
 
 ---
@@ -106,4 +106,4 @@ School Guardian needs to authenticate users (parents, drivers, administrators) a
 
 - JWT spec: https://datatracker.ietf.org/doc/html/rfc7519
 - JWKS: https://datatracker.ietf.org/doc/html/rfc7517
-- Related to: ADR-006 (API Gateway validates JWT), ADR-002 (shared DB), `07-api/contracts/openapi/auth-service.yaml`
+- Related to: ADR-006 (API Gateway validates JWT), ADR-002 (shared DB), `07-api/contracts/openapi/iam-service.yaml`

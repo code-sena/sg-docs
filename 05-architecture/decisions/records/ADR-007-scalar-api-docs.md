@@ -2,7 +2,7 @@
 
 - **ID:** ADR-007
 - **Date:** 2026-09-08
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authors:** [Team]
 
 ---
@@ -10,7 +10,7 @@
 ## Context
 
 School Guardian has OpenAPI contracts defined in `07-api/contracts/openapi/` for the API Gateway
-and auth-service. We need an **interactive documentation UI** where developers and testers can
+and iam-service. We need an **interactive documentation UI** where developers and testers can
 explore endpoints, read schemas, and execute live requests against the API. The OpenAPI spec
 already exists (YAML files); we need to choose the rendering/testing tool that displays it.
 

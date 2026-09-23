@@ -175,7 +175,7 @@ export class OrderController {
 
 ### Secondary Adapter — Repository
 
-The repository implements the driven port. The domain does not know PostgreSQL exists.
+The repository implements the driven port. The domain does not know SQL Server exists.
 
 ```typescript
 // src/infrastructure/adapters/out/persistence/OrderRepositoryImpl.ts
