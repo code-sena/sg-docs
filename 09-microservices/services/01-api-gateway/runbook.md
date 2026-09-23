@@ -1,92 +1,92 @@
 # Runbook — API Gateway
 
-> Procedimientos de operación para quien esté en guardia.
-> Cada sección es ejecutable sin contexto adicional.
+> Operations procedures for whoever is on call.
+> Each section is executable without extra context.
 
-**Servicio:** api-gateway
-**Puerto local:** 8080
-**Versión:** 1.0
-**Última actualización:** [YYYY-MM-DD]
+**Service:** api-gateway  
+**Local port:** 8000  
+**Version:** 1.0  
+**Last updated:** 2026-09-22
 
 ---
 
-## 1. Información rápida
+## 1. Quick info
 
-| Campo | Valor |
+| Field | Value |
 |-------|-------|
-| Puerto local | 8080 |
-| URL producción | `https://api.[dominio]/` |
-| URL staging | `https://staging.api.[dominio]/` |
-| Dashboard Grafana | [URL del panel de gateway] |
-| Canal de alertas | [#alerts] |
-| Escalamiento | [Tech Lead — contacto] |
-| RTO objetivo | 5 min (es la puerta de entrada — P0 inmediato) |
-| RPO objetivo | N/A (stateless) |
+| Local port | **8000** (Kong proxy) |
+| Production URL | `https://api.[domain]/` |
+| Staging URL | `https://staging.api.[domain]/` |
+| Grafana dashboard | [Gateway dashboard URL] |
+| Alerts channel | [#alerts] |
+| Escalation | [Tech Lead — contact] |
+| Target RTO | 5 min (public entry point — immediate P0) |
+| Target RPO | N/A (stateless) |
 
 ---
 
-## 2. Verificar salud
+## 2. Health check
 
 ```bash
-# Health check público (no requiere autenticación)
-curl https://api.[dominio]/health
+# Public health check (no auth required)
+curl http://localhost:8000/health  # Kong
 
-# Respuesta esperada:
+# Expected response:
 # {"status": "ok", "timestamp": "2024-01-15T10:30:00Z"}
 
-# Si hay problemas, verificar los upstreams:
-curl -H "Authorization: Bearer [token-dev]" https://api.[dominio]/api/v1/auth/health
+# If there are problems, check upstreams:
+curl -H "Authorization: Bearer [dev-token]" https://api.[domain]/api/v1/auth/health
 ```
 
 ---
 
-## 3. Alertas frecuentes
+## 3. Common alerts
 
-### Alta tasa de errores 502/503 (upstream no responde)
+### High 502/503 error rate (upstream not responding)
 
-**Síntoma:** Los servicios detrás del gateway devuelven 502 o 503.
+**Symptom:** Services behind the gateway return 502 or 503.
 
 ```bash
-# Ver a qué servicio corresponden los errores
+# See which service the errors belong to
 kubectl logs -n [ns] -l app=api-gateway --tail=200 | grep '"status":50'
 
-# Verificar que los pods del servicio afectado estén running
-kubectl get pods -n [ns] -l app=[servicio-afectado]
+# Verify the affected service pods are Running
+kubectl get pods -n [ns] -l app=[affected-service]
 ```
 
-**Árbol de decisión:**
-- ¿El servicio afectado tiene pods `Running`? → El problema puede ser una excepción no manejada. Ver los logs del servicio.
-- ¿Los pods están en `CrashLoopBackOff`? → El servicio se cayó. Escalar el runbook del servicio afectado.
-- ¿Todos los servicios están caídos? → Problema de red o del gateway mismo. Ver sección 3.3.
+**Decision tree:**
+- Does the affected service have `Running` pods? → Problem may be an unhandled exception. Check service logs.
+- Are pods in `CrashLoopBackOff`? → Service crashed. Escalate to the affected service runbook.
+- Are all services down? → Network or gateway problem. See section 3.3.
 
-### Alta tasa de errores 401 (token inválido)
+### High 401 error rate (invalid token)
 
-**Síntoma:** Muchos 401. Puede ser ataque o clave JWT rotada.
+**Symptom:** Many 401s. Could be an attack or a rotated JWT key.
 
 ```bash
-# Ver IPs con más 401s
+# See IPs with the most 401s
 kubectl logs -n [ns] -l app=api-gateway --tail=500 | \
   grep '"status":401' | jq '.ip' | sort | uniq -c | sort -rn | head
 ```
 
-- ¿Una IP sola genera todos los 401? → Posible ataque. Agregar a denylist.
-- ¿Muchas IPs generan 401 después de un deploy? → La clave pública JWT puede haber cambiado. Verificar variables de ambiente del gateway.
+- Does a single IP generate all 401s? → Possible attack. Add to denylist.
+- Do many IPs return 401 after a deploy? → JWT public key may have changed. Verify gateway environment variables.
 
-### Rate limit disparado globalmente
+### Rate limit triggered globally
 
 ```bash
-# Ver cuántas peticiones bloqueadas por rate limit
+# See how many requests blocked by rate limit
 kubectl logs -n [ns] -l app=api-gateway --tail=200 | grep '"status":429'
 ```
 
-Si el rate limit está disparado en condiciones normales, el límite puede ser muy bajo.
-Coordinar con Tech Lead antes de modificarlo.
+If the rate limit is triggering under normal conditions, the limit may be too low.
+Coordinate with the Tech Lead before changing it.
 
 ---
 
 ## 4. Rollback
 
-El API Gateway es stateless — el rollback es un redeploy de la versión anterior:
+The API Gateway is stateless — rollback is a redeploy of the previous version:
 
 ```bash
 kubectl rollout history deployment/api-gateway -n [ns]
@@ -96,19 +96,19 @@ kubectl rollout status deployment/api-gateway -n [ns]
 
 ---
 
-## 5. Escalar el gateway
+## 5. Scale the gateway
 
 ```bash
-# Escalar horizontalmente (sin downtime, stateless)
+# Horizontal scale (no downtime, stateless)
 kubectl scale deployment/api-gateway -n [ns] --replicas=3
 kubectl get pods -n [ns] -l app=api-gateway
 ```
 
 ---
 
-## 6. Post-incidente
+## 6. Post-incident
 
-- [ ] Gateway respondiendo con latencia P95 < 50ms
-- [ ] Zero 5xx en los últimos 5 minutos
-- [ ] Incidente registrado en `13-operations/incident-management.md`
-- [ ] Si el incidente causó SLA breach: notificar al Tech Lead
+- [ ] Gateway responding with P95 latency < 50ms
+- [ ] Zero 5xx in the last 5 minutes
+- [ ] Incident recorded in `13-operations/incident-management.md`
+- [ ] If the incident caused an SLA breach: notify Tech Lead

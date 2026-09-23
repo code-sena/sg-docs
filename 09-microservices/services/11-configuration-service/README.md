@@ -1,55 +1,52 @@
 # Configuration
 
-> Manages system-wide security settings and password policies.
-
----
-
-## Responsibility
-
-Handles security settings (key-value configuration) and password policy definitions used across the system.
-
----
+> Security settings and password policies.
 
 ## Location in the architecture
 
 | Field | Value |
 |-------|-------|
-| Number in catalog | 12 |
-| Local port | 8090 |
-| Repository | [Repo URL] |
-| DB engine | SQL Server (schema `Configuration`) |
-| Status | In development |
-
----
+| Number in catalog | 11 |
+| Local port | 8080 |
+| Stack | C# + ASP.NET |
+| SQL Server schema | `Configuration` |
+| Repository | One folder per service under `backend/` (reached by Docker DNS name, not by host path) |
+| Communicates with | — |
+| Consumed by | api-gateway (all client traffic) |
 
 ## Responsibilities (what this service DOES)
 
-- Security settings management (key-value)
-- Password policy definitions
+- Store system security settings (key-value)
+- Store password policies for iam-service
+- Broadcast setting changes via Kafka
 
 ## Out of scope (what it does NOT do)
 
-- Authentication logic — delegated to IAM service
-- Session management — delegated to IAM service
+- Infrastructure config (env/K8s)
+- UI feature flags (future)
 
----
+## Main endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/settings` | List settings |
+| GET | `/settings/{name}` | Get setting |
+| PUT | `/settings/{name}` | Update setting |
+| GET | `/password-policies` | List policies |
+| PUT | `/password-policies/{id}` | Update policy |
 
 ## How to run it locally
 
 ```bash
-# From the project root
 docker compose up -d configuration-service
-
-# Verify
-curl http://localhost:8090/health
+curl http://localhost:8080/health
 ```
-
----
 
 ## Related documents
 
-- [data-model.md](./data-model.md) — DB schema
-- [events.md](./events.md) — Events it publishes and consumes
-- [decisions.md](./decisions.md) — Internal design decisions
-- [runbook.md](./runbook.md) — Operation in production
+- [data-model.md](./data-model.md) — schema `Configuration`; tables: SecuritySettings, PasswordPolicies
+- [events.md](./events.md) — publishes/consumes
+- [decisions.md](./decisions.md) — service-level decisions
+- [runbook.md](./runbook.md) — production operations
 - [API Contract](../../../07-api/contracts/openapi/configuration-service.yaml)
+- Catalog → `09-microservices/service-catalog.md`

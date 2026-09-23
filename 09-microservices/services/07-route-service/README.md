@@ -1,58 +1,60 @@
 # Route
 
-> Manages routes, stops, schedules, executions, and student/bus assignments.
-
----
-
-## Responsibility
-
-Handles route definitions, stop locations, route schedules, route executions, and route-to-bus/student assignments.
-
----
+> Routes, stops, schedules, executions, and bus/student assignments.
 
 ## Location in the architecture
 
 | Field | Value |
 |-------|-------|
-| Number in catalog | 08 |
-| Local port | 8086 |
-| Repository | [Repo URL] |
-| DB engine | SQL Server (schema `Route`) |
-| Status | In development |
-
----
+| Number in catalog | 07 |
+| Local port | 8080 |
+| Stack | C# + ASP.NET |
+| SQL Server schema | `Route` |
+| Repository | One folder per service under `backend/` (reached by Docker DNS name, not by host path) |
+| Communicates with | school-service (reference), bus-service (bus validity) |
+| Consumed by | api-gateway (all client traffic) |
 
 ## Responsibilities (what this service DOES)
 
-- Route management (CRUD)
-- Stop location management
-- Route schedule by day of week
-- Route execution (actual trips)
-- Route-bus and route-student assignments
+- CRUD routes, ordered stops, schedules
+- Assign bus and students (boarding/alighting stop)
+- Run route executions and expose status
+- Publish route.* events
 
 ## Out of scope (what it does NOT do)
 
-- Boarding/event recording — delegated to Boarding service
-- Fleet management — delegated to Bus service
+- Fleet master data → bus-service
+- QR boarding records → notification-service
+- Live GPS points → gps-service
 
----
+## Main endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/routes` | List routes |
+| POST | `/routes` | Create route |
+| GET | `/routes/{id}` | Get route |
+| PUT | `/routes/{id}` | Update route |
+| DELETE | `/routes/{id}` | Delete route |
+| POST | `/routes/{id}/stops` | Add stop |
+| POST | `/routes/{id}/bus` | Assign bus |
+| POST | `/routes/{id}/students` | Assign student |
+| GET | `/routes/{id}/schedules` | List schedules |
+| GET | `/executions` | List executions |
+| POST | `/executions` | Start execution |
 
 ## How to run it locally
 
 ```bash
-# From the project root
 docker compose up -d route-service
-
-# Verify
-curl http://localhost:8086/health
+curl http://localhost:8080/health
 ```
-
----
 
 ## Related documents
 
-- [data-model.md](./data-model.md) — DB schema
-- [events.md](./events.md) — Events it publishes and consumes
-- [decisions.md](./decisions.md) — Internal design decisions
-- [runbook.md](./runbook.md) — Operation in production
+- [data-model.md](./data-model.md) — schema `Route`; tables: Route, Stop, RouteStop, RouteBusAssignments, RouteStudentAssignments, RouteSchedule, RouteExecution
+- [events.md](./events.md) — publishes/consumes
+- [decisions.md](./decisions.md) — service-level decisions
+- [runbook.md](./runbook.md) — production operations
 - [API Contract](../../../07-api/contracts/openapi/route-service.yaml)
+- Catalog → `09-microservices/service-catalog.md`

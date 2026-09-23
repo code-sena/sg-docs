@@ -1,57 +1,55 @@
 # Bus
 
-> Manages the school bus fleet, brands, and models.
-
----
-
-## Responsibility
-
-Handles bus registry, assigned drivers, GPS device association, vehicle models, and brands.
-
----
+> Bus fleet, brands, models, and driver assignments.
 
 ## Location in the architecture
 
 | Field | Value |
 |-------|-------|
 | Number in catalog | 06 |
-| Local port | 8085 |
-| Repository | [Repo URL] |
-| DB engine | SQL Server (schema `Bus`) |
-| Status | In development |
-
----
+| Local port | 8080 |
+| Stack | C# + ASP.NET |
+| SQL Server schema | `Bus` |
+| Repository | One folder per service under `backend/` (reached by Docker DNS name, not by host path) |
+| Communicates with | — |
+| Consumed by | api-gateway (all client traffic) |
 
 ## Responsibilities (what this service DOES)
 
-- Bus fleet management (CRUD)
-- Bus model and brand management
-- GPS device association to buses
-- Driver assignment to buses
+- CRUD buses, brands, models
+- Assign/unassign driver to bus
+- Track SOAT validity and GPS-enabled flag
 
 ## Out of scope (what it does NOT do)
 
-- Route planning — delegated to Route service
-- GPS position tracking — delegated to GPS service
+- Route↔bus assignment → route-service
+- GPS positions → gps-service
 
----
+## Main endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/buses` | List buses |
+| POST | `/buses` | Create bus |
+| GET | `/buses/{id}` | Get bus |
+| PUT | `/buses/{id}` | Update bus |
+| POST | `/buses/{id}/driver` | Assign driver |
+| DELETE | `/buses/{id}/driver` | Unassign driver |
+| GET | `/brands` | List brands |
+| GET | `/models` | List models |
 
 ## How to run it locally
 
 ```bash
-# From the project root
 docker compose up -d bus-service
-
-# Verify
-curl http://localhost:8085/health
+curl http://localhost:8080/health
 ```
-
----
 
 ## Related documents
 
-- [data-model.md](./data-model.md) — DB schema
-- [events.md](./events.md) — Events it publishes and consumes
-- [decisions.md](./decisions.md) — Internal design decisions
-- [runbook.md](./runbook.md) — Operation in production
+- [data-model.md](./data-model.md) — schema `Bus`; tables: Bus, Brand, Model, DriverAssignments
+- [events.md](./events.md) — publishes/consumes
+- [decisions.md](./decisions.md) — service-level decisions
+- [runbook.md](./runbook.md) — production operations
 - [API Contract](../../../07-api/contracts/openapi/bus-service.yaml)
+- Catalog → `09-microservices/service-catalog.md`

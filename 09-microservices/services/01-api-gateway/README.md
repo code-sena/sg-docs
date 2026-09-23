@@ -10,10 +10,10 @@
 | Field | Value |
 |-------|-------|
 | Number in catalog | 01 |
-| Local port | 8080 |
+| Local port | **8000** (Kong proxy) |
 | Repository | [Service repo URL] |
 | DB engine | — (stateless, no own DB) |
-| Communicates with | auth-service, [other services] |
+| Communicates with | iam-service, [other services] |
 | Consumed by | Web frontend, mobile app, third-party tools |
 
 ---
@@ -21,7 +21,7 @@
 ## Responsibilities (what this service DOES)
 
 - Route HTTP requests to the correct microservice based on the path (`/api/v1/auth/*`, `/api/v1/[resource]/*`)
-- Verify that the JWT token is valid before forwarding the request (delegating to auth-service)
+- Verify that the JWT token is valid before forwarding the request (delegating to iam-service)
 - Attach user context (`X-User-Id`, `X-User-Role`) as internal headers
 - Global rate limiting: maximum [100] requests per IP per minute
 - Unified access logs with correlationId
@@ -41,7 +41,7 @@
 docker compose up -d api-gateway
 
 # Verify it is working
-curl http://localhost:8080/health
+curl http://localhost:8000/health
 ```
 
 **Expected response:**
@@ -66,7 +66,7 @@ curl http://localhost:8080/health
 See: `09-microservices/services/01-api-gateway/decisions.md`
 
 Relevant decisions include:
-- **ADR-002** — Why [Kong / Nginx / custom Express] was chosen as the gateway base
+- **ADR-006** — Why **Kong OSS** was chosen as the gateway (language-neutral edge)
 - **ADR-003** — Authentication strategy at the gateway vs. in each service
 
 ---
@@ -74,8 +74,8 @@ Relevant decisions include:
 ## Routing pattern
 
 ```
-Client → :8080/api/v1/auth/*        → auth-service :8081
-Client → :8080/api/v1/[resource]/*  → [name]-service :808N
+Client → :8080/api/v1/auth/*        → iam-service :8080
+Client → :8000/api/v1/[resource]/* (Kong) → [name]-service:8080  (Docker DNS name)
 ```
 
 Routing configuration: `[path to gateway configuration file]`
