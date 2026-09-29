@@ -293,7 +293,6 @@ Scenario 2: Student already linked to another guardian account (error case)
 
 - **Responsible service(s):** user-management
 - **Endpoint(s) implemented:** `POST /api/v1/guardians/{id}/students`
-- **Events generated:** `StudentLinkedToGuardian`
 - **Required permissions:** administrator (JWT)
 
 **Definition of Done (DoD):**
