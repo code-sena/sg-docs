@@ -6,7 +6,7 @@
 ## Now (MVP) — cut aligned to Sprint 1–4 HUs
 
 - **Auth + accounts:** HU-IAM-001, HU-USER-004, HU-USER-003 (Admin web)
-- **Routes / fleet foundation:** HU-ROUTE-001, HU-BUS-001, HU-BUS-002, HU-ROUTE-008 (Admin)
+- **Routes / fleet foundation:** HU-ROUTE-001, HU-FLEET-001, HU-ROUTE-005, HU-BUS-002, HU-ROUTE-008 (Admin)
 - **Driver mobile:** HU-ROUTE-002, HU-ROUTE-003, HU-QR-001, HU-QR-002
 - **Student mobile:** HU-QR-004
 - **Guardian mobile:** HU-ROUTE-004, HU-NOTIF-001, HU-GPS-002

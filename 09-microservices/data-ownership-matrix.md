@@ -2,7 +2,7 @@
 
 > **Purpose:** For each business entity, identify the service that holds the "official version"
 > (source of truth) and how other services access it. This document enforces the schema boundary
-> defined in ADR-002: each service owns its schema and never accesses another service's schema.
+> defined in ADR-002: each service owns its schema and accesses its data directly within the shared database instance.
 
 ## Schema assignment model
 
@@ -10,19 +10,19 @@ Per [ADR-002](../05-architecture/decisions/records/ADR-002-shared-database-monol
 all services share a single SQL Server instance. Each service owns exactly **one schema**
 (the School service additionally owns the `Geographic` schema with the `City` table).
 
-| Schema | Owner service | Status |
-|--------|--------------|--------|
-| `Iam` | iam | 🟡 In development |
-| `UserManagement` | user-management | 🟡 In development |
-| `School` | school | 🟡 In development |
-| `Geographic` | geographic | 🟡 In development |
-| `Notification` | notification | 🟡 In development |
-| `Bus` | bus | 🟡 In development |
-| `Route` | route | 🟡 In development |
-| `Gps` | gps | 🟡 In development |
-| `Exceptional` | exceptional | 🟡 In development |
-| `Audit` | audit | 🟡 In development |
-| `Configuration` | configuration | 🟡 In development |
+| Schema | Owner service | Domain | Status |
+|--------|--------------|--------|--------|
+| `Iam` | iam-service | Identity | 🟡 In development |
+| `UserManagement` | user-management-service | Identity | 🟡 In development |
+| `School` | school-service | School | 🟡 In development |
+| `Geographic` | school-service | School | 🟡 In development |
+| `Notification` | notification-service | Notifications | 🟡 In development |
+| `Bus` | bus-service | Transport | 🟡 In development |
+| `Route` | route-service | Transport | 🟡 In development |
+| `Gps` | gps-service | Tracking | 🟡 In development |
+| `Exceptional` | exceptional-service | Transport | 🟡 In development |
+| `Audit` | audit-service | Infrastructure | 🟡 In development |
+| `Configuration` | configuration-service | Infrastructure | 🟡 In development |
 
 **API Gateway** is stateless: it does not own any SQL Server schema (it only uses Redis for
 tokens/cache/rate-limiting).
@@ -31,24 +31,23 @@ tokens/cache/rate-limiting).
 
 | Entity / Data | Owner service | Schema | How other services access |
 |---------------|--------------|--------|--------------------------|
-| Profile, Role, Permissions, PermissionsRole, SessionProfile | iam | `Iam` | REST API. Never shared directly. |
-| Person, Family, FamilyMember, DriverLicense | user-management | `UserManagement` | REST API + `user.*` events |
-| Course, CourseGroup | school | `School` | REST API (`GET /courses/:id`) |
-| School, SchoolCampus | school | `School` | REST API |
-| City | geographic | `Geographic` | REST API |
-| Boarding / alighting | notification | `Notification` | Consumes route events; REST API |
-| Alert, AlertType, AlertRecipient | notification | `Notification` | REST API + consumed events |
-| Bus, Brand, Model | bus | `Bus` | REST API + `bus.*` events |
-| Route, Stop, RouteStop | route | `Route` | REST API + `route.*` events |
-| RouteBusAssignments, RouteStudentAssignments | route | `Route` | REST API |
-| RouteSchedule, RouteExecution | route | `Route` | REST API + `route.*` events |
-| GpsDevice, GpsLocation | gps | `Gps` | Consumes GPS stream; REST query |
-| ExceptionalDriverUsage, ExceptionalRouteUsage | exceptional | `Exceptional` | REST API |
-| Audit, LogErrors | audit | `Audit` | REST API (write-only ingest) |
-| SecuritySettings, PasswordPolicies | configuration | `Configuration` | REST API |
+| Profile, Role, Permissions, PermissionsRole, SessionProfile | iam-service | `Iam` | REST API. Never shared directly. |
+| Person, Family, FamilyMember, DriverLicense | user-management-service | `UserManagement` | REST API + `user.*` events |
+| Course, CourseGroup | school-service | `School` | REST API (`GET /courses/:id`) |
+| School, SchoolCampus | school-service | `School` | REST API |
+| City | school-service | `Geographic` | REST API |
+| Boarding | notification-service | `Notification` | Consumes route events; REST API |
+| Alert, AlertType, AlertRecipient | notification-service | `Notification` | REST API + consumed events |
+| Bus, DriverAssignemts, Brand, Model | bus-service | `Bus` | REST API + `bus.*` events |
+| Route, Stop, RouteStop | route-service | `Route` | REST API + `route.*` events |
+| RouteBusAssignments, RouteStudentAssignments | route-service | `Route` | REST API |
+| RouteSchedule, RouteExecution | route-service | `Route` | REST API + `route.*` events |
+| GpsDevice, GpsLocation | gps-service | `Gps` | Consumes GPS stream; REST query |
+| ExceptionalDriverUsage, ExceptionalRouteUsage | exceptional-service | `Exceptional` | REST API |
+| Audit, LogErrors | audit-service | `Audit` | REST API (write-only ingest) |
+| SecuritySettings, PasswordPolicies | configuration-service | `Configuration` | REST API |
 
-> **Rule:** a service never queries ANOTHER service's schema directly. If it needs data,
-> it calls the owner's API or subscribes to its events.
+> **Rule:** a service never queries or updates ANOTHER service's schema directly from application code. Cross-schema foreign keys maintain direct relational integrity in SQL Server per ADR-002, while application-level access routes through the owner's API or events.
 
 ## Access control per schema (SQL Server)
 
@@ -70,7 +69,7 @@ tokens/cache/rate-limiting).
 
 ## How to update this matrix
 
-1. When a new service or entity appears, assign it to the owning schema/service.
+1. When a new service or entity appears, assign it to the owning schema/service and domain.
 2. If two services need to write to the same entity → redesign (breaking schema boundary).
 3. If a schema grows beyond its owner's ability to keep it cohesive, open an ADR
    to split it into its own database (Strangler Fig migration path, ADR-002).

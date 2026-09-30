@@ -52,7 +52,9 @@ ms-{name-service}/
         │       │   └── Controllers/
         │       │       └── MyEntityController.cs
         │       ├── Persistence/      # Secondary adapter: Database (EF Core DbContext + repositories)
-        │       │   └── MyEntityRepository.cs   # implements IMyEntityRepository
+        │       │   └── NameEntity.cs   # implements IMyEntityRepository
+        │       ├── Repository
+        │           └── EntityRepositoryImpl
         │       └── External/         # Secondary adapter: External APIs (e.g. Google Maps)
         ├── Shared/                   # Cross-cutting shared code across modules
         │   └── Domain/Model/         # e.g. common value objects (Person, Status...)

@@ -23,7 +23,7 @@
 
 | Cut | Sprint | Total HUs | Refined | In progress | Completed |
 |-----|--------|-----------|---------|-------------|-----------|
-| Cut 1 | Sprint 1-2 | 19 | 0 | 0 | 0 |
+| Cut 1 | Sprint 1-2 | 20 | 0 | 0 | 0 |
 | Cut 2 | Sprint 3-4 | 0 | 0 | 0 | 0 |
 
 ---
@@ -803,37 +803,38 @@ Scenario 2: QR not available (error case)
 
 ---
 
-### HU-BUS-001 — Administrator manages the bus fleet and assigns buses to a route {#HU-BUS-001}
+### HU-FLEET-001 — Administrator manages the bus fleet {#HU-FLEET-001}
 
 **Epic:** EP-003 (Route & Fleet Management)
 
 > **As** an administrator
-> **I want** to create, edit, activate/deactivate buses and assign them to a route
-> **so that** the fleet stays up to date and every route has an available bus.
+> **I want** to create, edit, and activate/deactivate buses in the fleet
+> **so that** the fleet stays up to date and ready for route assignment.
 
 **Acceptance Criteria:**
 
 ```gherkin
-Scenario 1: Create and assign a bus (happy path)
+Scenario 1: Create a bus (happy path)
   Given the administrator has access to fleet management
-  When the administrator creates a bus with a valid plate and capacity and assigns it to route R-01
-  Then the bus is registered and linked to the route
-  And it appears in the bus list with the status "On route"
+  When they create a bus with a valid plate and capacity
+  Then the bus is registered with status "Available"
+  And it appears in the bus list
 
-Scenario 2: Reassign a deactivated bus to a route that already has a bus (error case)
-  Given the bus is deactivated and route R-01 already has a bus assigned
-  When the administrator attempts to assign the bus to route R-01
-  Then the system rejects the assignment with the message "The route already has a bus assigned"
+Scenario 2: Duplicate plate (error case)
+  Given a bus with plate "ABC-123" already exists
+  When the administrator tries to create another bus with the same plate
+  Then the system rejects it with the message "Plate already exists"
 ```
 
 **Technical notes:**
 
-> The bus plate must be unique and the capacity greater than zero. A bus can only be
-> assigned to one route at a time. Assigning an inactive bus is not allowed.
+> The bus plate must be unique and the capacity greater than zero. A bus can be
+> assigned to one route at a time (handled by route-service). Assigning an inactive
+> bus is not allowed.
 
 - **Responsible service(s):** fleet-service
-- **Endpoint(s) implemented:** `POST /api/v1/buses`, `PUT /api/v1/buses/{id}`, `PATCH /api/v1/buses/{id}/status`, `PUT /api/v1/routes/{routeId}/bus`
-- **Events generated:** `BusCreated`, `BusAssignedToRoute`
+- **Endpoint(s) implemented:** `POST /api/v1/buses`, `PUT /api/v1/buses/{id}`, `PATCH /api/v1/buses/{id}/status`
+- **Events generated:** `BusCreated`, `BusUpdated`, `BusStatusChanged`
 - **Required permissions:** administrator (JWT)
 
 **Definition of Done (DoD):**
@@ -853,6 +854,59 @@ Scenario 2: Reassign a deactivated bus to a route that already has a bus (error 
 | Priority | Medium |
 | Target sprint | Sprint 2 |
 | Dependencies | HU-ROUTE-001 (route definition) |
+
+---
+
+### HU-ROUTE-005 — Administrator assigns a bus to a route {#HU-ROUTE-005}
+
+**Epic:** EP-003 (Route & Fleet Management)
+
+> **As** an administrator
+> **I want** to assign a bus to a route
+> **so that** every route has an available bus for its operation.
+
+**Acceptance Criteria:**
+
+```gherkin
+Scenario 1: Assign a bus to a route (happy path)
+  Given an active bus exists and route R-01 has no bus assigned
+  When the administrator assigns the bus to route R-01
+  Then the bus is linked to the route
+  And the bus status changes to "On route"
+
+Scenario 2: Route already has a bus (error case)
+  Given route R-01 already has an active bus assigned
+  When the administrator tries to assign a different bus to route R-01
+  Then the system rejects it with the message "The route already has a bus assigned"
+```
+
+**Technical notes:**
+
+> A bus can only be assigned to one route at a time. The assignment is stored in
+> `RouteBusAssignments` (route-service). The bus must be active to be assigned.
+
+- **Responsible service(s):** route-service
+- **Endpoint(s) implemented:** `PUT /api/v1/routes/{routeId}/bus`
+- **Events generated:** `BusAssignedToRoute`
+- **Required permissions:** administrator (JWT)
+
+**Definition of Done (DoD):**
+
+> This HU can only be closed when it meets the team's full DoD.
+> See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
+
+**Additional checks specific to this HU (if applicable):**
+- [ ] 1:1 invariant: a bus is assigned to a single route at a time
+- [ ] Additional checks reviewed by the service owner
+
+**Estimation and priority:**
+
+| Field | Value |
+|-------|-------|
+| Story Points | 2 |
+| Priority | Medium |
+| Target sprint | Sprint 2 |
+| Dependencies | HU-FLEET-001 (bus fleet), HU-ROUTE-001 (route definition) |
 
 ---
 
@@ -907,7 +961,7 @@ Scenario 2: Driver already responsible for another bus (error case)
 | Story Points | 3 |
 | Priority | High |
 | Target sprint | Sprint 2 |
-| Dependencies | HU-USER-004 (driver accounts), HU-BUS-001 (bus fleet) |
+| Dependencies | HU-USER-004 (driver accounts), HU-FLEET-001 (bus fleet) |
 
 ---
 

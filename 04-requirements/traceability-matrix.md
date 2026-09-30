@@ -33,7 +33,8 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 | FR-3.2 | Validate route uniqueness before persisting it | HU-ROUTE-001 | TBD | route-service | 🔴 Pending |
 | FR-3.3 | Update route data | HU-ROUTE-001 | TBD | route-service | 🔴 Pending |
 | FR-3.4 | Delete route data (only when no active trip depends on it) | HU-ROUTE-001 | TBD | route-service | 🔴 Pending |
-| FR-3.5 | Assign/unassign a bus to a route (one bus per route, one route per bus) | HU-BUS-001 | TBD | route-service | 🔴 Pending |
+| FR-3.5 | Assign/unassign a bus to a route (one bus per route, one route per bus) | HU-ROUTE-005 | TBD | route-service | 🔴 Pending |
+| FR-3.8 | Create, edit, and activate/deactivate buses (unique plate, capacity > 0) | HU-FLEET-001 | TBD | fleet-service | 🔴 Pending |
 | FR-3.6 | Assign/unassign a driver to a bus (a driver is responsible for that bus until reassigned); route coverage is derived from the bus assigned to the route | HU-BUS-002 | TBD | bus-service | 🔴 Pending |
 | FR-3.7 | Assign students to a route indicating their boarding and alighting stop (stops must belong to the route) | HU-ROUTE-008 | TBD | route-service | 🔴 Pending |
 | FR-4.1 | Generate an individual QR code for each student, with rotation/expiration policy | HU-QR-004 | TBD | iam-service | 🔴 Pending |
@@ -85,7 +86,8 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 | HU-QR-002 | Driver scans the student's QR code to register their alighting | FR-4.3 | Sprint 2 |
 | HU-ROUTE-002 | Driver views their assigned route with stops and schedules | FR-9.2 | Sprint 2 |
 | HU-ROUTE-003 | Driver starts and finishes the route trip | FR-7.1, FR-7.2 | Sprint 2 |
-| HU-BUS-001 | Administrator manages the bus fleet and assigns buses to a route | FR-3.5 | Sprint 2 |
+| HU-FLEET-001 | Administrator manages the bus fleet | FR-3.8 | Sprint 2 |
+| HU-ROUTE-005 | Administrator assigns a bus to a route | FR-3.5 | Sprint 2 |
 | HU-BUS-002 | Administrator assigns a driver to a bus | FR-3.6 | Sprint 2 |
 | HU-ROUTE-008 | Administrator assigns students to a route indicating their stop | FR-3.7 | Sprint 2 |
 | HU-NOTIF-001 | Real-time pickup/drop-off notifications to guardians | FR-5.2, FR-5.3 | Sprint 3 |
