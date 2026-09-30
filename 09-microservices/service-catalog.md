@@ -129,7 +129,7 @@
 | **Folder** | `09-microservices/services/03-user-management-service/` |
 | **Domain** | Identity |
 | **Responsibility** | Persons, families, family members, driver licenses |
-| **Stack** | C# + ASP.NET |
+| **Stack** | Kong OSS |
 | **Schema** | `UserManagement` |
 | **Tables** | Person, Family, FamilyMember, DriverLicense |
 | **Direct FK Relationships** | `FamilyMember.FamilyID` → `Family(ID)`, `FamilyMember.ProfileID` → `Iam.Profile(ID)`, `DriverLicense.ProfileID` → `Iam.Profile(ID)` |
@@ -143,7 +143,7 @@
 | **Folder** | `09-microservices/services/04-school-service/` |
 | **Domain** | School |
 | **Responsibility** | Schools, campuses, courses, course groups, cities |
-| **Stack** | C# + ASP.NET |
+| **Stack** | Kong OSS |
 | **Schema** | `School` + `Geographic` |
 | **Tables** | School, SchoolCampus, Course, CourseGroup, City |
 | **Direct FK Relationships** | `School.CityID` → `Geographic.City(ID)`, `SchoolCampus.SchoolID` → `School(ID)`, `Course.CampusID` → `SchoolCampus(ID)`, `CourseGroup.CourseID` → `Course(ID)`, `CourseGroup.ProfileID` → `Iam.Profile(ID)` |
@@ -169,9 +169,14 @@
 | Field | Value |
 |-------|-------|
 | **Folder** | `09-microservices/services/06-bus-service/` |
+<<<<<<< HEAD
 | **Domain** | Transport |
 | **Responsibility** | Bus fleet, brands, models, driver assignments |
 | **Stack** | C# + ASP.NET |
+=======
+| **Responsibility** | Bus fleet, brands, models |
+| **Stack** | Kong OSS |
+>>>>>>> main
 | **Schema** | `Bus` |
 | **Tables** | Bus, DriverAssignemts, Brand, Model |
 | **Direct FK Relationships** | `Bus.SchoolID` → `School.School(ID)`, `Bus.GpsDeviceID` → `Gps.GpsDevice(ID)`, `Bus.ModelId` → `Model(ID)`, `DriverAssignemts.ProfileID` → `Iam.Profile(ID)`, `DriverAssignemts.BusID` → `Bus(ID)`, `Model.BrandID` → `Brand(ID)` |
@@ -185,7 +190,7 @@
 | **Folder** | `09-microservices/services/07-route-service/` |
 | **Domain** | Transport |
 | **Responsibility** | Routes, stops, schedules, executions, assignments |
-| **Stack** | C# + ASP.NET |
+| **Stack** | Kong OSS |
 | **Schema** | `Route` |
 | **Tables** | Route, Stop, RouteStop, RouteBusAssignments, RouteStudentAssignments, RouteSchedule, RouteExecution |
 | **Direct FK Relationships** | `Route.SchoolID` → `School.School(ID)`, `Stop.CityID` → `Geographic.City(ID)`, `Stop.SchoolID` → `School.School(ID)`, `RouteStop.RouteID` → `Route(ID)`, `RouteStop.StopID` → `Stop(ID)`, `RouteBusAssignments.BusID` → `Bus.Bus(ID)`, `RouteBusAssignments.RouteID` → `Route(ID)`, `RouteStudentAssignments.ProfileID` → `Iam.Profile(ID)`, `RouteStudentAssignments.RouteStopID` → `RouteStop(ID)`, `RouteSchedule.RouteBusAssignmentsId` → `RouteBusAssignments(ID)`, `RouteExecution.RouteScheduleId` → `RouteSchedule(ID)` |
@@ -213,7 +218,7 @@
 | **Folder** | `09-microservices/services/09-exceptional-service/` |
 | **Domain** | Transport |
 | **Responsibility** | Exceptional driver and route usage |
-| **Stack** | C# + ASP.NET |
+| **Stack** | Kong OSS |
 | **Schema** | `Exceptional` |
 | **Tables** | ExceptionalDriverUsage, ExceptionalRouteUsage |
 | **Direct FK Relationships** | `ExceptionalDriverUsage.BusID` → `Bus.Bus(ID)`, `ExceptionalDriverUsage.ProfileID` → `Iam.Profile(ID)`, `ExceptionalRouteUsage.ProfileID` → `Iam.Profile(ID)`, `ExceptionalRouteUsage.RouteID` → `Route.Route(ID)` |
@@ -227,7 +232,7 @@
 | **Folder** | `09-microservices/services/10-audit-service/` |
 | **Domain** | Infrastructure |
 | **Responsibility** | Audit trail and error logs |
-| **Stack** | C# + ASP.NET |
+| **Stack** | Kong OSS |
 | **Schema** | `Audit` |
 | **Tables** | Audit, LogErrors |
 | **Direct FK Relationships** | `Audit.ProfileID` → `Iam.Profile(ID)` |
@@ -241,7 +246,7 @@
 | **Folder** | `09-microservices/services/11-configuration-service/` |
 | **Domain** | Infrastructure |
 | **Responsibility** | Security settings and password policies |
-| **Stack** | C# + ASP.NET |
+| **Stack** | Kong OSS |
 | **Schema** | `Configuration` |
 | **Tables** | SecuritySettings, PasswordPolicies |
 
@@ -250,6 +255,11 @@
 ## Service communication matrix
 
 > **Channels:** synchronous **gRPC** (ADR-005) and asynchronous **Kafka** (ADR-004). Client-facing REST goes only through the Kong gateway.
+<<<<<<< HEAD
+=======
+
+> Who calls whom and through which channel.
+>>>>>>> main
 
 | Source service | Destination service | Channel | Type | Description |
 |----------------|--------------------|---------|------|-------------|
