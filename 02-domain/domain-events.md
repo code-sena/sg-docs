@@ -45,12 +45,12 @@ Administrator → [CreateRoute] → RouteService → [RouteCreated] → Other co
 
 | Field                  | Value                                                 |
 | ---------------------- | ----------------------------------------------------- |
-| **Name**               | `PersonRegistered`                                    |
+| **Name**               | `StudentCreate`                                    |
 | **Bounded Context**    | UserManagementService                                 |
 | **Aggregate**          | Person                                                |
 | **Trigger**            | A new person is successfully registered in the system |
-| **Consumers**          | SecurityService, Audit                                |
-| **Channel (topic)**    | `user.person.registered`                              |
+| **Consumers**          | Iam                                |
+| **Channel (topic)**    | `student.created`                              |
 | **Schema version**     | `v1`                                                  |
 | **Delivery guarantee** | At-least-once                                         |
 
@@ -58,18 +58,16 @@ Administrator → [CreateRoute] → RouteService → [RouteCreated] → Other co
 
 ```json
 {
-  "eventId": "550e8400-e29b-41d4-a716-446655440000",
-  "eventType": "PersonRegistered",
+  "eventType": "student.created",
   "aggregateId": "550e8400-e29b-41d4-a716-446655440001",
   "aggregateType": "Person",
   "occurredAt": "2026-09-03T10:30:00Z",
   "version": 1,
   "payload": {
+    "eventId": "550e8400-e29b-41d4-a716-446655440000",
     "personId": "UUID",
-    "firstName": "string",
-    "lastName": "string",
     "email": "string",
-    "phone": "string"
+    "identificationNumber": "string"
   },
   "metadata": {
     "correlationId": "550e8400-e29b-41d4-a716-446655440002",

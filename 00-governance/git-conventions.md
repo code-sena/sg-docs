@@ -27,8 +27,8 @@ main        ← Production. Merge from release only. Always stable.
 [type]/[description-in-kebab-case]
 
 Examples:
-feat/auth-login
-feat/guardian-route-tracking
+feature/auth-login
+feature/guardian-route-tracking
 fix/duplicate-boarding-record
 docs/update-security-policy
 chore/configure-notifications

@@ -53,7 +53,8 @@ Canonical labels in HUs: `administrator` · `parent`/`guardian` · `student` · 
 | HU-ROUTE-003 | Start / finish trip | Driver | Mobile | Medium | Backlog |
 | HU-ROUTE-004 | View child's route details | Parent / guardian | Mobile | Medium | Backlog |
 | HU-ROUTE-008 | Assign students to route + stops | Admin | Web | High | Backlog |
-| HU-BUS-001 | Manage fleet, assign bus to route | Admin | Web | Medium | Backlog |
+| HU-FLEET-001 | Manage bus fleet (CRUD, activate/deactivate) | Admin | Web | Medium | Backlog |
+| HU-ROUTE-005 | Assign bus to route | Admin | Web | Medium | Backlog |
 | HU-BUS-002 | Assign driver to bus | Admin | Web | High | Backlog |
 
 ### EP-004 — User Management / Family
@@ -83,7 +84,11 @@ Canonical labels in HUs: `administrator` · `parent`/`guardian` · `student` · 
 | HU-UI-001 | Customize theme colors | All 4 roles | Web + Mobile | Low | Backlog |
 | HU-UI-002 | Choose interface language (≥4) | All 4 roles | Web + Mobile | Low | Backlog |
 
+<<<<<<< HEAD
+**Count check:** 3+2+8+3+1+1+2 = **20** HUs — matches Cut 1 in `user-stories.md`.
+=======
 **Count check:** 3+2+7+3+1+1+2 = **19** HUs — matches Cut 1 in `user-stories.md`.
+>>>>>>> main
 
 ---
 
@@ -92,7 +97,11 @@ Canonical labels in HUs: `administrator` · `parent`/`guardian` · `student` · 
 | Band | HUs |
 |------|-----|
 | High | HU-IAM-001, HU-ROUTE-001, HU-NOTIF-001, HU-USER-003, HU-USER-004, HU-QR-001, HU-QR-002, HU-ROUTE-002, HU-ROUTE-008, HU-BUS-002 |
+<<<<<<< HEAD
+| Medium | HU-GPS-002, HU-NOTIF-005, HU-ROUTE-003, HU-INCIDENT-001, HU-ROUTE-004, HU-QR-004, HU-FLEET-001, HU-ROUTE-005 |
+=======
 | Medium | HU-GPS-002, HU-NOTIF-005, HU-ROUTE-003, HU-INCIDENT-001, HU-ROUTE-004, HU-QR-004, HU-BUS-001 |
+>>>>>>> main
 | Low | HU-UI-001, HU-UI-002 |
 
 ---

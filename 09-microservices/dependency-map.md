@@ -1,31 +1,29 @@
 # Dependency map
 
-Last updated: 2026-09-22 · Logical dependencies (not deploy order hell — services stay independently deployable).
+Last updated: 2026-09-25 · Logical dependencies (services stay independently deployable behind Kong and Kafka/gRPC).
 
 ## Legend
 
 - **HTTP/Kong** — via edge :8000
 - **gRPC** — ADR-005
 - **Kafka** — ADR-004
-- **SQL schema** — same instance, isolated schema (ADR-002)
+- **SQL schema** — same instance, isolated schema with direct relational integrity (ADR-002)
 
 ## Matrix (consumer → depends on)
 
-| Consumer | Edge HTTP | gRPC / HTTP to | Kafka consumes | Schema reads (own) |
-|----------|-----------|----------------|----------------|--------------------|
-| api-gateway | — | routes to all :8080 | — | Redis only |
-| iam-service | exposed | — | — | `Iam` |
-| user-management-service | exposed | iam (validate) | — | `UserManagement` |
-| school-service | exposed | — | — | `School` |
-| bus-service | exposed | route, school | — | `Bus` |
-| route-service | exposed | bus, school | — | `Route` |
-| gps-service | exposed | bus, route | — | `Gps` |
-| exceptional-service | exposed | route, bus, school | — | `Exceptional` |
-| notification-service | exposed | user-mgmt / iam templates | exception, trip events | `Notification` |
-| audit-service | exposed | — | most domain events | `Audit` |
-| configuration-service | exposed | — | — | `Configuration` |
-
-> Refine cells as OpenAPI/gRPC protos firm up; keep **no cross-schema FK**.
+| Consumer | Domain | Edge HTTP | gRPC / HTTP to | Kafka consumes | Schema reads (own) |
+|----------|--------|-----------|----------------|----------------|--------------------|
+| api-gateway | Infra | — | routes to all :8080 | — | Redis only |
+| iam-service | Identity | exposed | — | — | `Iam` |
+| user-management-service | Identity | exposed | iam (validate) | — | `UserManagement` |
+| school-service | School | exposed | — | — | `School`, `Geographic` |
+| notification-service | Notifications | exposed | user-mgmt / iam templates | exception, trip events | `Notification` |
+| bus-service | Transport | exposed | route, school | — | `Bus` |
+| route-service | Transport | exposed | bus, school | — | `Route` |
+| gps-service | Tracking | exposed | bus, route | — | `Gps` |
+| exceptional-service | Transport | exposed | route, bus, school | — | `Exceptional` |
+| audit-service | Infra | exposed | — | most domain events | `Audit` |
+| configuration-service | Infra | exposed | — | — | `Configuration` |
 
 ## Risky edges (watch)
 
