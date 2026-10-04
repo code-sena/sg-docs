@@ -23,7 +23,7 @@
 
 | Cut | Sprint | Total HUs | Refined | In progress | Completed |
 |-----|--------|-----------|---------|-------------|-----------|
-| Cut 1 | Sprint 1-2 | 20 | 0 | 0 | 0 |
+| Cut 1 | Sprint 1-2 | 20 | 2 | 3 | 15 |
 | Cut 2 | Sprint 3-4 | 0 | 0 | 0 | 0 |
 
 ---
@@ -94,6 +94,7 @@ Scenario 2: Invalid credentials (error case)
 
 | Field | Value |
 |-------|-------|
+| Status | Done |
 | Story Points | 8 |
 | Priority | High |
 | Target sprint | Sprint 1 |
@@ -149,6 +150,7 @@ Scenario 2: Duplicate route name (error case)
 
 | Field | Value |
 |-------|-------|
+| Status | Done |
 | Story Points | 8 |
 | Priority | High |
 | Target sprint | Sprint 1 |
@@ -203,6 +205,7 @@ Scenario 2: Student alights the bus (happy path)
 
 | Field | Value |
 |-------|-------|
+| Status | Done |
 | Story Points | 5 |
 | Priority | High |
 | Target sprint | Sprint 3 |
@@ -256,6 +259,7 @@ Scenario 2: Bus without GPS signal (error case)
 
 | Field | Value |
 |-------|-------|
+| Status | Done |
 | Story Points | 8 |
 | Priority | Medium |
 | Target sprint | Sprint 4 |
@@ -308,6 +312,7 @@ Scenario 2: Student already linked to another guardian account (error case)
 
 | Field | Value |
 |-------|-------|
+| Status | Done |
 | Story Points | 3 |
 | Priority | High |
 | Target sprint | Sprint 1 |
@@ -363,6 +368,7 @@ Scenario 2: Deactivate an existing account
 
 | Field | Value |
 |-------|-------|
+| Status | Done |
 | Story Points | 3 |
 | Priority | High |
 | Target sprint | Sprint 1 |
@@ -416,6 +422,7 @@ Scenario 2: Bus resumes before the threshold (no alert)
 
 | Field | Value |
 |-------|-------|
+| Status | Backlog |
 | Story Points | 3 |
 | Priority | Medium |
 | Target sprint | Sprint 5 |
@@ -471,6 +478,7 @@ Scenario 2: Student not assigned to this route (error case)
 
 | Field | Value |
 |-------|-------|
+| Status | Done |
 | Story Points | 5 |
 | Priority | High |
 | Target sprint | Sprint 2 |
@@ -525,6 +533,7 @@ Scenario 2: Scanning without a previous boarding (error case)
 
 | Field | Value |
 |-------|-------|
+| Status | Done |
 | Story Points | 5 |
 | Priority | High |
 | Target sprint | Sprint 2 |
@@ -578,6 +587,7 @@ Scenario 2: Driver without an assigned route (error case)
 
 | Field | Value |
 |-------|-------|
+| Status | Done |
 | Story Points | 3 |
 | Priority | High |
 | Target sprint | Sprint 2 |
@@ -637,6 +647,7 @@ Scenario 3: Start a second concurrent trip (error case)
 
 | Field | Value |
 |-------|-------|
+| Status | Done |
 | Story Points | 3 |
 | Priority | Medium |
 | Target sprint | Sprint 2 |
@@ -691,6 +702,7 @@ Scenario 2: Report outside an active trip (error case)
 
 | Field | Value |
 |-------|-------|
+| Status | Backlog |
 | Story Points | 3 |
 | Priority | Medium |
 | Target sprint | Sprint 5 |
@@ -743,6 +755,7 @@ Scenario 2: Child without an assigned route (error case)
 
 | Field | Value |
 |-------|-------|
+| Status | Done |
 | Story Points | 2 |
 | Priority | Medium |
 | Target sprint | Sprint 3 |
@@ -796,6 +809,7 @@ Scenario 2: QR not available (error case)
 
 | Field | Value |
 |-------|-------|
+| Status | Done |
 | Story Points | 2 |
 | Priority | Medium |
 | Target sprint | Sprint 1 |
@@ -850,6 +864,7 @@ Scenario 2: Duplicate plate (error case)
 
 | Field | Value |
 |-------|-------|
+| Status | Done |
 | Story Points | 3 |
 | Priority | Medium |
 | Target sprint | Sprint 2 |
@@ -903,6 +918,7 @@ Scenario 2: Route already has a bus (error case)
 
 | Field | Value |
 |-------|-------|
+| Status | In progress |
 | Story Points | 2 |
 | Priority | Medium |
 | Target sprint | Sprint 2 |
@@ -958,6 +974,7 @@ Scenario 2: Driver already responsible for another bus (error case)
 
 | Field | Value |
 |-------|-------|
+| Status | In progress |
 | Story Points | 3 |
 | Priority | High |
 | Target sprint | Sprint 2 |
@@ -1012,6 +1029,7 @@ Scenario 2: Stop that does not belong to the route (error case)
 
 | Field | Value |
 |-------|-------|
+| Status | In progress |
 | Story Points | 3 |
 | Priority | High |
 | Target sprint | Sprint 2 |
@@ -1065,6 +1083,7 @@ Scenario 2: The preference persists (happy path)
 
 | Field | Value |
 |-------|-------|
+| Status | Done |
 | Story Points | 2 |
 | Priority | Low |
 | Target sprint | Sprint 5 |
@@ -1118,6 +1137,7 @@ Scenario 2: Default language on first use (happy path)
 
 | Field | Value |
 |-------|-------|
+| Status | Done |
 | Story Points | 2 |
 | Priority | Low |
 | Target sprint | Sprint 5 |
