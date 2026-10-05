@@ -1,6 +1,6 @@
 # Event catalog (Kafka)
 
-> Canonical async contracts. Topics versioned additively (ADR-004). Last updated: 2026-09-22
+> Canonical async contracts. Topics versioned additively (ADR-004). Last updated: 2026-10-04
 > Per-service event *docs* also live in `services/*/events.md` — this file is the **cross-service index**.
 
 ## Conventions
@@ -15,14 +15,34 @@
 
 ## Catalog
 
-| Topic / subject | Producer | Consumers | Payload summary |
-|-----------------|----------|-----------|-----------------|
-| `trip.status.changed` | bus/route (TBD) | notification, audit, gps consumers | Trip lifecycle |
-| `exception.raised` | exceptional-service | notification, audit, coordinator UIs via API | Severity + refs |
-| `location.sampled` *(optional high-volume)* | gps-service | analytics/read models | Batched points — consider separate store path |
-| `notification.delivered` | notification-service | audit, metrics | Delivery outcome |
-| `config.changed` | configuration-service | all interested services | Feature flag updates |
-| `user.access.revoked` | iam-service | gateways/sessions | Security |
+### Implemented
+
+Declared in `backend/kafka/init/topics.conf` and wired in code today.
+
+| Topic | Producer | Consumers | Payload summary |
+|-------|----------|-----------|-----------------|
+| `student.created` | user-management-service (`CreateStudentService`) | iam-service (`PersonCreatedConsumer`, groupId `iam`) | New student person → IAM profile/role |
+| `driver.created` | user-management-service (`CreateDriverService`) | iam-service (`PersonCreatedConsumer`, groupId `iam`) | New driver person → IAM profile/role |
+| `admin.created` | user-management-service (`CreateAdminService`) | iam-service (`PersonCreatedConsumer`, groupId `iam`) | New admin person → IAM profile/role |
+| `parent.created` | user-management-service (`CreateParentService`) | iam-service (`PersonCreatedConsumer`, groupId `iam`) | New guardian person → IAM profile/role |
+| `profile.created` | iam-service (`CreateProfileService`) | — (no consumer yet) | IAM profile created for a person |
+| `student.scanned` | notification-service (`ProcessScanService`) | notification-service (`StudentScannedConsumer`) | QR boarding/alighting scan → push to guardian |
+
+> Naming in use is `<entity>.<action>`, not the `<domain>.<entity>.<action>` convention above.
+> Rename additively before M2 rather than in place (ADR-004).
+
+### Planned
+
+Not declared in any broker configuration yet. Kept here as the target contract.
+
+| Topic / subject | Producer | Consumers | Payload summary | Depends on |
+|-----------------|----------|-----------|-----------------|------------|
+| `trip.status.changed` | route-service | notification, audit consumers | Trip lifecycle | route-service events |
+| `exception.raised` | exceptional-service | notification, audit, coordinator UIs via API | Severity + refs | exceptional-service |
+| `location.sampled` *(optional high-volume)* | gps-service | analytics/read models | Batched points — consider separate store path | gps-service |
+| `notification.delivered` | notification-service | audit, metrics | Delivery outcome | audit-service |
+| `config.changed` | configuration-service | all interested services | Feature flag updates | configuration-service |
+| `user.access.revoked` | iam-service | gateways/sessions | Security | Redis token blacklist |
 
 > Fill producer/consumer codes to match ADRs and service READMEs as APIs stabilize; rename topics to final convention before M2.
 
