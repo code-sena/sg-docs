@@ -48,10 +48,8 @@ Verify these ports are free before starting:
 | 8000 | api-gateway (Kong OSS) | Public entry point |
 | 8080 | business services | each microservice (Docker DNS by name) |
 | 1433 | SQL Server | Relational database (monolith instance) |
-| 6379 | Redis | Cache and message queue |
-| 5672 | RabbitMQ | Message broker (AMQP) |
-| 15672 | RabbitMQ Management | RabbitMQ web interface |
-| 9092 | Kafka | Message broker (if applicable) |
+| 6379 | Redis | Cache and token blacklist |
+| 9092 | Kafka | Message broker (ADR-004) |
 
 **Check free ports:**
 ```bash
@@ -112,14 +110,29 @@ The command should show all containers in `healthy` or `running` state.
 
 | Stack | Command |
 |-------|---------|
+| **.NET 10 (project stack)** | `dotnet restore` |
 | Node.js + npm | `npm install` |
 | Java + Maven | `mvn install -DskipTests` |
 | Python + Poetry | `poetry install` |
 | Go | `go mod download` |
 
+> For .NET services the Docker images already run `dotnet restore` at build time,
+> so this step is only needed when you develop outside Docker.
+
 ### Step 5: Run migrations
 
-> The migration tool varies by stack. See `_stacks/[your-stack].md`.
+> **This project runs no migrations from the services.** The schema lives in the
+> isolated `database/` repository and is applied with **Liquibase** (ADR-009):
+>
+> ```bash
+> cd database && docker compose up -d
+> ```
+>
+> That single file starts SQL Server, creates the database and runs the 11
+> Liquibase changelogs (one per service schema). Never add `Migrations/` or
+> Liquibase files inside a microservice.
+>
+> The table below is the generic reference for other stacks.
 
 | Stack / Tool | Command |
 |--------------|---------|
@@ -139,6 +152,7 @@ The command should show all containers in `healthy` or `running` state.
 
 | Stack | Development command |
 |-------|---------------------|
+| **.NET 10 (project stack)** | `dotnet run --project src/<service>.Api` or `docker compose up -d --build` |
 | Node.js | `npm run dev` |
 | Java | `mvn spring-boot:run` or `java -jar target/app.jar` |
 | Python | `uvicorn main:app --reload` |
@@ -154,7 +168,7 @@ curl http://localhost:8000/health
 # {"status": "ok", "timestamp": "2024-01-15T10:30:00Z"}
 ```
 
-Open your browser at `http://localhost:15672` for the RabbitMQ interface (if using RabbitMQ).
+Open your browser at `http://localhost:9092` — Kafka listens there (ADR-004 chose Kafka over RabbitMQ; there is no RabbitMQ container in this project).
 
 ---
 
@@ -266,8 +280,6 @@ npm run build:docker        # Build local Docker image
 | Service | URL | Credentials (local only) |
 |---------|-----|--------------------------|
 | API Gateway (Kong OSS) | http://localhost:8000 | |
-| RabbitMQ UI | http://localhost:15672 | guest / guest |
-| Adminer (DB) | http://localhost:8090 | sa / *** |
 | Scalar API docs | http://localhost:8000/docs | |
 
 ---
