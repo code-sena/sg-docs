@@ -24,9 +24,8 @@
 | ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
 | BusID | UNIQUEIDENTIFIER | No | Reference to bus | FK → Bus.ID (Bus) |
 | ProfileID | UNIQUEIDENTIFIER | No | Reference to driver profile | FK → Profile.ID (IAM) |
-| DateTime | DATETIME | No | When the exceptional usage occurred | |
+| DateTime | DATETIME2 | No | When the exceptional usage occurred | Default: GETDATE() |
 | Reason | VARCHAR(200) | No | Justification | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
 
 **Relationships:**
 - `BusID` → FK to `Bus.ID` in Bus service
@@ -44,7 +43,6 @@
 | StartDateTime | DATETIME | No | Usage start | |
 | EndDateTime | DATETIME | No | Usage end | |
 | Reason | VARCHAR(200) | No | Justification | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
 
 **Relationships:**
 - `ProfileID` → FK to `Profile.ID` in IAM service
@@ -55,3 +53,4 @@
 ## Modeling decisions
 
 - **Separate tables by usage type:** ExceptionalDriverUsage and ExceptionalRouteUsage are kept separate to model distinct scenarios (bus assignment vs route assignment) with their own references.
+- **No status column:** both tables are append-only records of an exceptional usage; there is no lifecycle to model, so no `Status`/soft-delete column exists.

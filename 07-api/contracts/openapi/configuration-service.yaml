@@ -84,7 +84,7 @@ paths:
         - name: name
           in: path
           required: true
-          schema: { type: string, format: uuid }
+          schema: { type: string, maxLength: 100, example: session.timeout.minutes }
       responses:
         '200':
           description: OK
@@ -101,7 +101,7 @@ paths:
         - name: name
           in: path
           required: true
-          schema: { type: string, format: uuid }
+          schema: { type: string, maxLength: 100, example: session.timeout.minutes }
       requestBody:
         required: true
         content:
@@ -144,7 +144,7 @@ paths:
         - name: id
           in: path
           required: true
-          schema: { type: string, format: uuid }
+          schema: { type: integer, minimum: 1, maximum: 255, example: 1 }
       requestBody:
         required: true
         content:

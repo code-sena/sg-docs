@@ -76,7 +76,7 @@
 | 08 | `gps-service` | Tracking | GPS devices (VT03F protocol) and position history | 8080 | `Gps` | Relational (shared) | Java + Spring Boot | 🟡 In development |
 | 09 | `exceptional-service` | Transport | Exceptional driver and route usage | 8080 | `Exceptional` | Relational (shared) | C# + ASP.NET | 🟡 In development |
 | 10 | `audit-service` | Infra | Audit trail and error logs | 8080 | `Audit` | Relational (shared) | C# + ASP.NET | 🟡 In development |
-| 11 | `configuration-service` | Infra | Security settings and password policies | 8080 | `Configuration` | Relational (shared) | C# + ASP.NET | 🟡 In development |
+| 11 | `configuration-service` | Infra | Security settings and password policies | 8080 | `Settings` | Relational (shared) | C# + ASP.NET | 🟡 In development |
 
 **Statuses:** 🟢 Active in prod | 🟡 In development | 🔴 Planned | ⏸ Deprecated
 
@@ -242,7 +242,7 @@
 | **Domain** | Infrastructure |
 | **Responsibility** | Security settings and password policies |
 | **Stack** | C# + ASP.NET |
-| **Schema** | `Configuration` |
+| **Schema** | `Settings` |
 | **Tables** | SecuritySettings, PasswordPolicies |
 
 ---

@@ -9,7 +9,7 @@
 | Number in catalog | 11 |
 | Local port | 8080 |
 | Stack | C# + ASP.NET |
-| SQL Server schema | `Configuration` |
+| SQL Server schema | `Settings` |
 | Repository | One folder per service under `backend/` (reached by Docker DNS name, not by host path) |
 | Communicates with | — |
 | Consumed by | api-gateway (all client traffic) |
@@ -44,7 +44,7 @@ curl http://localhost:8080/health
 
 ## Related documents
 
-- [data-model.md](./data-model.md) — schema `Configuration`; tables: SecuritySettings, PasswordPolicies
+- [data-model.md](./data-model.md) — schema `Settings`; tables: SecuritySettings, PasswordPolicies
 - [events.md](./events.md) — publishes/consumes
 - [decisions.md](./decisions.md) — service-level decisions
 - [runbook.md](./runbook.md) — production operations
