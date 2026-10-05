@@ -30,7 +30,7 @@
 | Email | VARCHAR(50) | Yes | Contact email | |
 | Website | VARCHAR(100) | Yes | Website URL | |
 | Theme | VARCHAR(20) | Yes | Visual theme config | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 **Relationships:**
 - `CityID` → FK to `City.ID`
@@ -45,7 +45,7 @@
 | SchoolID | UNIQUEIDENTIFIER | No | Reference to school | FK → School.ID |
 | Name | VARCHAR(30) | Yes | Campus name | |
 | Address | VARCHAR(30) | Yes | Campus address | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 **Relationships:**
 - `SchoolID` → FK to `School.ID`
@@ -59,7 +59,7 @@
 | ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
 | CampusID | UNIQUEIDENTIFIER | No | Reference to campus | FK → SchoolCampus.ID |
 | Name | VARCHAR(10) | Yes | Course name/code | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 **Relationships:**
 - `CampusID` → FK to `SchoolCampus.ID`
@@ -73,7 +73,6 @@
 | ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
 | ProfileID | UNIQUEIDENTIFIER | No | Reference to student profile | FK → Profile.ID (IAM) |
 | CourseID | UNIQUEIDENTIFIER | No | Reference to course | FK → Course.ID |
-| Status | STATUS | No | Record status | Default: ACTIVE |
 
 **Relationships:**
 - `ProfileID` → FK to `Profile.ID` in IAM service
@@ -92,7 +91,7 @@
 | ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
 | Name | VARCHAR(40) | Yes | City name | |
 | Country | VARCHAR(30) | Yes | Country name | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 ---
 

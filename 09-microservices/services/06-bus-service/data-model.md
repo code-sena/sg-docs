@@ -24,12 +24,11 @@
 | ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
 | SchoolID | UNIQUEIDENTIFIER | No | Reference to school | FK → School.ID (School) |
 | SoatValidity | DATE | No | SOAT insurance validity | |
-| GpsDeviceID | UNIQUEIDENTIFIER | No | Reference to GPS device | FK → GpsDevice.ID (GPS) |
-| GpsStatus | BOOLEAN | No | GPS enabled status | |
+| GpsDeviceID | UNIQUEIDENTIFIER | No | Reference to GPS device | FK → GpsDevice.ID (GPS), UNIQUE |
 | Capacity | TINYINT | No | Passenger capacity | |
 | Plate | VARCHAR(15) | No | License plate | |
 | ModelId | TINYINT | No | Reference to model | FK → Model.ID |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 **Relationships:**
 - `SchoolID` → FK to `School.ID` in School service
@@ -60,7 +59,7 @@
 |-------|------|----------|-------------|-------------|
 | ID | TINYINT | No | Unique identifier | PK |
 | Name | VARCHAR(30) | Yes | Brand name | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 ### Table: Model
 
@@ -71,7 +70,7 @@
 | ID | TINYINT | No | Unique identifier | PK |
 | BrandID | TINYINT | No | Reference to brand | FK → Brand.ID |
 | Name | VARCHAR(30) | Yes | Model name | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 **Relationships:**
 - `BrandID` → FK to `Brand.ID`

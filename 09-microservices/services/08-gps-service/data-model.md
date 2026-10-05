@@ -24,7 +24,7 @@
 | ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
 | Imei | VARCHAR(20) | Yes | Device IMEI | |
 | LastConnection | DATETIME | Yes | Last connection time | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| GpsStatus | BIT | No | Device registered/active flag | NOT NULL, no default |
 
 ### Table: GpsLocation
 
@@ -39,7 +39,6 @@
 | Speed | DECIMAL(8,2) | Yes | Vehicle speed | |
 | Course | DECIMAL(8,2) | Yes | Heading/direction | |
 | DateTime | DATETIME | Yes | Position timestamp | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
 
 **Relationships:**
 - `GpsDeviceID` → FK to `GpsDevice.ID`

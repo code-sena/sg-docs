@@ -25,7 +25,7 @@
 | SchoolID | UNIQUEIDENTIFIER | No | Reference to school | FK → School.ID (School) |
 | Name | VARCHAR(30) | Yes | Route name | |
 | TargetSector | VARCHAR(30) | Yes | Target neighborhood/sector | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 **Relationships:**
 - `SchoolID` → FK to `School.ID` in School service
@@ -42,7 +42,7 @@
 | Address | VARCHAR(30) | Yes | Address | |
 | Longitude | DECIMAL(12,2) | Yes | Longitude coordinate | |
 | Latitude | DECIMAL(12,2) | Yes | Latitude coordinate | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 **Relationships:**
 - `CityID` → FK to `City.ID` in School service
@@ -58,7 +58,7 @@
 | RouteID | UNIQUEIDENTIFIER | No | Reference to route | FK → Route.ID |
 | StopID | UNIQUEIDENTIFIER | No | Reference to stop | FK → Stop.ID |
 | Order | INT | No | Stop sequence order | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 **Relationships:**
 - `RouteID` → FK to `Route.ID`
@@ -73,7 +73,7 @@
 | ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
 | BusID | UNIQUEIDENTIFIER | No | Reference to bus | FK → Bus.ID (Bus) |
 | RouteID | UNIQUEIDENTIFIER | No | Reference to route | FK → Route.ID |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 **Relationships:**
 - `BusID` → FK to `Bus.ID` in Bus service
@@ -88,7 +88,7 @@
 | ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
 | ProfileID | UNIQUEIDENTIFIER | No | Reference to student profile | FK → Profile.ID (IAM) |
 | RouteStopID | UNIQUEIDENTIFIER | No | Reference to route stop | FK → RouteStop.ID |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 **Relationships:**
 - `ProfileID` → FK to `Profile.ID` in IAM service
@@ -105,7 +105,7 @@
 | DayOfWeek | DAYOFWEEK | No | Day of the week | Default: MONDAY |
 | Direction | VARCHAR(10) | No | Trip direction (e.g., outbound/inbound) | |
 | StartTime | TIME | No | Scheduled start time | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 **Relationships:**
 - `RouteBusAssignmentsId` → FK to `RouteBusAssignments.ID`
@@ -123,7 +123,7 @@
 | DayOfWeek | DAYOFWEEK | No | Day of the week | Default: MONDAY |
 | StartDateTime | DATETIME | No | Start of execution | |
 | EndDateTime | DATETIME | No | End of execution | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 **Relationships:**
 - `RouteScheduleId` → FK to `RouteSchedule.ID`
