@@ -23,17 +23,14 @@
 | ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
 | RouteExecutionID | UNIQUEIDENTIFIER | No | Reference to route execution | FK → RouteExecution.ID (Route) |
 | ProfileID | UNIQUEIDENTIFIER | No | Reference to student profile | FK → Profile.ID (IAM) |
-| BusID | UNIQUEIDENTIFIER | No | Reference to bus | FK → Bus.ID (Bus) |
-| StopID | UNIQUEIDENTIFIER | No | Reference to stop | FK → Stop.ID (Route) |
-| DateTime | TIMESTAMP | Yes | Event date/time (auto-generated) | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
-| BoardingType | BOARDINGTYPE | No | ON_BOARD or OFF_BOARD | Default: ON_BOARD |
+| RouteStopID | UNIQUEIDENTIFIER | No | Reference to route stop | FK → RouteStop.ID (Route) |
+| DateTime | DATETIME2 | No | Event date/time | NOT NULL, Default GETDATE() |
+| BoardingType | VARCHAR(20) | No | ON_BOARD or OFF_BOARD | CHECK (BoardingType IN ('ON_BOARD', 'OFF_BOARD')), Default 'ON_BOARD' |
 
 **Relationships:**
 - `RouteExecutionID` → FK to `RouteExecution.ID` in Route service
 - `ProfileID` → FK to `Profile.ID` in IAM service
-- `BusID` → FK to `Bus.ID` in Bus service
-- `StopID` → FK to `Stop.ID` in Route service
+- `RouteStopID` → FK to `RouteStop.ID` in Route service
 
 **Enum values for BoardingType:** ON_BOARD, OFF_BOARD
 
@@ -47,7 +44,6 @@
 | Name | VARCHAR(30) | Yes | Alert type name | |
 | Description | VARCHAR(100) | Yes | Description | |
 | UrgencyLevel | TINYINT | Yes | Numeric urgency level | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
 
 ### Table: Alert
 
@@ -61,7 +57,6 @@
 | ProfileId | UNIQUEIDENTIFIER | No | Reference to reporting profile | FK → Profile.ID (IAM) |
 | DateTime | DATETIME | Yes | Alert timestamp | |
 | Description | VARCHAR(100) | Yes | Alert description | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
 
 **Relationships:**
 - `RouteExecutionID` → FK to `RouteExecution.ID` in Route service
@@ -78,7 +73,6 @@
 | AlertID | UNIQUEIDENTIFIER | No | Reference to alert | FK → Alert.ID |
 | ProfileID | UNIQUEIDENTIFIER | No | Reference to recipient profile | FK → Profile.ID (IAM) |
 | DateTimeRead | DATETIME | No | When the alert was read | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
 
 **Relationships:**
 - `AlertID` → FK to `Alert.ID`

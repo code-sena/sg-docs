@@ -102,6 +102,7 @@ Choose the guide that matches your project's primary language:
 
 | Stack | File |
 |-------|------|
+| **ASP.NET Core (.NET 10)** | [`_stacks/dotnet-aspnet.md`](./_stacks/dotnet-aspnet.md) ← **project stack** |
 | Java + Spring Boot | [`_stacks/java-spring.md`](./_stacks/java-spring.md) |
 | Go | [`_stacks/go.md`](./_stacks/go.md) |
 | Node.js + TypeScript | [`_stacks/node-typescript.md`](./_stacks/node-typescript.md) |

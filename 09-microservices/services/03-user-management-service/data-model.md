@@ -30,7 +30,7 @@
 | Phone | INT | No | Phone number | |
 | ResidenceAddress | VARCHAR(50) | No | Home address | |
 | DateBirth | DATE | No | Date of birth | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 ### Table: Family
 
@@ -41,7 +41,7 @@
 | ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
 | Name | VARCHAR(50) | Yes | Family name/label | |
 | Observations | VARCHAR(100) | Yes | Additional notes | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 ### Table: FamilyMember
 
@@ -53,7 +53,7 @@
 | FamilyID | UNIQUEIDENTIFIER | No | Reference to family | FK → Family.ID |
 | ProfileID | UNIQUEIDENTIFIER | No | Reference to profile | FK → Profile.ID (IAM) |
 | RelationshipType | RELATIONSHIPTYPE | No | Relationship type | Default: PARENT |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 **Relationships:**
 - `FamilyID` → FK to `Family.ID`
@@ -71,7 +71,7 @@
 | ProfileID | UNIQUEIDENTIFIER | No | Reference to profile | FK → Profile.ID (IAM) |
 | LicenseNumber | SMALLINT | Yes | License number | |
 | LicenseExpirationDate | DATE | No | Expiration date | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 **Relationships:**
 - `ProfileID` → FK to `Profile.ID` in IAM service

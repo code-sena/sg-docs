@@ -49,7 +49,7 @@ Include: software prerequisites, environment variables, exact commands, how to v
 | configuration-service | 8080 |
 | SQL Server | 1433 |
 | Redis | 6379 |
-| RabbitMQ UI | 15672 |
+| Kafka | 9092 |
 | Adminer (DB) | 8090 |
 
 > **Docker network:** Kong OSS listens on **8000** (single public entry). Every business microservice listens on **8080** and is called by **service name** (e.g. `http://iam-service:8080/health`).

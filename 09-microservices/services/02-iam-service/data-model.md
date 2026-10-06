@@ -24,7 +24,7 @@
 | ID | TINYINT | No | Unique identifier | PK |
 | Name | VARCHAR(20) | No | Role name | |
 | Description | VARCHAR(100) | No | Role description | |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 ### Table: Permissions
 
@@ -61,7 +61,7 @@
 | SchoolID | UNIQUEIDENTIFIER | No | Reference to school | FK → School.ID (School) |
 | PasswordHash | VARCHAR(100) | No | Hashed password | |
 | RoleID | TINYINT | No | Reference to role | FK → Role.ID |
-| Status | STATUS | No | Record status | Default: ACTIVE |
+| Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 **Relationships:**
 - `PersonID` → FK to `Person.ID` in User Management service
