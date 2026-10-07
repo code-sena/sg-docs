@@ -20,7 +20,7 @@ CREATE TABLE Person (
     IdentificationType VARCHAR(20) NOT NULL CHECK (IdentificationType IN ('TI', 'CC')) DEFAULT 'TI',
     IdentificationNumber VARCHAR(20) UNIQUE NOT NULL, 
     Email VARCHAR(50) NOT NULL, 
-    Phone INT NOT NULL, 
+    Phone BIGINT NOT NULL, 
     ResidenceAddress VARCHAR(50) NOT NULL, 
     DateBirth DATE NOT NULL, 
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
