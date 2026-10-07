@@ -178,7 +178,6 @@ ALTER TABLE Person DROP COLUMN LastName;
 | Engine | Use when... | Avoid when... |
 |--------|------------|---------------|
 | **SQL Server** | ACID transactions, personal-data integrity, and relational memberships | Ephemeral counters or cache-only state |
-| **PostgreSQL** | ACID transactions, complex relationships, JSONB, full-text search | Deeply nested documents |
 | **MongoDB** | Flexible documents and catalog-style data | Complex transactions across collections |
 | **Redis** | Cache, sessions, TTL state, and counters | Authoritative personal data |
 | **Elasticsearch** | Full-text search, analytics, and logs | Source of truth for personal records |
@@ -188,7 +187,7 @@ ALTER TABLE Person DROP COLUMN LastName;
 ```mermaid
 erDiagram
 	Family ||--o{ FamilyMember : contains
-	Person ||--o{ DriverLicense : identifies
+	Person ||--o{ Profile : identifies
 	Profile ||--o{ FamilyMember : belongs
 	Profile ||--o{ DriverLicense : holds
 ```

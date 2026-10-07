@@ -52,7 +52,9 @@ ms-{name-service}/
         │       │   └── Controllers/
         │       │       └── MyEntityController.cs
         │       ├── Persistence/      # Secondary adapter: Database (EF Core DbContext + repositories)
-        │       │   └── MyEntityRepository.cs   # implements IMyEntityRepository
+        │       │   └── NameEntity.cs   # implements IMyEntityRepository
+        │       ├── Repository
+        │           └── EntityRepositoryImpl
         │       └── External/         # Secondary adapter: External APIs (e.g. Google Maps)
         ├── Shared/                   # Cross-cutting shared code across modules
         │   └── Domain/Model/         # e.g. common value objects (Person, Status...)
@@ -73,7 +75,7 @@ dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer   # JWT tokens
 dotnet add package Swashbuckle.AspNetCore                          # Swagger UI + API docs
 
 # Data infrastructure — Entity Framework Core
-dotnet add package Microsoft.EntityFrameworkCore.SqlServer          # or Npgsql provider
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer          # or Microsoft.Data.SqlClient provider
 dotnet add package Microsoft.EntityFrameworkCore.Design             # migrations tooling
 
 # Validation (primary adapter)

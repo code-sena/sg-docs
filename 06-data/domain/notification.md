@@ -19,7 +19,6 @@ CREATE TABLE Boarding (
     ProfileId UNIQUEIDENTIFIER NOT NULL,
     RouteStopId UNIQUEIDENTIFIER NOT NULL,
     DateTime DATETIME2 NOT NULL DEFAULT GETDATE(),
-    Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active', 
     BoardingType VARCHAR(20) NOT NULL CHECK (BoardingType IN ('ON_BOARD', 'OFF_BOARD')) DEFAULT 'ON_BOARD'
 );
 ```
@@ -50,7 +49,6 @@ CREATE TABLE AlertType (
     Name VARCHAR(30) NOT NULL, 
     Description VARCHAR(100) NOT NULL, 
     UrgencyLevel TINYINT NOT NULL, 
-    Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
 ```
 
@@ -79,9 +77,8 @@ CREATE TABLE Alert (
     AlertTypeId TINYINT NOT NULL,
     ProfileId UNIQUEIDENTIFIER NOT NULL,
     DateTime DATETIME2 NOT NULL DEFAULT GETDATE(),
-    Description VARCHAR(100) NOT NULL, 
+    Description VARCHAR(100), 
     AcknowledgedAt DATETIME2 NULL
-    Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
 ```
 
@@ -112,7 +109,6 @@ CREATE TABLE AlertRecipient (
     AlertId UNIQUEIDENTIFIER NOT NULL,
     ProfileId UNIQUEIDENTIFIER NOT NULL,
     DateTimeRead DATETIME2 NOT NULL, 
-    Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
 ```
 
@@ -179,7 +175,6 @@ ALTER TABLE Alert DROP COLUMN DateTime;
 | Engine | Use when... | Avoid when... |
 |--------|------------|---------------|
 | **SQL Server** | ACID event, alert, recipient, and catalog records | Ephemeral counters or cache-only state |
-| **PostgreSQL** | ACID transactions, complex relationships, JSONB, full-text search | Deeply nested documents |
 | **MongoDB** | Flexible documents and catalog-style data | Complex transactions across collections |
 | **Redis** | Cache, sessions, TTL state, and notification queues | Durable alert history or source-of-truth records |
 | **Elasticsearch** | Full-text search, analytics, and operational logs | Authoritative notification data |
@@ -190,7 +185,6 @@ ALTER TABLE Alert DROP COLUMN DateTime;
 erDiagram
 		AlertType ||--o{ Alert : classifies
 		Alert ||--o{ AlertRecipient : reaches
-		Alert ||--o{ Boarding : correlates
 ```
 
 ## Correlations

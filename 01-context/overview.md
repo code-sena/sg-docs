@@ -44,15 +44,15 @@ Guardian Escolar addresses this gap with route management, vehicle monitoring, t
 
 - **Web frontend:** Angular 21.
 - **Mobile frontend:** React + Expo.
-- **Backend and services:** .NET + C#.
-- **Database:** PostgreSQL.
+- **Backend and services:** polyglot microservices — C#/.NET, Java/Spring Boot, Go.
+- **Database:** SQL Server (shared instance, schema per service — ADR-002).
 - **Development and containers:** Docker + WSL2.
 - **Additional technology under consideration:** .NET MAUI.
 - **Repository workflow:** Git, including `develop` and `docs` branches.
 
 ## Current status
 
-Guardian Escolar is under active academic development. The web frontend contains public, authentication, administration, super administration, and profile areas. The backend is organized as a modular ASP.NET Core application with modules such as Security, UserManagement, FleetManagement, RouteManagement, SchoolManagement, AlertManagement, and BoardingManagement.
+Guardian Escolar is under active academic development. The web frontend contains public, authentication, administration, super administration, and profile areas. The backend is organized as **11 microservices** behind a Kong API Gateway (see `09-microservices/service-catalog.md`), with stacks across C#/.NET, Java/Spring Boot, and Go.
 
 The mobile frontend uses React + Expo. A Notifications view has recently been created with mocked data, search filters, and highlighted notifications. Some integrations and operational monitoring behaviors remain under development or require confirmation through API contracts.
 
@@ -73,9 +73,9 @@ The product is planned for internationalization in Spanish, English, French, and
 
 - Scope: `scope.md`
 - Domain glossary: `glossary.md`
-- Navigation Map: `../12-ux-ui/navigation-map-guardian-escolar.md`
-- Design System: `../12-ux-ui/design-system-guardian-escolar.md`
+- Navigation Map: `../12-ux-ui/navigation-map.md`
+- Design System: `../12-ux-ui/design-system.md`
 - Product vision: `../03-product/vision.md`
 - Security policy: `../00-governance/security-policy.md`
-- Backend source: `../../GuardianEscolar/dvlp-back/src/backend/`
-- Web frontend source: `../../GuardianEscolar/dvlp-front/dvlp-web/`
+- Backend: environment-specific — not documented in this repo
+- Web frontend: environment-specific — not documented in this repo

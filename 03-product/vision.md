@@ -107,3 +107,11 @@ Provide a reliable platform that improves visibility, control, and traceability 
 - Problem framing (the why) → `03-product/problem-framing.md`
 - Backlog that implements the vision → `04-requirements/user-stories.md`
 - KPIs in operations → `13-operations/README.md`
+
+---
+
+## Principal roles
+
+Only four: **Admin (web)** · **Parent/guardian (mobile)** · **Student (mobile)** · **Driver (mobile)**.
+
+_Aligned with HUs: `04-requirements/user-stories.md` · 2026-09-22_

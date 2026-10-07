@@ -14,12 +14,11 @@
 
 ```sql
 CREATE TABLE ExceptionalDriverUsage (
-	ID UNIQUEIDENTIFIER PRIMARY KEY,
-	BusID UNIQUEIDENTIFIER NOT NULL,
-	ProfileID UNIQUEIDENTIFIER NOT NULL,
-	DateTime DATETIME2 NOT NULL, 
+	Id UNIQUEIDENTIFIER PRIMARY KEY,
+	BusId UNIQUEIDENTIFIER NOT NULL,
+	ProfileId UNIQUEIDENTIFIER NOT NULL,
+	DateTime DATETIME2 NOT NULL DEFAULT GETDATE(), 
     Reason VARCHAR(200) NOT NULL,
-	Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
 ```
 
@@ -32,7 +31,6 @@ CREATE TABLE ExceptionalDriverUsage (
 | ProfileId | UNIQUEIDENTIFIER | Driver profile reference | `550e8400-...` |
 | DateTime | DATETIME2 | Exceptional usage timestamp | `2026-09-08T08:00:00Z` |
 | Reason | VARCHAR(200) | Business justification | `Replacement driver` |
-| Status | VARCHAR(20) | Lifecycle status | `Active` |
 
 **Modeling decisions:**
 1. Bus and profile IDs are external correlations resolved through service contracts.
@@ -50,7 +48,6 @@ CREATE TABLE ExceptionalRouteUsage (
 	StartDateTime DATETIME NOT NULL, 
     EndDateTime DATETIME NOT NULL,
 	Reason VARCHAR(200) NOT NULL, 
-	Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
 ```
 
@@ -119,7 +116,6 @@ ALTER TABLE ExceptionalDriverUsage DROP COLUMN DateTime;
 | Engine | Use when... | Avoid when... |
 |--------|------------|---------------|
 | **SQL Server** | ACID exception records and indexed operational references | Ephemeral counters or unstructured documents |
-| **PostgreSQL** | ACID transactions, complex relationships, JSONB, full-text search | Deeply nested documents |
 | **MongoDB** | Flexible exception documents | Complex transactions across collections |
 | **Redis** | Cache, sessions, TTL state, and counters | Authoritative exception history |
 | **Elasticsearch** | Search, analytics, and operational logs | Source of truth for exceptions |

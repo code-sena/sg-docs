@@ -38,7 +38,7 @@ service-name/
 │       │   │   └── appointment_handler.go
 │       │   └── dto/
 │       │       └── appointment_dto.go
-│       ├── postgres/                # Secondary adapter: PostgreSQL
+│       ├── sqlserver/                # Secondary adapter: SQL Server
 │       │   └── appointment_repository.go   # implements port/out.AppointmentRepository
 │       ├── kafka/                   # Secondary adapter: Kafka (if applicable)
 │       │   └── event_publisher.go
@@ -79,7 +79,7 @@ require (
     github.com/go-playground/validator/v10 v10.x
 
     // Persistence (choose the driver for the project's engine)
-    github.com/jackc/pgx/v5 v5.x            // PostgreSQL
+    github.com/microsoft/go-mssqldb v1.x     // SQL Server
     // go.mongodb.org/mongo-driver v1.x      // MongoDB
 
     // Migrations

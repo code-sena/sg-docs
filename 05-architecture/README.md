@@ -49,7 +49,7 @@ error handling, retry policies.
 Catalog of design patterns used in the project.
 **Fill in:** for each pattern: name, when to use it, when NOT to use it, concrete example from the project.
 
-### `security-threat-model.md`
+### [`security-threat-model.md`](./security-threat-model.md)
 Security threat analysis of the system.
 **Fill in:** using the STRIDE methodology: Spoofing, Tampering, Repudiation, Information Disclosure,
 Denial of Service, Elevation of Privilege. For each threat: implemented mitigation.

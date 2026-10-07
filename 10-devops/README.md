@@ -31,18 +31,31 @@ Include: software prerequisites, environment variables, exact commands, how to v
 2. Copy environment variables: `cp .env.example .env`
 3. Start infrastructure: `docker-compose up -d`
 4. Wait for services to be ready: `./scripts/wait-for-services.sh`
-5. Verify: `curl http://localhost:8080/health`
+5. Verify: `curl http://localhost:8000/health`
 
 ## Local ports
 | Service | Port |
 |---------|------|
-| API Gateway | 8080 |
-| [Service 1] | 8001 |
-| RabbitMQ UI | 15672 |
+| api-gateway (Kong OSS) | **8000** |
+| iam-service | 8080 |
+| user-management-service | 8080 |
+| school-service | 8080 |
+| notification-service | 8080 |
+| bus-service | 8080 |
+| route-service | 8080 |
+| gps-service | 8080 |
+| exceptional-service | 8080 |
+| audit-service | 8080 |
+| configuration-service | 8080 |
+| SQL Server | 1433 |
+| Redis | 6379 |
+| Kafka | 9092 |
 | Adminer (DB) | 8090 |
 
+> **Docker network:** Kong OSS listens on **8000** (single public entry). Every business microservice listens on **8080** and is called by **service name** (e.g. `http://iam-service:8080/health`).
+
 ## Common issues
-- **Port in use:** `lsof -i :8080` to see what is using it
+- **Port in use:** `lsof -i :8000` to see what is using it
 - **DB not connecting:** verify Docker is running
 ```
 

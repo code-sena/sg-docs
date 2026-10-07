@@ -18,7 +18,7 @@
 | Number in catalog | [NN] |
 | Local port | [80XX] |
 | Repository | [URL] |
-| DB engine | [PostgreSQL / MongoDB / Redis / —] |
+| DB engine | [SQL Server / Redis / —] |
 | Communicates with | [list of other services it consumes] |
 | Consumed by | [list of services/frontends that call it] |
 

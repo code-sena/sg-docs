@@ -2,7 +2,7 @@
 
 - **ID:** ADR-006
 - **Date:** 2026-09-08
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authors:** [Team]
 
 ---
@@ -64,7 +64,7 @@ the internal service topology, create coupling, and duplicate cross-cutting logi
 - Debugging: need to distinguish gateway errors from service errors (structured logging with correlation ID).
 
 **Impact on the system:**
-- Affected services: all externally exposed services (auth-service, users-service, route-service, etc.).
+- Affected services: all externally exposed services (iam-service, users-service, route-service, etc.).
 - Documents that must be updated:
   - `05-architecture/overview.md` (update "Kong/NGINX/Spring Cloud Gateway" → Kong)
   - `09-microservices/service-catalog.md` (update API Gateway entry)

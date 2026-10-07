@@ -29,7 +29,7 @@ APP_[SERVICE]_[VARIABLE]
 
 Examples:
   APP_AUTH_JWT_SECRET
-  APP_ORDERS_DATABASE_URL
+  APP_ORDERS_ConnectionStrings__Default
   APP_NOTIFICATIONS_SMTP_HOST
 ```
 
@@ -37,7 +37,7 @@ Examples:
 
 | Variable | Local | Dev | Staging | Production |
 |----------|-------|-----|---------|------------|
-| `DATABASE_URL` | `postgresql://dev:dev@localhost/dev_db` | Vault | Vault | Vault |
+| `ConnectionStrings__Default` | `Server=localhost,1433;Database=school_guardian;User Id=sa;Password=***;TrustServerCertificate=True` | Vault | Vault | Vault |
 | `REDIS_URL` | `redis://localhost:6379` | Vault | Vault | Vault |
 | `JWT_SECRET` | `dev-secret-only-local` | Vault | Vault | Vault |
 | `LOG_LEVEL` | `debug` | `info` | `info` | `warn` |

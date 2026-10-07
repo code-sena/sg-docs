@@ -18,7 +18,7 @@ School Guardian has **two clients** with different needs:
    - **Driver:** scan the student's QR code (pickup/drop-off registration) and report GPS position.
    - **Student:** show the QR code on their phone.
 
-With 7 microservices in the backend, the question arises: how do we structure these two client
+With 11 microservices in the backend, the question arises: how do we structure these two client
 applications? A single monolith per platform, or a fragmented frontend (micro-frontends)?
 
 **Known constraints:**

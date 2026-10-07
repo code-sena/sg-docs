@@ -6,9 +6,9 @@
 
 ## 1. The problem in one sentence
 
-**Padres y acudientes de estudiantes que utilizan transporte escolar** y **necesitan conocer y controlar el recorrido de sus hijos durante el servicio de transporte** tienen dificultades para **saber en tiempo real dónde se encuentra el bus, si el estudiante abordó o descendió correctamente y recibir información oportuna ante novedades**, debido a **la falta de un sistema centralizado que integre el seguimiento GPS, el control de acceso mediante QR y las notificaciones**, lo que puede generar **incertidumbre para los acudientes, dificultades de control para las instituciones y falta de trazabilidad sobre los recorridos y el ingreso/salida de los estudiantes**.
+**Parents and guardians of students who use school transportation** and **need to know and control their children's trip during the service** have difficulty **knowing in real time where the bus is, whether the student boarded or alighted correctly, and receiving timely updates on exceptions**, due to **the lack of a centralized system that integrates GPS tracking, QR access control, and notifications**, which can cause **uncertainty for guardians, difficulty controlling operations for institutions, and a lack of traceability over routes and student boarding/alighting**.
 
-> **Nota:** El impacto cuantitativo exacto debe validarse mediante entrevistas, observación y datos reales de las instituciones. No se establece un porcentaje sin evidencia.
+> **Note:** Exact quantitative impact must be validated with interviews, observation, and real institutional data. No percentage is claimed without evidence.
 
 ---
 
@@ -16,45 +16,52 @@
 
 | Segment | Description | Estimated size | Priority |
 |---------|-------------|---------------|---------|
-| Padres y acudientes | Responsables de los estudiantes que utilizan el transporte escolar y necesitan conocer su ubicación y estado durante el recorrido. | Por determinar | High |
-| Conductores | Encargados de realizar las rutas y controlar el abordaje y descenso de los estudiantes. | Por determinar | High |
-| Administradores de la institución | Gestionan estudiantes, acudientes, conductores, buses, rutas y paradas. | Por determinar | High |
-| Estudiantes | Usuarios transportados mediante las rutas escolares. | Por determinar | High |
-| Superadministradores | Gestionan instituciones y administradores dentro del sistema. | Por determinar | Medium |
+| Parents and guardians | Responsible for students who use school transportation and need to know location and status during the trip. | TBD | High |
+| Drivers | Responsible for running routes and controlling student boarding and alighting. | TBD | High |
+| Institution administrators | Manage students, guardians, drivers, buses, routes, and stops. | TBD | High |
+| Students | Users transported on school routes. | TBD | High |
+
+> Only **four** principal roles: Admin (web) · Parent/guardian (mobile) · Student (mobile) · Driver (mobile).
 
 ### Jobs-to-be-done (JTBD)
 
-**Padres y acudientes**
+**Parents and guardians**
 
-> **Cuando** mi hijo utiliza el transporte escolar,  
-> **quiero** conocer la ubicación del bus y recibir información sobre su abordaje, descenso o novedades,  
-> **para** tener mayor tranquilidad y saber que el recorrido se está realizando correctamente.
+> **When** my child uses school transportation,  
+> **I want** to know the bus location and receive information about boarding, alighting, or exceptions,  
+> **so that** I have greater peace of mind and know the trip is being completed correctly.
 
-**Conductores**
+**Drivers**
 
-> **Cuando** inicio y realizo una ruta escolar,  
-> **quiero** identificar mediante QR a los estudiantes que suben y bajan del bus,  
-> **para** mantener un registro de los estudiantes transportados y generar las notificaciones correspondientes.
+> **When** I start and run a school route,  
+> **I want** to identify students boarding and alighting via QR,  
+> **so that** I keep a record of transported students and trigger the corresponding notifications.
 
-**Administradores**
+**Administrators**
 
-> **Cuando** gestiono el servicio de transporte escolar,  
-> **quiero** administrar estudiantes, acudientes, conductores, buses, rutas y paradas desde un sistema centralizado,  
-> **para** tener control y trazabilidad de la operación del transporte.
+> **When** I manage the school transportation service,  
+> **I want** to manage students, guardians, drivers, buses, routes, and stops from a centralized system,  
+> **so that** I have control and traceability of transportation operations.
+
+**Students**
+
+> **When** I board or get off the school bus,  
+> **I want** to show my personal QR code in the app,  
+> **so that** the driver can reliably register my boarding and alighting.
 
 ---
 
 ## 3. Evidence of the problem
 
-> La evidencia disponible actualmente proviene principalmente del levantamiento de información del proyecto. Los datos cuantitativos deben validarse posteriormente.
+> Available evidence currently comes mainly from project discovery. Quantitative data must be validated later.
 
 | Evidence type | Source | Date | Key finding |
 |--------------|--------|------|------------|
-| User interviews | Entrevistas/levantamiento con usuarios relacionados con el transporte escolar | 2026 | Se identificó la necesidad de conocer la ubicación del bus y mantener informados a los acudientes. |
-| User interviews | Levantamiento con responsables del servicio | 2026 | Se identificó la necesidad de controlar quién sube y baja del bus. |
-| Direct observation | Análisis del proceso actual | 2026 | Actualmente no existe un mecanismo integrado para registrar mediante QR el abordaje y descenso de estudiantes. |
-| Benchmarking | Análisis de soluciones de seguimiento como Protrack | 2026 | Se identificó el seguimiento de vehículos mediante mapas como una referencia para resolver la visualización de rutas y ubicación. |
-| Technical validation | Pruebas con dispositivo GPS VT03F | 2026 | Se comprobó la viabilidad técnica de recibir información del GPS mediante comunicación TCP para obtener datos de ubicación del vehículo. |
+| User interviews | Interviews/discovery with users related to school transportation | 2026 | Identified the need to know bus location and keep guardians informed. |
+| User interviews | Discovery with people responsible for the service | 2026 | Identified the need to control who boards and alights the bus. |
+| Direct observation | Analysis of the current process | 2026 | There is currently no integrated mechanism to register student boarding/alighting via QR. |
+| Benchmarking | Analysis of tracking solutions such as Protrack | 2026 | Vehicle tracking on maps identified as a reference for route and location visualization. |
+| Technical validation | Tests with VT03F GPS device | 2026 | Technical feasibility confirmed of receiving GPS data over TCP to obtain vehicle location. |
 
 ---
 
@@ -62,22 +69,22 @@
 
 | Current solution | Limitations | Cost/Friction |
 |-----------------|------------|--------------|
-| Comunicación directa entre institución, conductor y acudientes | La información depende de comunicación manual y no existe una fuente centralizada de información. | Tiempo adicional y posibilidad de retrasos en la comunicación. |
-| Consulta manual sobre el estado del recorrido | No permite conocer de forma centralizada la ubicación actual del bus. | Incertidumbre y dependencia de terceros para obtener información. |
-| Control manual de estudiantes durante el abordaje y descenso | No existe inicialmente un mecanismo automatizado que registre cada evento asociado al estudiante. | Riesgo de errores humanos y falta de trazabilidad. |
-| Sistemas/plataformas externas de rastreo GPS | Pueden permitir visualizar vehículos, pero no necesariamente integran estudiantes, acudientes, rutas y eventos de abordaje/descenso dentro del mismo sistema. | Necesidad de consultar diferentes herramientas o adaptar procesos manualmente. |
+| Direct communication among institution, driver, and guardians | Information depends on manual communication; there is no centralized source of truth. | Extra time and possible delays in communication. |
+| Manual check of trip status | Does not provide a centralized view of the current bus location. | Uncertainty and dependence on third parties to get information. |
+| Manual control of students during boarding/alighting | No automated mechanism records each student-associated event. | Risk of human error and lack of traceability. |
+| External GPS tracking systems/platforms | May show vehicles, but do not necessarily integrate students, guardians, routes, and boarding/alighting events in one system. | Need to consult different tools or adapt processes manually. |
 
 ---
 
 ## 5. Solution hypothesis
 
-**We believe that** una plataforma de gestión de transporte escolar que integre **seguimiento GPS de los buses, control de abordaje y descenso mediante códigos QR, gestión de rutas y paradas y notificaciones a los acudientes**
+**We believe that** a school transportation management platform that integrates **GPS bus tracking, boarding and alighting control via QR codes, route and stop management, and guardian notifications**
 
-**for** padres y acudientes, conductores y administradores de instituciones educativas
+**for** parents and guardians, drivers, and administrators of educational institutions
 
-**will achieve** mayor visibilidad, control y trazabilidad del servicio de transporte escolar, permitiendo que los acudientes conozcan la ubicación del bus y reciban información sobre los eventos relacionados con sus estudiantes.
+**will achieve** greater visibility, control, and traceability of school transportation, enabling guardians to know bus location and receive information about events related to their students.
 
-**We will know we succeeded when** los usuarios puedan consultar la ubicación del bus, registrar correctamente los eventos de abordaje/descenso mediante QR y recibir las notificaciones correspondientes, con una reducción de la dependencia de procesos manuales.
+**We will know we succeeded when** users can check bus location, correctly register boarding/alighting events via QR, and receive the corresponding notifications, with reduced dependence on manual processes.
 
 ---
 
@@ -85,17 +92,17 @@
 
 | Metric | Current baseline | 6-month target | How to measure it |
 |--------|----------------|---------------|-------------------|
-| Estudiantes con eventos de abordaje/descenso registrados | No existe medición centralizada | ≥ 95% de los eventos registrados mediante QR | Registros generados por el sistema |
-| Rutas con seguimiento GPS activo | Por determinar | ≥ 95% de las rutas operativas con GPS activo | Datos recibidos por el servicio GPS |
-| Notificaciones generadas correctamente | No existe medición | ≥ 95% de los eventos configurados generan su notificación | Logs de eventos y notificaciones |
-| Uso de la aplicación por acudientes | No existe medición | Por determinar mediante piloto | Métricas de autenticación y actividad |
-| Incidencias de información no disponible sobre el recorrido | Por determinar | Reducción respecto a la línea base | Registro de incidencias y soporte |
+| Students with registered boarding/alighting events | No centralized measurement | ≥ 95% of events registered via QR | System-generated records |
+| Routes with active GPS tracking | TBD | ≥ 95% of operational routes with GPS active | Data received by gps-service |
+| Notifications generated correctly | No measurement | ≥ 95% of configured events generate their notification | Event and notification logs |
+| App usage by guardians | No measurement | TBD via pilot | Authentication and activity metrics |
+| Incidents of unavailable trip information | TBD | Reduction vs baseline | Incident and support logs |
 
 ### North Star Metric
 
-**Porcentaje de recorridos escolares en los que los eventos críticos del servicio —ubicación del bus y abordaje/descenso de estudiantes— quedan registrados y disponibles para los usuarios correspondientes.**
+**Percentage of school trips in which critical service events — bus location and student boarding/alighting — are registered and available to the corresponding users.**
 
-Esta métrica representa el valor principal del sistema: **dar visibilidad y trazabilidad al transporte escolar.**
+This metric represents the core value of the system: **give visibility and traceability to school transportation.**
 
 ---
 
@@ -103,30 +110,30 @@ Esta métrica representa el valor principal del sistema: **dar visibilidad y tra
 
 | Risk | Probability | Impact | Experiment to validate |
 |------|-------------|--------|----------------------|
-| Los acudientes no utilizan frecuentemente la aplicación | Medium | High | Realizar un piloto con acudientes y medir frecuencia de acceso y consultas. |
-| Los conductores no realizan correctamente el escaneo de QR | Medium | High | Probar el flujo de abordaje/descenso durante recorridos reales y medir eventos correctamente registrados. |
-| La señal GPS no es suficientemente estable durante los recorridos | Medium | High | Realizar pruebas del VT03F durante diferentes recorridos y medir continuidad de los datos TCP/GPS. |
-| Los usuarios no necesitan consultar la ubicación con tanta frecuencia como se plantea | Medium | Medium | Medir durante un piloto cuántas consultas de ubicación realizan los acudientes. |
-| Las notificaciones no son oportunas o relevantes | Medium | High | Medir tiempos de generación/entrega y solicitar retroalimentación de los usuarios. |
-| La integración del GPS presenta problemas de conectividad | Medium | High | Realizar pruebas de conexión, recepción de datos y reconexión del dispositivo GPS. |
-| El proceso actual de transporte presenta variaciones entre instituciones | Medium | Medium | Validar el flujo con diferentes instituciones antes de establecerlo como proceso estándar. |
+| Guardians do not use the app frequently | Medium | High | Run a pilot with guardians and measure access/query frequency. |
+| Drivers do not scan QR correctly | Medium | High | Test boarding/alighting on real trips and measure correctly registered events. |
+| GPS signal is not stable enough during trips | Medium | High | Test the VT03F on different trips and measure TCP/GPS data continuity. |
+| Users do not need location queries as often as assumed | Medium | Medium | Measure how many location queries guardians make in a pilot. |
+| Notifications are not timely or relevant | Medium | High | Measure generation/delivery times and collect user feedback. |
+| GPS integration has connectivity issues | Medium | High | Test connection, data reception, and device reconnection. |
+| Current transportation process varies by institution | Medium | Medium | Validate the flow with different institutions before standardizing. |
 
 ---
 
 ## 8. Out of scope (we do not solve)
 
-Para esta versión del sistema **no se pretende resolver**:
+This version of the system **does not aim to solve**:
 
-- La planificación automática de horarios académicos de los estudiantes.
-- La gestión académica de las instituciones educativas.
-- El mantenimiento mecánico de los buses.
-- La compra, administración o instalación física de dispositivos GPS.
-- La gestión del servicio de transporte público general.
-- La navegación autónoma del conductor.
-- La generación automática de rutas óptimas mediante inteligencia artificial.
-- El pago o cobro del servicio de transporte escolar.
-- La comunicación telefónica directa entre acudientes y conductores como función principal.
-- La sustitución de los procedimientos de emergencia establecidos por cada institución.
+- Automatic planning of students' academic schedules.
+- Academic management of educational institutions.
+- Mechanical maintenance of buses.
+- Purchase, administration, or physical installation of GPS devices.
+- Management of general public transportation services.
+- Autonomous driver navigation.
+- Automatic generation of optimal routes via artificial intelligence.
+- Payment or billing for the school transportation service.
+- Direct phone calls between guardians and drivers as a core feature.
+- Replacing emergency procedures established by each institution.
 
 ---
 
@@ -136,5 +143,20 @@ Para esta versión del sistema **no se pretende resolver**:
 - HUs that implement this solution → `04-requirements/user-stories.md`
 - Detailed KPIs → `13-operations/README.md`
 - Domain → `02-domain/`
-- GPS / tracking → módulo o servicio de seguimiento GPS
-- QR → módulo de control de abordaje y descenso
+- GPS / tracking → GPS tracking service/module
+- QR → boarding and alighting control module
+
+---
+
+## Product roles (canonical)
+
+Only **four** principal roles:
+
+1. **Admin** (web)
+2. **Parent / father / guardian** (mobile)
+3. **Student** (mobile)
+4. **Driver** (mobile)
+
+Formal HUs live in [`../04-requirements/user-stories.md`](../04-requirements/user-stories.md); the product backlog uses the same IDs (`HU-*`).
+
+_Updated: 2026-09-22_

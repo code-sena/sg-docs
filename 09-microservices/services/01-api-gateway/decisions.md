@@ -1,56 +1,55 @@
-# Decisiones técnicas — API Gateway
+# Technical decisions — API Gateway
 
-> Decisiones de diseño internas de este servicio que no están cubiertas por los ADRs
-> de arquitectura global. Cada decisión documenta el contexto, la elección y las consecuencias.
-
----
-
-## Decisión: Autenticación en gateway vs. en cada servicio
-
-**Fecha:** [fecha de la decisión]
-**Contexto:** Hay dos estrategias para verificar tokens JWT: (A) el gateway verifica el token
-y pasa el contexto del usuario como headers; (B) cada microservicio verifica su propio token.
-
-**Decisión:** Estrategia A — el gateway verifica el JWT (firma + expiración + blacklist)
-y adjunta `X-User-Id` y `X-User-Role` como headers internos. Los microservicios confían
-en estos headers sin re-verificar el token.
-
-**Consecuencias:**
-- Los microservicios son más simples (no necesitan librería JWT)
-- El gateway es el único punto que necesita acceso a la clave pública JWT
-- Si el gateway es comprometido, todos los servicios son vulnerables — mitigado con TLS interno
-- Los headers internos NO deben estar disponibles desde fuera del gateway (nginx/proxy stripea los headers X-User-* entrantes)
+> Internal design decisions for this service that are not covered by the global architecture ADRs.
+> Each decision documents the context, the choice, and the consequences.
 
 ---
 
-## Decisión: Rate limiting por IP vs. por usuario
+## Decision: Auth at the gateway vs. at each service
 
-**Fecha:** [fecha de la decisión]
-**Contexto:** El rate limiting se puede aplicar a la IP de origen o al usuario autenticado.
+**Date:** [decision date]  
+**Context:** There are two strategies for verifying JWT tokens: (A) the gateway verifies the token
+and passes user context as headers; (B) each microservice verifies its own token.
 
-**Decisión:** Rate limiting por IP para endpoints públicos (login, register), por user-id para
-endpoints autenticados.
+**Decision:** Strategy A — the gateway verifies the JWT (signature + expiration + blacklist)
+and attaches `X-User-Id` and `X-User-Role` as internal headers. Microservices trust
+these headers without re-verifying the token.
 
-**Consecuencias:**
-- El rate limit por IP no penaliza a usuarios de la misma red (NAT corporativa)
-- El rate limit por user-id requiere que el token esté verificado antes de aplicar el límite
-- Implementación: bucket en Redis con key `rate:{ip}:{path}` o `rate:{userId}:{path}`
-
----
-
-## Decisión: Implementación del gateway
-
-**Fecha:** [fecha de la decisión]
-**Contexto:** Opciones: (A) Kong/NGINX Plus (solución gestionada), (B) Express/Fastify custom,
-(C) Envoy como sidecar.
-
-**Decisión:** [A / B / C] — [razón]
-
-**Consecuencias:** [trade-offs de la decisión]
+**Consequences:**
+- Microservices are simpler (no JWT library required)
+- The gateway is the only point that needs access to the JWT public key
+- If the gateway is compromised, all services are vulnerable — mitigated with internal TLS
+- Internal headers must NOT be reachable from outside the gateway (nginx/proxy strips inbound `X-User-*` headers)
 
 ---
 
-## Correlaciones
+## Decision: Rate limiting by IP vs. by user
 
-- ADRs de arquitectura global → `05-architecture/decisions/records/`
-- Runbook del gateway → `runbook.md`
+**Date:** [decision date]  
+**Context:** Rate limiting can be applied to the source IP or to the authenticated user.
+
+**Decision:** Rate limiting by IP for public endpoints (login, register), by user-id for
+authenticated endpoints.
+
+**Consequences:**
+- IP rate limit does not penalize users on the same network (corporate NAT)
+- User-id rate limit requires the token to be verified before applying the limit
+- Implementation: Redis bucket with key `rate:{ip}:{path}` or `rate:{userId}:{path}`
+
+---
+
+## Decision: Gateway implementation
+
+**Date:** [decision date]  
+**Context:** Options: (A) Kong OSS, (B) NGINX Plus, (C) custom Express/Fastify, (D) Envoy sidecar.
+
+**Decision:** **(A) Kong OSS** — industry gateway, language-neutral for services, auth/rate-limit plugins, aligned with ADR-006/ADR-007 (Scalar for docs).
+
+**Consequences:** [trade-offs of the decision]
+
+---
+
+## Correlations
+
+- Global architecture ADRs → `05-architecture/decisions/records/`
+- Gateway runbook → `runbook.md`

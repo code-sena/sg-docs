@@ -45,14 +45,11 @@ Verify these ports are free before starting:
 
 | Port | Service | Description |
 |------|---------|-------------|
-| 8080 | api-gateway | Main entry point |
-| 3001 | auth-service | Authentication service |
-| 300X | [service-name] | [description] |
-| 5432 | PostgreSQL | Relational database |
-| 6379 | Redis | Cache and message queue |
-| 5672 | RabbitMQ | Message broker (AMQP) |
-| 15672 | RabbitMQ Management | RabbitMQ web interface |
-| 9092 | Kafka | Message broker (if applicable) |
+| 8000 | api-gateway (Kong OSS) | Public entry point |
+| 8080 | business services | each microservice (Docker DNS by name) |
+| 1433 | SQL Server | Relational database (monolith instance) |
+| 6379 | Redis | Cache and token blacklist |
+| 9092 | Kafka | Message broker (ADR-004) |
 
 **Check free ports:**
 ```bash
@@ -88,7 +85,7 @@ cp .env.example .env
 
 | Variable | Description | Value for local |
 |----------|-------------|----------------|
-| `DATABASE_URL` | PostgreSQL connection | `postgresql://dev:dev@localhost:5432/dev` |
+| `ConnectionStrings__Default` / `MSSQL_*` | SQL Server connection | `Server=localhost,1433;Database=school_guardian;User Id=sa;Password=***;TrustServerCertificate=True` |
 | `REDIS_URL` | Redis connection | `redis://localhost:6379` |
 | `JWT_SECRET` | Key for signing JWT | `[generate with: openssl rand -base64 32]` |
 | `[VARIABLE]` | [description] | [example value] |
@@ -113,14 +110,29 @@ The command should show all containers in `healthy` or `running` state.
 
 | Stack | Command |
 |-------|---------|
+| **.NET 10 (project stack)** | `dotnet restore` |
 | Node.js + npm | `npm install` |
 | Java + Maven | `mvn install -DskipTests` |
 | Python + Poetry | `poetry install` |
 | Go | `go mod download` |
 
+> For .NET services the Docker images already run `dotnet restore` at build time,
+> so this step is only needed when you develop outside Docker.
+
 ### Step 5: Run migrations
 
-> The migration tool varies by stack. See `_stacks/[your-stack].md`.
+> **This project runs no migrations from the services.** The schema lives in the
+> isolated `database/` repository and is applied with **Liquibase** (ADR-009):
+>
+> ```bash
+> cd database && docker compose up -d
+> ```
+>
+> That single file starts SQL Server, creates the database and runs the 11
+> Liquibase changelogs (one per service schema). Never add `Migrations/` or
+> Liquibase files inside a microservice.
+>
+> The table below is the generic reference for other stacks.
 
 | Stack / Tool | Command |
 |--------------|---------|
@@ -140,6 +152,7 @@ The command should show all containers in `healthy` or `running` state.
 
 | Stack | Development command |
 |-------|---------------------|
+| **.NET 10 (project stack)** | `dotnet run --project src/<service>.Api` or `docker compose up -d --build` |
 | Node.js | `npm run dev` |
 | Java | `mvn spring-boot:run` or `java -jar target/app.jar` |
 | Python | `uvicorn main:app --reload` |
@@ -148,14 +161,14 @@ The command should show all containers in `healthy` or `running` state.
 ### Step 7: Verify it works
 
 ```bash
-# Health check of the API Gateway
-curl http://localhost:8080/health
+# Health check of the API Gateway (Kong OSS)
+curl http://localhost:8000/health
 
 # Expected response:
 # {"status": "ok", "timestamp": "2024-01-15T10:30:00Z"}
 ```
 
-Open your browser at `http://localhost:15672` for the RabbitMQ interface (if using RabbitMQ).
+Open your browser at `http://localhost:9092` — Kafka listens there (ADR-004 chose Kafka over RabbitMQ; there is no RabbitMQ container in this project).
 
 ---
 
@@ -184,8 +197,8 @@ git commit -m "feat(scope): description"
 
 ```bash
 # Find which process is using the port
-lsof -i :5432    # macOS/Linux
-netstat -ano | findstr :5432  # Windows
+lsof -i :1433    # macOS/Linux
+netstat -ano | findstr :1433  # Windows
 
 # Kill the process (replace PID)
 kill -9 [PID]    # macOS/Linux
@@ -206,10 +219,10 @@ docker compose up -d
 ### "Database connection refused"
 
 ```bash
-# Verify PostgreSQL is running
+# Verify SQL Server is running
 docker compose ps | grep postgres
 
-# View PostgreSQL logs
+# View SQL Server logs
 docker compose logs postgres
 ```
 
@@ -266,10 +279,8 @@ npm run build:docker        # Build local Docker image
 
 | Service | URL | Credentials (local only) |
 |---------|-----|--------------------------|
-| API Gateway | http://localhost:8080 | |
-| RabbitMQ UI | http://localhost:15672 | guest / guest |
-| [Tool] | http://localhost:[port] | [user / pass] |
-| Swagger UI | http://localhost:3001/api-docs | |
+| API Gateway (Kong OSS) | http://localhost:8000 | |
+| Scalar API docs | http://localhost:8000/docs | |
 
 ---
 

@@ -264,7 +264,7 @@ Test that adapters interact correctly with external systems.
 
 ```typescript
 // tests/integration/OrderRepositoryImpl.spec.ts
-describe('OrderRepositoryImpl (integration with PostgreSQL)', () => {
+describe('RouteRepositoryImpl (integration with SQL Server)', () => {
   let db: DatabaseConnection;
   let repo: OrderRepositoryImpl;
 

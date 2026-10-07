@@ -49,7 +49,7 @@ CREATE TABLE Bus (
 
 ```sql
 CREATE TABLE Brand (
-    Id TINYINT PRIMARY KEY, 
+    Id TINYINT PRIMARY KEY IDENTITY, 
     Name VARCHAR(30), 
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
@@ -73,7 +73,7 @@ CREATE TABLE Brand (
 
 ```sql
 CREATE TABLE Model (
-    Id TINYINT PRIMARY KEY, 
+    Id TINYINT PRIMARY KEY IDENTITY, 
     BrandId TINYINT NOT NULL, 
     Name VARCHAR(30), 
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
@@ -102,7 +102,7 @@ CREATE TABLE DriverAssignemts (
     Id UNIQUEIDENTIFIER PRIMARY KEY,
     ProfileId UNIQUEIDENTIFIER NOT NULL,
     BusId UNIQUEIDENTIFIER NOT NULL,
-    AssignedFrom DATE NOT NULL,
+    AssignedFrom DATE NOT NULL DEFAULT GETDATE(),
     AssignedTo DATE NULL
 );
 ```
@@ -172,7 +172,6 @@ ALTER TABLE Bus DROP COLUMN Plate;
 | Engine | Use when... | Avoid when... |
 |--------|------------|---------------|
 | **SQL Server** | ACID fleet records, catalog integrity, and relational lookups | Ephemeral counters or cache-only state |
-| **PostgreSQL** | ACID transactions, complex relationships, JSONB, full-text search | Deeply nested documents |
 | **MongoDB** | Flexible documents and catalog-style data | Complex transactions across collections |
 | **Redis** | Cache, sessions, TTL state, and counters | Authoritative fleet records |
 | **Elasticsearch** | Full-text search, analytics, and logs | Source of truth for vehicles |
@@ -184,6 +183,7 @@ erDiagram
 		Brand ||--o{ Model : catalogs
 		Model ||--o{ Bus : identifies
 		Bus
+        Bus ||--o{ DriverAssignemts : assigned
 ```
 
 ## Correlations

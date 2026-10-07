@@ -29,8 +29,8 @@ What Guardian Escolar builds and maintains for school transportation in Neiva, H
 
 | System or capability | Integration type | Purpose |
 |----------------------|------------------|---------|
-| PostgreSQL | Database connection | Persist users, schools, families, students, buses, routes, stops, alerts, and assignments. |
-| ASP.NET Core API | REST API | Expose authentication and modular CRUD operations to the frontends. |
+| SQL Server | Database connection | Persist users, schools, families, students, buses, routes, stops, alerts, and assignments (ADR-002). |
+| API Gateway + microservices | REST/gRPC | Single entry point exposing auth and CRUD to frontends (ADR-006). |
 | Angular web frontend | Application integration | Provide administration, super administration, authentication, profile, and route-management screens. |
 | React + Expo mobile frontend | Application integration | Provide the mobile experience for guardians and other mobile users, including notifications. |
 | Docker + WSL2 | Development/container tooling | Standardize local development and service execution. |
@@ -82,7 +82,7 @@ The following items are not part of the currently confirmed MVP implementation.
 |---|------------|---------------------|
 | 1 | Families and schools provide correct student, guardian, driver, vehicle, route, and stop data. | Route assignments and safety notifications may be incorrect. |
 | 2 | Users have access to a compatible web browser or mobile device. | A separate assisted or offline channel would be required. |
-| 3 | PostgreSQL is available for persistent project data. | Persistence and deployment architecture would need to change. |
+| 3 | SQL Server is available for persistent project data. | Persistence and deployment architecture would need to change. |
 | 4 | The API can expose the data required by the Angular and React/Expo frontends. | Frontend flows, contracts, and delivery dates would change. |
 | 5 | A GPS/location provider can expose vehicle position and status when monitoring is enabled. | Location features would remain unavailable or use a different source. |
 | 6 | Notification delivery is available through a future provider or configured platform service. | Notifications would remain in-app or mocked. |
@@ -97,7 +97,7 @@ The following items are not part of the currently confirmed MVP implementation.
 |------|-------------|
 | **Academic** | The project is developed under SENA ADSO, cohort 3145556. |
 | **Geographic** | The initial operational context is Neiva, Huila, Colombia. |
-| **Technology** | Web frontend: Angular 21; mobile: React + Expo; backend: .NET/C#; database: PostgreSQL. |
+| **Technology** | Web frontend: Angular 21; mobile: React + Expo; backend: polyglot microservices (C#, Java, Go) + Kong gateway; database: SQL Server (ADR-002). |
 | **Development** | Docker and WSL2 are part of the development and container workflow. |
 | **Security** | Student and family data is sensitive. Access control, secure transport, and privacy requirements must be considered. |
 | **Regulatory** | Colombian personal-data requirements apply, with additional care for minors' data. |
@@ -110,7 +110,7 @@ The following items are not part of the currently confirmed MVP implementation.
 
 | Dependency | Team / Provider | Required date | Status |
 |-----------|-----------------|---------------|--------|
-| PostgreSQL environment | Backend / DevOps | Before integrated testing | Available in project architecture |
+| SQL Server environment | Backend / DevOps | Before integrated testing | Available in project architecture |
 | Docker and WSL2 setup | Development / DevOps | During local setup | Required |
 | GPS/location API | External provider or transport operator | Before live vehicle monitoring | To be defined |
 | Push notification service | Mobile / DevOps | Before production notifications | To be defined |

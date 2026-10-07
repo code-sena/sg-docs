@@ -15,6 +15,18 @@ documented in ADR-002 (Strangler Fig).
 
 ---
 
+
+## File map
+
+| File | Role | Status |
+|------|------|--------|
+| [models.md](./models.md) | **Scaffold/guide** for filling a new service model (placeholders) | ✅ template |
+| [domain/](./domain/) | Filled table models per schema | ✅ 11 schemas |
+| [data-dictionary.md](./data-dictionary.md) | Ambiguous / PII / enum meanings | ✅ |
+| [modeling-conventions.md](./modeling-conventions.md) | Naming, keys, timestamps | ✅ |
+| [normalization-assessment.md](./normalization-assessment.md) | Intentional denormalization | ✅ |
+| [migration-strategy.md](./migration-strategy.md) | Liquibase / expand-contract | ✅ |
+
 ## What is here and how to fill it in
 
 ### `models.md` ⭐
@@ -24,7 +36,7 @@ Data models for each microservice.
 **Format per service:**
 ```markdown
 ## Service: [name]
-**DB Engine:** [PostgreSQL / MongoDB / Redis / etc.]
+**DB Engine:** SQL Server (ADR-002) for all relational services; Redis only for API Gateway ephemeral state
 **Justification:** [why this engine for this service]
 
 ### Table/Collection: [name]
@@ -60,7 +72,7 @@ Analysis of the normalization level and justification for denormalizations.
 
 ### `migration-strategy.md`
 Strategy for migrating data between schema versions.
-**Fill in:** migration tool (Flyway, Liquibase, Alembic), rollback policy,
+**Fill in:** migration tool (Liquibase — see ADR-009), rollback policy,
 how to handle migrations with data in production.
 
 ---
@@ -81,7 +93,7 @@ how to handle migrations with data in production.
 
 ### SQL or NoSQL?
 There is no single answer. It depends on the service:
-- **SQL** (PostgreSQL, MySQL): relational data, ACID transactions, fixed schema
+- **SQL** (SQL Server): relational data, ACID transactions, fixed schema (ADR-002)
 - **Document** (MongoDB): hierarchical data, flexible schema, high variability
 - **Key-value** (Redis): cache, sessions, high-speed temporary data
 - **Time series** (InfluxDB, TimescaleDB): metrics, event logs

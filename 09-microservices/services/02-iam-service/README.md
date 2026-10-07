@@ -1,53 +1,62 @@
-# IAM (Identity and Access Management)
+# IAM
 
-> **Identity authority** of the system. Manages authentication, JWT issuance, RBAC permissions, and sessions.
-
----
+> Identity authority: authentication, JWT issuance, RBAC, sessions.
 
 ## Location in the architecture
 
 | Field | Value |
 |-------|-------|
 | Number in catalog | 02 |
-| Local port | 8081 |
-| Repository | [Service repo URL] |
-| DB engine | SQL Server (schema `Iam`) |
-| Communicates with | — (does not call other microservices) |
-| Consumed by | api-gateway (token verification), all other services |
-
----
+| Local port | 8080 |
+| Stack | Java + Spring Boot |
+| SQL Server schema | `Iam` |
+| Repository | One folder per service under `backend/` (reached by Docker DNS name, not by host path) |
+| Communicates with | configuration-service (password policy on change) |
+| Consumed by | api-gateway (all client traffic) |
 
 ## Responsibilities (what this service DOES)
 
-- Authentication (login, logout, token refresh)
-- Role management (RBAC): assign, revoke, query
-- Permission management (RBAC)
-- Session tracking (SessionProfile)
+- Authenticate users and issue access + refresh tokens (RS256)
+- Publish JWKS for token verification
+- Manage roles, permissions, and role-permission mappings
+- Manage profiles (credentials) and active sessions
+- Revoke tokens / logout and password lifecycle endpoints
 
 ## Out of scope (what it does NOT do)
 
-- Person data (name, phone, etc.) — delegated to User Management service
-- School data — delegated to School service
-- Password policies/security settings — delegated to Configuration service
+- Personal data (Person/Family) → user-management-service
+- Business configuration → configuration-service
+- Audit persistence → audit-service
 
----
+## Main endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/auth/login` | Authenticate and issue tokens |
+| POST | `/auth/refresh` | Rotate refresh token |
+| POST | `/auth/logout` | Revoke current session |
+| POST | `/auth/forgot-password` | Start password reset |
+| POST | `/auth/reset-password` | Complete password reset |
+| POST | `/auth/change-password` | Change password |
+| GET | `/jwks` | Public keys for JWT verification |
+| GET | `/roles` | List roles |
+| POST | `/roles` | Create role |
+| GET | `/permissions` | List permissions |
+| GET | `/profiles` | List profiles |
+| PATCH | `/profiles/{id}/status` | Activate/deactivate profile |
 
 ## How to run it locally
 
 ```bash
-# Start with its dependency (SQL Server)
 docker compose up -d iam-service
-
-# Verify
-curl http://localhost:8081/health
+curl http://localhost:8080/health
 ```
-
----
 
 ## Related documents
 
-- [data-model.md](./data-model.md) — Tables `Role`, `Permissions`, `PermissionsRole`, `Profile`, `SessionProfile`
-- [events.md](./events.md) — Events it publishes and consumes
-- [decisions.md](./decisions.md) — Design decisions for the IAM service
-- [runbook.md](./runbook.md) — Operation in production
+- [data-model.md](./data-model.md) — schema `Iam`; tables: Role, Permissions, PermissionsRole, Profile, SessionProfile
+- [events.md](./events.md) — publishes/consumes
+- [decisions.md](./decisions.md) — service-level decisions
+- [runbook.md](./runbook.md) — production operations
 - [API Contract](../../../07-api/contracts/openapi/iam-service.yaml)
+- Catalog → `09-microservices/service-catalog.md`

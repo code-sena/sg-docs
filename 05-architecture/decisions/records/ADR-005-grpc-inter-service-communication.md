@@ -2,7 +2,7 @@
 
 - **ID:** ADR-005
 - **Date:** 2026-09-08
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authors:** [Team]
 
 ---
@@ -12,7 +12,7 @@
 School Guardian is built as polyglot microservices (ASP.NET, Go, Java + Spring Boot) that share
 a single SQL Server instance (ADR-002) and use Kafka for asynchronous events (ADR-004).
 Services also need **synchronous** communication: one service queries another in real time
-(e.g. API Gateway validates a token with auth-service, a service queries user data from
+(e.g. API Gateway validates a token with iam-service, a service queries user data from
 users-service, a service queries route details from route-service). We must choose the protocol
 for these synchronous calls.
 

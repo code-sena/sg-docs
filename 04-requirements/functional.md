@@ -41,7 +41,8 @@
 | FR-3.2 | Validate route uniqueness before persisting it | route-service | HU-ROUTE-001 | Medium |
 | FR-3.3 | Update route data | route-service | HU-ROUTE-001 | Medium |
 | FR-3.4 | Delete route data (only when no active trip depends on it) | route-service | HU-ROUTE-001 | Medium |
-| FR-3.5 | Assign/unassign a bus to a route (one bus per route, one route per bus) | route-service | HU-BUS-001 | Medium |
+| FR-3.5 | Assign/unassign a bus to a route (one bus per route, one route per bus) | route-service | HU-ROUTE-005 | Medium |
+| FR-3.8 | Create, edit, and activate/deactivate buses (unique plate, capacity > 0) | fleet-service | HU-FLEET-001 | Medium |
 | FR-3.6 | Assign/unassign a driver to a bus (a driver is responsible for that bus until reassigned); route coverage is derived from the bus assigned to the route | bus-service | HU-BUS-002 | High |
 | FR-3.7 | Assign students to a route indicating their boarding and alighting stop (stops must belong to the route) | route-service | HU-ROUTE-008 | High |
 
