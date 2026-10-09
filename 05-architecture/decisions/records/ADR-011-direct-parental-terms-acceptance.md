@@ -22,11 +22,11 @@ To avoid legal exposure under Ley 1581 de 2012 (art. 7, minors' data) and Decret
 
 ## Decision
 
-**We decided:** the parent is shown the Terms and the data-processing notice **before login** (read-only), and records acceptance **after login** in a blocking step, stored append-only in `Iam.TermsAcceptance` (profile, minor, version, timestamp, IP, channel).
+**We decided:** the parent is shown the Terms and the data-processing notice **before login** (read-only links), and acceptance is recorded **automatically on login** in `Iam.TermsAcceptance` (profile, minor, version, timestamp, IP, channel). Logging in constitutes acceptance; no checkbox or extra tap exists anywhere.
 
 **Justification:**
 - Pre-login display guarantees the parent knows what applies before authenticating.
-- Post-login acceptance binds the act to an authenticated profile, producing real evidence (who, on whose behalf, which version, when).
+- Automatic recording on authenticated login binds the act to a profile, producing real evidence (who, on whose behalf, which version, when) with zero friction.
 - Append-only history satisfies the traceability requirement without complicating the model.
 - A newer `TermsVersion` voids older acceptances, covering numeral 15 (modifications).
 
@@ -50,7 +50,7 @@ To avoid legal exposure under Ley 1581 de 2012 (art. 7, minors' data) and Decret
 - Web untouched (parents do not use it).
 
 **Negative / Trade-offs:**
-- Login flow gains one blocking step for parents with pending acceptances.
+- Login flow gains a silent recording step for parents with pending acceptances.
 - Mobile must resolve the parent's minors (family) to compute pending items.
 
 **Impact on the system:**
