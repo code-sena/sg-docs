@@ -31,7 +31,7 @@ Last updated: 2026-09-22 · Engine: **SQL Server** single instance, schemas per 
 1. Declare incident severity ([incident-management.md](./incident-management.md)).
 2. Identify latest clean full + subsequent logs; restore to standby.
 3. Point application config (connection strings) to restored instance in a controlled window.
-4. Verify per schema smoke: iam login, school read, gps last N, audit append.
+4. Verify per schema smoke: iam login, school read, gps last N.
 5. Kafka: decide replay window vs accept gap (document decision).
 6. Postmortem → update this doc + runbooks.
 

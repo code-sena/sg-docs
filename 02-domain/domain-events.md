@@ -102,7 +102,6 @@ Administrator → [CreateRoute] → RouteService → [RouteCreated] → Other co
 | Consuming service | Action                                               | Idempotent?                           |
 | ----------------- | ---------------------------------------------------- | ------------------------------------- |
 | SecurityService   | Creates or associates the corresponding user profile | Yes — uses eventId as idempotency key |
-| Audit             | Records the person registration                      | Yes — uses eventId as idempotency key |
 
 ---
 
@@ -114,7 +113,7 @@ Administrator → [CreateRoute] → RouteService → [RouteCreated] → Other co
 | **Bounded Context**    | UserManagementService        |
 | **Aggregate**          | Family                       |
 | **Trigger**            | A new family is created      |
-| **Consumers**          | UserManagementService, Audit |
+| **Consumers**          | UserManagementService|
 | **Channel (topic)**    | `user.family.created`        |
 | **Schema version**     | `v1`                         |
 | **Delivery guarantee** | At-least-once                |
@@ -163,7 +162,6 @@ Administrator → [CreateRoute] → RouteService → [RouteCreated] → Other co
 | Consuming service     | Action                             | Idempotent?                           |
 | --------------------- | ---------------------------------- | ------------------------------------- |
 | UserManagementService | Updates family-related information | Yes — uses eventId as idempotency key |
-| Audit                 | Records the family creation        | Yes — uses eventId as idempotency key |
 
 ---
 
@@ -175,7 +173,7 @@ Administrator → [CreateRoute] → RouteService → [RouteCreated] → Other co
 | **Bounded Context**    | SecurityService                            |
 | **Aggregate**          | Profile                                    |
 | **Trigger**            | A security profile is created for a person |
-| **Consumers**          | UserManagementService, Audit               |
+| **Consumers**          | UserManagementService|
 | **Channel (topic)**    | `security.profile.created`                 |
 | **Schema version**     | `v1`                                       |
 | **Delivery guarantee** | At-least-once                              |
@@ -226,7 +224,6 @@ Administrator → [CreateRoute] → RouteService → [RouteCreated] → Other co
 | Consuming service     | Action                                 | Idempotent?                           |
 | --------------------- | -------------------------------------- | ------------------------------------- |
 | UserManagementService | Associates the profile with the person | Yes — uses eventId as idempotency key |
-| Audit                 | Records profile creation               | Yes — uses eventId as idempotency key |
 
 ---
 
@@ -238,7 +235,7 @@ Administrator → [CreateRoute] → RouteService → [RouteCreated] → Other co
 | **Bounded Context**    | SecurityService                   |
 | **Aggregate**          | SessionProfile                    |
 | **Trigger**            | A user successfully authenticates |
-| **Consumers**          | Audit                             |
+| **Consumers**          | —                                 |
 | **Channel (topic)**    | `security.session.started`        |
 | **Schema version**     | `v1`                              |
 | **Delivery guarantee** | At-least-once                     |
@@ -281,12 +278,6 @@ Administrator → [CreateRoute] → RouteService → [RouteCreated] → Other co
   }
 }
 ```
-
-**What do consumers do with this event?**
-
-| Consuming service | Action                                | Idempotent?                           |
-| ----------------- | ------------------------------------- | ------------------------------------- |
-| Audit             | Records the successful authentication | Yes — uses eventId as idempotency key |
 
 ---
 
@@ -1130,136 +1121,6 @@ Administrator → [CreateRoute] → RouteService → [RouteCreated] → Other co
 
 ---
 
-### Event: ExceptionalDriverDetected
-
-| Field                  | Value                                                   |
-| ---------------------- | ------------------------------------------------------- |
-| **Name**               | `ExceptionalDriverDetected`                             |
-| **Bounded Context**    | ExceptionalDriverService                                |
-| **Aggregate**          | ExceptionalDriverUsage                                  |
-| **Trigger**            | An exceptional or unauthorized driver usage is detected |
-| **Consumers**          | AlertsService, Audit                                    |
-| **Channel (topic)**    | `exceptional.driver.detected`                           |
-| **Schema version**     | `v1`                                                    |
-| **Delivery guarantee** | At-least-once                                           |
-
-**Payload (JSON schema):**
-
-```json
-{
-  "eventId": "UUID",
-  "eventType": "ExceptionalDriverDetected",
-  "aggregateId": "UUID",
-  "aggregateType": "ExceptionalDriverUsage",
-  "occurredAt": "2026-09-03T12:25:00Z",
-  "version": 1,
-  "payload": {
-    "exceptionalUsageId": "UUID",
-    "busId": "UUID",
-    "driverProfileId": "UUID",
-    "reason": "string"
-  },
-  "metadata": {
-    "correlationId": "UUID",
-    "causationId": "UUID",
-    "userId": "UUID"
-  }
-}
-```
-
-**Real payload example:**
-
-```json
-{
-  "eventId": "generated-uuid",
-  "eventType": "ExceptionalDriverDetected",
-  "aggregateId": "exceptional-driver-uuid",
-  "aggregateType": "ExceptionalDriverUsage",
-  "occurredAt": "2026-09-03T12:25:00Z",
-  "version": 1,
-  "payload": {
-    "exceptionalUsageId": "exceptional-123",
-    "busId": "bus-123",
-    "driverProfileId": "driver-123",
-    "reason": "Unauthorized driver usage"
-  }
-}
-```
-
-**What do consumers do with this event?**
-
-| Consuming service | Action                                     | Idempotent?                           |
-| ----------------- | ------------------------------------------ | ------------------------------------- |
-| AlertsService     | Creates an alert for the exceptional usage | Yes — uses eventId as idempotency key |
-| Audit             | Records the exceptional event              | Yes — uses eventId as idempotency key |
-
----
-
-### Event: ExceptionalRouteDetected
-
-| Field                  | Value                                                    |
-| ---------------------- | -------------------------------------------------------- |
-| **Name**               | `ExceptionalRouteDetected`                               |
-| **Bounded Context**    | ExceptionalDriverService                                 |
-| **Aggregate**          | ExceptionalRouteUsage                                    |
-| **Trigger**            | A route deviation or exceptional route usage is detected |
-| **Consumers**          | AlertsService, Audit                                     |
-| **Channel (topic)**    | `exceptional.route.detected`                             |
-| **Schema version**     | `v1`                                                     |
-| **Delivery guarantee** | At-least-once                                            |
-
-**Payload (JSON schema):**
-
-```json
-{
-  "eventId": "UUID",
-  "eventType": "ExceptionalRouteDetected",
-  "aggregateId": "UUID",
-  "aggregateType": "ExceptionalRouteUsage",
-  "occurredAt": "2026-09-03T12:30:00Z",
-  "version": 1,
-  "payload": {
-    "exceptionalUsageId": "UUID",
-    "routeId": "UUID",
-    "driverProfileId": "UUID",
-    "reason": "string"
-  },
-  "metadata": {
-    "correlationId": "UUID",
-    "causationId": "UUID",
-    "userId": "UUID"
-  }
-}
-```
-
-**Real payload example:**
-
-```json
-{
-  "eventId": "generated-uuid",
-  "eventType": "ExceptionalRouteDetected",
-  "aggregateId": "exceptional-route-uuid",
-  "aggregateType": "ExceptionalRouteUsage",
-  "occurredAt": "2026-09-03T12:30:00Z",
-  "version": 1,
-  "payload": {
-    "exceptionalUsageId": "exceptional-route-123",
-    "routeId": "route-123",
-    "driverProfileId": "driver-123",
-    "reason": "Route deviation"
-  }
-}
-```
-
-**What do consumers do with this event?**
-
-| Consuming service | Action                          | Idempotent?                           |
-| ----------------- | ------------------------------- | ------------------------------------- |
-| AlertsService     | Creates a route deviation alert | Yes — uses eventId as idempotency key |
-| Audit             | Records the exceptional event   | Yes — uses eventId as idempotency key |
-
----
-
 ## Standard fields for all events
 
 All events must include these fields in the envelope:
@@ -1414,10 +1275,10 @@ Versioning is especially important for `GpsLocationReceived` because the GPS pay
 
 | Event                       | Origin context           | Topic                         | Consumers                           | Version |
 | --------------------------- | ------------------------ | ----------------------------- | ----------------------------------- | ------- |
-| `PersonRegistered`          | UserManagementService    | `user.person.registered`      | SecurityService, Audit              | v1      |
-| `FamilyCreated`             | UserManagementService    | `user.family.created`         | UserManagementService, Audit        | v1      |
-| `ProfileCreated`            | SecurityService          | `security.profile.created`    | UserManagementService, Audit        | v1      |
-| `SessionStarted`            | SecurityService          | `security.session.started`    | Audit                               | v1      |
+| `PersonRegistered`          | UserManagementService    | `user.person.registered`      | SecurityService| v1      |
+| `FamilyCreated`             | UserManagementService    | `user.family.created`         | UserManagementService| v1      |
+| `ProfileCreated`            | SecurityService          | `security.profile.created`    | UserManagementService| v1      |
+| `SessionStarted`            | SecurityService          | `security.session.started`    | —                                  | v1      |
 | `SchoolCreated`             | SchoolService            | `school.created`              | RouteService, BusService            | v1      |
 | `BusRegistered`             | BusService               | `bus.registered`              | RouteService, GpsService            | v1      |
 | `RouteCreated`              | RouteService             | `route.created`               | BusService, BoardingService         | v1      |
@@ -1431,8 +1292,6 @@ Versioning is especially important for `GpsLocationReceived` because the GPS pay
 | `GpsLocationReceived`       | GpsService               | `gps.location.received`       | BusService, AlertsService, Tracking | v1      |
 | `GpsSignalLost`             | GpsService               | `gps.signal.lost`             | AlertsService, Notification         | v1      |
 | `AlertCreated`              | AlertsService            | `alert.created`               | Notification, Frontend              | v1      |
-| `ExceptionalDriverDetected` | ExceptionalDriverService | `exceptional.driver.detected` | AlertsService, Audit                | v1      |
-| `ExceptionalRouteDetected`  | ExceptionalDriverService | `exceptional.route.detected`  | AlertsService, Audit                | v1      |
 
 ---
 
@@ -1456,8 +1315,6 @@ Policy: Whenever a BoardingRegistered event arrives with
 | `BoardingRegistered`        | Whenever a boarding occurs, notify the student's guardian                   | `SendBoardingNotification` | Notification    |
 | `GpsLocationReceived`       | Whenever a GPS location arrives, update the current bus position            | `UpdateBusLocation`        | BusService      |
 | `GpsSignalLost`             | Whenever GPS signal is lost, create a GPS alert                             | `CreateAlert`              | AlertsService   |
-| `ExceptionalDriverDetected` | Whenever exceptional driver usage is detected, create an alert              | `CreateAlert`              | AlertsService   |
-| `ExceptionalRouteDetected`  | Whenever exceptional route usage is detected, create an alert               | `CreateAlert`              | AlertsService   |
 | `AlertCreated`              | Whenever an alert is created, notify responsible users                      | `SendNotification`         | Notification    |
 
 > The `Notification` service is currently a candidate bounded context because it is not represented as an independent database schema in the current model.

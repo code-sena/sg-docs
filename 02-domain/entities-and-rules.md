@@ -1048,8 +1048,6 @@ Examples:
 | `GpsLocationReceived` | GpsDevice | GPS Tracking |
 | `GpsSignalLost` | GpsDevice | GPS Tracking |
 | `AlertCreated` | Alert | Alerts |
-| `ExceptionalDriverDetected` | ExceptionalDriverUsage | Exceptional Usage |
-| `ExceptionalRouteDetected` | ExceptionalRouteUsage | Exceptional Usage |
 
 ---
 
@@ -1118,7 +1116,7 @@ The same principle applies to the other bounded contexts.
    - Boarding records what happens when a student boards or leaves a bus.
 
 4. **Alerts remain separate from the contexts that generate the events.**
-   - GPS, Boarding, and Exceptional Usage can generate events.
+   - GPS and Boarding can generate events.
    - Alerts consumes those events and creates alerts.
 
 5. **QR functionality remains inside Boarding.**

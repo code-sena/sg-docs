@@ -102,7 +102,6 @@
 | FR-8.2 | Automatically notify the school and the guardians of the students on board | notification-service | HU-INCIDENT-001 | High |
 
 > **Note:** The incident report is modeled as the `Alert` entity in `notification-service` (`AlertType`, `Alert`, `AlertRecipient`).
-> The Exceptional service is for out-of-pattern driver/route usage, not for emergency reports.
 
 ---
 

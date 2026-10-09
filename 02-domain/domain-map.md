@@ -106,7 +106,7 @@ has consistent meaning. Each bounded context has its own Ubiquitous Language.
 | **Owning team** | Guardian Escolar Development Team |
 | **Microservice(s)** | `school-service` |
 | **Database** | SQL Server |
-| **Ubiquitous Language** | School, Campus, Course, Course Group |
+| **Ubiquitous Language** | School, Campus, SchoolAdmin |
 
 ---
 
@@ -223,33 +223,7 @@ has consistent meaning. Each bounded context has its own Ubiquitous Language.
 | **Owning team** | Guardian Escolar Development Team |
 | **Microservice(s)** | `alert-service` |
 | **Database** | SQL Server |
-| **Ubiquitous Language** | Alert, Alert Type, Saved Alert, GPS Signal Loss, Route Deviation, Exceptional Usage |
-
----
-
-### Bounded Context: Exceptional Usage
-
-| Field | Value |
-|-------|-------|
-| **Name** | Exceptional Usage |
-| **Responsibility** | Detects and records exceptional driver and route usage situations |
-| **Owning team** | Guardian Escolar Development Team |
-| **Microservice(s)** | `exceptional-usage-service` |
-| **Database** | SQL Server |
-| **Ubiquitous Language** | Exceptional Driver Usage, Exceptional Route Usage, Driver, Route, Exception |
-
----
-
-### Bounded Context: Audit
-
-| Field | Value |
-|-------|-------|
-| **Name** | Audit |
-| **Responsibility** | Records relevant system actions and errors for traceability and accountability |
-| **Owning team** | Guardian Escolar Development Team |
-| **Microservice(s)** | `audit-service` |
-| **Database** | SQL Server |
-| **Ubiquitous Language** | Audit, Audit Record, Error Log, User Action, Traceability |
+| **Ubiquitous Language** | Alert, Alert Type, Saved Alert, GPS Signal Loss, Route Deviation |
 
 ---
 
@@ -368,9 +342,7 @@ how contexts communicate and who holds the "power" in the integration.
 | Route Management | U → D | Boarding | Event | `RouteCreated`, `StudentAssignedToRoute`, `RouteStopAdded` |
 | GPS Tracking | U → D | Alerts | Event | `GpsLocationReceived`, `GpsSignalLost` |
 | Boarding | U → D | Alerts | Event | `BoardingRegistered` |
-| Exceptional Usage | U → D | Alerts | Event | `ExceptionalDriverDetected`, `ExceptionalRouteDetected` |
 | Alerts | U → D | Notification | Event | `AlertCreated` |
-| All relevant contexts | U → D | Audit | Event | Domain Events |
 | VT03F GPS | U → D | GPS Tracking | TCP | GPS device protocol |
 
 ---
@@ -396,10 +368,8 @@ DDD classifies subdomains by their strategic value:
 | User Management | Supporting | People and family information supports the main transportation processes |
 | School Management | Supporting | School information is required to organize transportation |
 | Alerts | Supporting | Alerts support the core transportation monitoring and safety processes |
-| Exceptional Usage | Supporting | Exceptional driver and route situations support operational control |
 | Geography | Generic | Geographic information such as cities is a common domain capability |
 | Security | Generic | Authentication, roles, permissions, and sessions are common capabilities with standard solutions available |
-| Audit | Generic | Audit logging is a common technical/business requirement |
 | Configuration | Generic | Security and password configuration are supporting capabilities that can use standard mechanisms |
 
 ---

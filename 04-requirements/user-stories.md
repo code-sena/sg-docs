@@ -968,7 +968,7 @@ Scenario 2: Driver already responsible for another bus (error case)
 
 **Additional checks specific to this HU (if applicable):**
 - [ ] 1:1 invariant: a driver is responsible for a single bus at a time
-- [ ] Assignment changes recorded for audit (audit-service)
+- [ ] Assignment changes recorded in status history
 
 **Estimation and priority:**
 

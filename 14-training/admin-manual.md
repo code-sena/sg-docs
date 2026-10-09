@@ -4,7 +4,6 @@ Last updated: 2026-09-22 · Audiences: school admins, platform ops
 
 ## 1. Administration console access
 - Roles from `iam-service` (RBAC)
-- All changes appear in `Audit` schema
 
 ## 2. Schools, users, routes, buses
 - Create/update masters; soft-delete policy
