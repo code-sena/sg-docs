@@ -29,5 +29,6 @@ ADRs document important architectural decisions. Each file = one decision.
 | 007 | Scalar for interactive API documentation | Accepted | 2026-09-08 |
 | 008 | JWT RS256 for authentication and authorization | Accepted | 2026-09-08 |
 | 009 | Liquibase for schema migrations | Accepted | 2026-09-19 |
+| 010 | Institutional acceptance of terms recorded backend-only | Proposed | 2026-10-09 |
 
 > Add rows here as you create ADRs in `records/`
