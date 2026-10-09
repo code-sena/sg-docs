@@ -21,16 +21,16 @@
 │                               2. SCHOOL                                                  │
 │ ┌──────────────────────────────────────────────────────────────────────────────────────┐ │
 │ │ 04 - school-service                                                                  │ │
-│ │ (Colegios, Sedes, Cursos, Grupos/Matrícula, Ciudades)                                │ │
+│ │ (Colegios, Sedes, Administradores, Ciudades)                                        │ │
 │ └──────────────────────────────────────────────────────────────────────────────────────┘ │
 └──────────────────────────────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────────────────────────────┐
 │                               3. TRANSPORT                                               │
-│ ┌──────────────────────┐   ┌───────────────────────────┐   ┌─────────────────────────┐ │
-│ │ 06 - bus-service     │   │ 07 - route-service        │   │ 09 - exceptional-service│ │
-│ │ (Vehículos, Asignación)  │ (Rutas, Paradas, Viajes)  │   │ (Novedades de Uso)      │ │
-│ └──────────────────────┘   └───────────────────────────┘   └─────────────────────────┘ │
+│ ┌──────────────────────┐   ┌───────────────────────────┐                               │
+│ │ 06 - bus-service     │   │ 07 - route-service        │                               │
+│ │ (Vehículos, Asignación)  │ (Rutas, Paradas, Viajes)  │                               │
+│ └──────────────────────┘   └───────────────────────────┘                               │
 └──────────────────────────────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────────────────────────────┐
@@ -51,10 +51,10 @@
 
 ┌──────────────────────────────────────────────────────────────────────────────────────────┐
 │                               6. INFRASTRUCTURE                                          │
-│ ┌──────────────────────┐   ┌───────────────────────────┐   ┌─────────────────────────┐ │
-│ │ 01 - api-gateway     │   │ 10 - audit-service        │   │ 11 - configuration-service│
-│ │ (Punto de Entrada)   │   │ (Auditoría e Errores)     │   │ (Parámetros y Políticas)│ │
-│ └──────────────────────┘   └───────────────────────────┘   └─────────────────────────┘ │
+│ ┌──────────────────────┐   ┌───────────────────────────┐                               │
+│ │ 01 - api-gateway     │   │ 11 - configuration-service│                               │
+│ │ (Punto de Entrada)   │   │ (Parámetros y Políticas)│                                 │
+│ └──────────────────────┘   └───────────────────────────┘                               │
 └──────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -69,13 +69,11 @@
 | 01 | `api-gateway` | Infra | Routing, authentication, rate limiting | 8000 | — (Redis cache) | Redis (ephemeral) | Kong OSS | 🟡 In development |
 | 02 | `iam-service` | Identity | Identity, auth, roles, permissions, profiles, sessions | 8080 | `Iam` | Relational (shared) | Java + Spring Boot | 🟡 In development |
 | 03 | `user-management-service` | Identity | Persons, families, family members, driver licenses | 8080 | `UserManagement` | Relational (shared) | C# + ASP.NET | 🟡 In development |
-| 04 | `school-service` | School | Schools, campuses, courses, course groups, cities | 8080 | `School` + `Geographic` | Relational (shared) | C# + ASP.NET | 🟡 In development |
+| 04 | `school-service` | School | Schools, campuses, school admins, cities | 8080 | `School` + `Geographic` | Relational (shared) | C# + ASP.NET | 🟡 In development |
 | 05 | `notification-service` | Notifications | Boarding/alighting events (QR), alerts, and recipients | 8080 | `Notification` | Relational (shared) | C# + ASP.NET | 🟡 In development |
 | 06 | `bus-service` | Transport | Bus fleet, brands, models, driver assignments | 8080 | `Bus` | Relational (shared) | C# + ASP.NET | 🟡 In development |
 | 07 | `route-service` | Transport | Routes, stops, schedules, executions, assignments | 8080 | `Route` | Relational (shared) | C# + ASP.NET | 🟡 In development |
 | 08 | `gps-service` | Tracking | GPS devices (VT03F protocol) and position history | 8080 | `Gps` | Relational (shared) | Java + Spring Boot | 🟡 In development |
-| 09 | `exceptional-service` | Transport | Exceptional driver and route usage | 8080 | `Exceptional` | Relational (shared) | C# + ASP.NET | 🟡 In development |
-| 10 | `audit-service` | Infra | Audit trail and error logs | 8080 | `Audit` | Relational (shared) | C# + ASP.NET | 🟡 In development |
 | 11 | `configuration-service` | Infra | Security settings and password policies | 8080 | `Settings` | Relational (shared) | C# + ASP.NET | 🟡 In development |
 
 **Statuses:** 🟢 Active in prod | 🟡 In development | 🔴 Planned | ⏸ Deprecated
@@ -142,11 +140,11 @@
 |-------|-------|
 | **Folder** | `09-microservices/services/04-school-service/` |
 | **Domain** | School |
-| **Responsibility** | Schools, campuses, courses, course groups, cities |
+| **Responsibility** | Schools, campuses, school admins, cities |
 | **Stack** | C# + ASP.NET |
 | **Schema** | `School` + `Geographic` |
-| **Tables** | School, SchoolCampus, Course, CourseGroup, City |
-| **Direct FK Relationships** | `School.CityID` → `Geographic.City(ID)`, `SchoolCampus.SchoolID` → `School(ID)`, `Course.CampusID` → `SchoolCampus(ID)`, `CourseGroup.CourseID` → `Course(ID)`, `CourseGroup.ProfileID` → `Iam.Profile(ID)` |
+| **Tables** | School, SchoolCampus, SchoolAdmin, City |
+| **Direct FK Relationships** | `School.CityID` → `Geographic.City(ID)`, `SchoolCampus.SchoolID` → `School(ID)`, `SchoolAdmin.SchoolID` → `School(ID)`, `SchoolAdmin.ProfileID` → `Iam.Profile(ID)` |
 
 ---
 
@@ -206,34 +204,6 @@
 
 ---
 
-### 09 — `exceptional-service`
-
-| Field | Value |
-|-------|-------|
-| **Folder** | `09-microservices/services/09-exceptional-service/` |
-| **Domain** | Transport |
-| **Responsibility** | Exceptional driver and route usage |
-| **Stack** | C# + ASP.NET |
-| **Schema** | `Exceptional` |
-| **Tables** | ExceptionalDriverUsage, ExceptionalRouteUsage |
-| **Direct FK Relationships** | `ExceptionalDriverUsage.BusID` → `Bus.Bus(ID)`, `ExceptionalDriverUsage.ProfileID` → `Iam.Profile(ID)`, `ExceptionalRouteUsage.ProfileID` → `Iam.Profile(ID)`, `ExceptionalRouteUsage.RouteID` → `Route.Route(ID)` |
-
----
-
-### 10 — `audit-service`
-
-| Field | Value |
-|-------|-------|
-| **Folder** | `09-microservices/services/10-audit-service/` |
-| **Domain** | Infrastructure |
-| **Responsibility** | Audit trail and error logs |
-| **Stack** | C# + ASP.NET |
-| **Schema** | `Audit` |
-| **Tables** | Audit, LogErrors |
-| **Direct FK Relationships** | `Audit.ProfileID` → `Iam.Profile(ID)` |
-
----
-
 ### 11 — `configuration-service`
 
 | Field | Value |
@@ -264,10 +234,7 @@
 | notification-service | iam-service | Kafka | Asynchronous | Notify delivery status of alerts |
 | school-service | route-service | gRPC | Synchronous | Query school stop locations |
 | user-management-service | iam-service | gRPC | Synchronous | Resolve person identity for profiles |
-| audit-service | all services | Kafka | Asynchronous | Ingest audit trail from all services |
 | configuration-service | all services | Kafka | Asynchronous | Broadcast security setting changes |
-| exceptional-service | route-service | gRPC | Synchronous | Validate route existence |
-| exceptional-service | bus-service | gRPC | Synchronous | Validate bus and driver assignment |
 
 ---
 
@@ -280,14 +247,12 @@ Others access via API or events, never directly to the DB.
 |---------------|--------------------------------|--------------------------|
 | Profile, Role, Permissions, PermissionsRole, SessionProfile | iam-service | REST API |
 | Person, Family, FamilyMember, DriverLicense | user-management-service | REST API |
-| School, SchoolCampus, Course, CourseGroup | school-service | REST API |
+| School, SchoolCampus, SchoolAdmin | school-service | REST API |
 | City | school-service (`Geographic`) | REST API |
 | Boarding, Alert, AlertType, AlertRecipient | notification-service | REST API + consumed events |
 | Bus, DriverAssignemts, Brand, Model | bus-service | REST API |
 | Route, Stop, RouteStop, RouteBusAssignments, RouteStudentAssignments, RouteSchedule, RouteExecution | route-service | REST API + events |
 | GpsDevice, GpsLocation | gps-service | REST query |
-| ExceptionalDriverUsage, ExceptionalRouteUsage | exceptional-service | REST API |
-| Audit, LogErrors | audit-service | REST API (write-only ingest) |
 | SecuritySettings, PasswordPolicies | configuration-service | REST API |
 
 ---

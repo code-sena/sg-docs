@@ -44,8 +44,6 @@ Include: software prerequisites, environment variables, exact commands, how to v
 | bus-service | 8080 |
 | route-service | 8080 |
 | gps-service | 8080 |
-| exceptional-service | 8080 |
-| audit-service | 8080 |
 | configuration-service | 8080 |
 | SQL Server | 1433 |
 | Redis | 6379 |

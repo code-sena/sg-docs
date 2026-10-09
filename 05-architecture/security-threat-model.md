@@ -21,7 +21,7 @@ Last updated: 2026-09-22 · Companion to [security-policy](../00-governance/secu
 |---|----------|------------------|------------|-------|
 | S | Spoofing | Forged JWT to call internal APIs | RS256 JWT at edge (ADR-008); reject `alg=none`; key rotation | iam-service + Kong |
 | T | Tampering | Replay of gRPC payload / Kafka message | TLS in transit; Kafka ACLs; payload schema registry (ADR-004) | platform |
-| R | Repudiation | "Who changed route assignment?" | audit-service append-only log (schema `Audit`); no UPDATE/DELETE from app | audit-service |
+| R | Repudiation | "Who changed route assignment?" | Status history on application rows; no UPDATE/DELETE from app without trace | owning service |
 | I | Information disclosure | SQL injection across schemas | Parameterized queries; Liquibase-controlled DDL (ADR-009); least-privilege DB roles per schema | each service |
 | D | Denial of service | Stampede on `/health` or auth | Kong rate limiting; Redis for edge counters; backoff on gRPC | Kong + services |
 | E | Elevation of privilege | User calls another tenant's school data | Authorization at edge + service; row scope by school/tenant; service-boundary rules | iam + school |

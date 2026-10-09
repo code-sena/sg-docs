@@ -21,8 +21,7 @@ Last updated: 2026-09-22
 
 | Data | Home | Access |
 |------|------|--------|
-| Audit entries | `Audit` schema | Append-only API |
-| Config/docs flags | `Configuration` | Admin API |
+| Config/docs flags | `Settings` | Admin API |
 | Binary attachments (if any) | blob store | Short-lived URLs |
 
 ## Related

@@ -37,10 +37,9 @@ Not declared in any broker configuration yet. Kept here as the target contract.
 
 | Topic / subject | Producer | Consumers | Payload summary | Depends on |
 |-----------------|----------|-----------|-----------------|------------|
-| `trip.status.changed` | route-service | notification, audit consumers | Trip lifecycle | route-service events |
-| `exception.raised` | exceptional-service | notification, audit, coordinator UIs via API | Severity + refs | exceptional-service |
+| `trip.status.changed` | route-service | notification consumers | Trip lifecycle | route-service events |
 | `location.sampled` *(optional high-volume)* | gps-service | analytics/read models | Batched points — consider separate store path | gps-service |
-| `notification.delivered` | notification-service | audit, metrics | Delivery outcome | audit-service |
+| `notification.delivered` | notification-service | metrics | Delivery outcome | notification-service |
 | `config.changed` | configuration-service | all interested services | Feature flag updates | configuration-service |
 | `user.access.revoked` | iam-service | gateways/sessions | Security | Redis token blacklist |
 

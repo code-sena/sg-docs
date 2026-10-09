@@ -161,7 +161,7 @@ Clients **cannot** set these past the edge.
 - TLS 1.2+ everywhere; HTTP only inside compose network.
 - Secrets (signing key, DB) only via environment/secret manager — never Git.
 - RS256 private key lives **only** in `iam-service`; all others use public JWKS.
-- Audit: login success/failure, password reset, role change → `audit-service`.
+- Audit: login success/failure, password reset, role change → owning service status/log history.
 
 ---
 

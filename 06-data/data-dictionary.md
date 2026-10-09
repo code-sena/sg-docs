@@ -24,8 +24,8 @@
 | Bus fleet unit | `Bus` | Store plate independently without FK-by-convention |
 | Route assignment | `Route` | Mutate GPS raw samples |
 | Position sample | `Gps` | Treat as source of truth for schedule (derived) |
-| Audit trail | `Audit` | UPDATE/DELETE application rows |
-| Feature flags / settings | `Configuration` | Hardcode env-specific flags in services |
+| Audit trail | Application status history | UPDATE/DELETE application rows |
+| Feature flags / settings | `Settings` | Hardcode env-specific flags in services |
 
 ## Per-schema highlights
 
@@ -51,6 +51,7 @@
 | Field | Meaning | Notes |
 |-------|---------|-------|
 | School.code | Stable institutional code | Used in URLs / reports |
+| SchoolAdmin.ProfileId | Admin profile linked to one school | UNIQUE: one school per admin |
 | Geographic references | Links into `Geographic` where present | Read-only from school writers |
 
 ### `Bus` / `Route` / `Gps`
@@ -70,22 +71,7 @@
 | Delivery.status | queued / sent / failed / read | Idempotent retries via Kafka (ADR-004) |
 | channel | push / sms / email / webhook | Channel-specific payload envelope |
 
-### `Exceptional`
-
-| Field | Meaning | Notes |
-|-------|---------|-------|
-| Incident type + severity | Operational exception taxonomy | Feeds alerts |
-| Related route/bus/school ids | Soft references (by id, no cross-schema FK) | Documented in service-boundary-rules |
-
-### `Audit`
-
-| Field | Meaning | Notes |
-|-------|---------|-------|
-| actor_id | Who performed the action | From JWT claims (ADR-008) |
-| action / entity / before-after | What changed | Append-only |
-| occurred_at | Event time | UTC |
-
-### `Configuration`
+### `Settings`
 
 | Field | Meaning | Notes |
 |-------|---------|-------|

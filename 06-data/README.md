@@ -21,7 +21,7 @@ documented in ADR-002 (Strangler Fig).
 | File | Role | Status |
 |------|------|--------|
 | [models.md](./models.md) | **Scaffold/guide** for filling a new service model (placeholders) | ✅ template |
-| [domain/](./domain/) | Filled table models per schema | ✅ 11 schemas |
+| [domain/](./domain/) | Filled table models per schema | ✅ 9 schemas |
 | [data-dictionary.md](./data-dictionary.md) | Ambiguous / PII / enum meanings | ✅ |
 | [modeling-conventions.md](./modeling-conventions.md) | Naming, keys, timestamps | ✅ |
 | [normalization-assessment.md](./normalization-assessment.md) | Intentional denormalization | ✅ |

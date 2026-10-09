@@ -26,7 +26,6 @@
 
 - Personal data (Person/Family) → user-management-service
 - Business configuration → configuration-service
-- Audit persistence → audit-service
 
 ## Main endpoints
 
