@@ -4,6 +4,7 @@
 - **Date:** 2026-10-09
 - **Status:** Proposed
 - **Authors:** [Team]
+- **Superseded by:** ADR-011
 
 ---
 

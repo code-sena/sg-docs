@@ -148,6 +148,38 @@ CREATE TABLE SessionProfile (
 **Modeling decisions:**
 1. Session history is retained to support security review and forced logout.
 
+### Table: TermsAcceptance
+
+**Purpose:** Append-only evidence of terms and data-processing acceptance per profile and terms version.
+
+```sql
+CREATE TABLE Iam.TermsAcceptance (
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    ProfileId UNIQUEIDENTIFIER NOT NULL REFERENCES Iam.Profile(Id),
+    StudentProfileId UNIQUEIDENTIFIER NULL REFERENCES Iam.Profile(Id),
+    TermsVersion VARCHAR(20) NOT NULL,
+    AcceptedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+    IpAddress VARCHAR(50) NULL,
+    Channel VARCHAR(20) NOT NULL DEFAULT 'mobile'
+);
+```
+
+**Data dictionary:**
+
+| Column | Type | Description | Example |
+|--------|------|-------------|---------|
+| Id | UNIQUEIDENTIFIER | Acceptance record identifier | `550e8400-...` |
+| ProfileId | UNIQUEIDENTIFIER | Profile that accepted | `550e8400-...` |
+| StudentProfileId | UNIQUEIDENTIFIER | Minor on whose behalf the parent accepted (NULL = own data) | `550e8400-...` |
+| TermsVersion | VARCHAR(20) | Accepted terms version | `2026.08` |
+| AcceptedAt | DATETIME2 | Acceptance timestamp | `2026-10-09T12:00:00` |
+| IpAddress | VARCHAR(50) | Client IP address | `192.0.2.10` |
+| Channel | VARCHAR(20) | Capture channel | `mobile` |
+
+**Modeling decisions:**
+1. Append-only: a new version or revocation adds rows; history is never updated.
+2. The latest row per (ProfileId, StudentProfileId) wins; a newer TermsVersion voids older ones.
+
 ### Indexes
 
 | Name | Fields | Type | Justification |

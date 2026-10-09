@@ -113,7 +113,7 @@
 | **Responsibility** | Identity and access: auth, JWT, roles/permissions (RBAC), profiles, sessions |
 | **Stack** | Java + Spring Boot |
 | **Schema** | `Iam` |
-| **Tables** | Role, Permissions, PermissionsRole, Profile, SessionProfile |
+| **Tables** | Role, Permissions, PermissionsRole, Profile, SessionProfile, TermsAcceptance |
 | **Direct FK Relationships** | `Profile.PersonID` → `UserManagement.Person(ID)`, `Profile.SchoolID` → `School.School(ID)`, `Profile.RoleID` → `Role(ID)` |
 | **Consumed by** | api-gateway (token verification), all other services |
 | **Externally exposed** | Only through the API Gateway |
@@ -245,7 +245,7 @@ Others access via API or events, never directly to the DB.
 
 | Entity / Data | Owner service (Source of Truth) | How other services access |
 |---------------|--------------------------------|--------------------------|
-| Profile, Role, Permissions, PermissionsRole, SessionProfile | iam-service | REST API |
+| Profile, Role, Permissions, PermissionsRole, SessionProfile, TermsAcceptance | iam-service | REST API |
 | Person, Family, FamilyMember, DriverLicense | user-management-service | REST API |
 | School, SchoolCampus, SchoolAdmin | school-service | REST API |
 | City | school-service (`Geographic`) | REST API |

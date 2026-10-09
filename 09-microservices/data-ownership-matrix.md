@@ -29,7 +29,7 @@ tokens/cache/rate-limiting).
 
 | Entity / Data | Owner service | Schema | How other services access |
 |---------------|--------------|--------|--------------------------|
-| Profile, Role, Permissions, PermissionsRole, SessionProfile | iam-service | `Iam` | REST API. Never shared directly. |
+| Profile, Role, Permissions, PermissionsRole, SessionProfile, TermsAcceptance | iam-service | `Iam` | REST API. Never shared directly. |
 | Person, Family, FamilyMember, DriverLicense | user-management-service | `UserManagement` | REST API + `user.*` events |
 | School, SchoolCampus, SchoolAdmin | school-service | `School` | REST API |
 | City | school-service | `Geographic` | REST API |
