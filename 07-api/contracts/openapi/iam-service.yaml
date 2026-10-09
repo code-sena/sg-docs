@@ -35,7 +35,7 @@ security:
 
 tags:
   - name: IAM
-    description: Identity authority: authentication, JWT issuance, RBAC, sessions.
+    description: "Identity authority: authentication, JWT issuance, RBAC, sessions."
   - name: Health
     description: Health checks
 
@@ -149,6 +149,44 @@ paths:
   /auth/change-password:
     post:
       summary: Change password
+      tags: [IAM]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, additionalProperties: true }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { type: object }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /auth/terms/acceptances:
+    get:
+      summary: List my terms acceptances
+      tags: [IAM]
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { type: object }
+                  pagination: { $ref: '#/components/schemas/PageMeta' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /auth/terms/accept:
+    post:
+      summary: Record terms acceptance
       tags: [IAM]
       requestBody:
         required: true
