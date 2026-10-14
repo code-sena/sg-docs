@@ -7,7 +7,6 @@ Last updated: 2026-09-22
 | Store | Role | Notes |
 |-------|------|-------|
 | **SQL Server** (one instance) | Primary OLTP | Schema per service (ADR-002); Liquibase (ADR-009) |
-| **Redis** | Ephemeral edge/cache | api-gateway rate/session aids — not source of truth |
 | **Kafka** | Event log | Durable history per retention (ADR-004) |
 | Object/blob (optional later) | Exports, large media | Not a core MVP dependency |
 
@@ -21,7 +20,6 @@ Last updated: 2026-09-22
 
 | Data | Home | Access |
 |------|------|--------|
-| Config/docs flags | `Settings` | Admin API |
 | Binary attachments (if any) | blob store | Short-lived URLs |
 
 ## Related

@@ -261,7 +261,6 @@ ALTER TABLE RouteSchedule DROP COLUMN StartTime;
 |--------|------------|---------------|
 | **SQL Server** | ACID route hierarchy, assignments, schedules, and executions | Ephemeral counters or unstructured documents |
 | **MongoDB** | Flexible documents and catalog-style data | Complex transactions across collections |
-| **Redis** | Cache, sessions, TTL state, and counters | Authoritative route plans or execution history |
 | **Elasticsearch** | Full-text search, analytics, and logs | Source of truth for route data |
 
 ## Relationship diagram (per service)

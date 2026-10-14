@@ -28,7 +28,6 @@ database/
   ms-fleet-db/          # bus
   ms-route-db/
   ms-gps-db/
-  ms-settings-db/       # configuration
   ms-geographic-db/     # supporting geographic ref data
 ```
 

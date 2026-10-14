@@ -7,7 +7,7 @@
 
 ## Database engine
 
-**Engine:** [SQL Server / Redis / etc.]
+**Engine:** [SQL Server / —]
 **Justification:** [why this engine is appropriate for this service]
 
 ---

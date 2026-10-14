@@ -4,7 +4,7 @@ Last updated: 2026-09-22 · Companion to [security-policy](../00-governance/secu
 
 ## Scope
 
-**In scope:** edge (Kong :8000), 11 business microservices (:8080), Kafka, gRPC, SQL Server (schemas), Redis (ephemeral), admin/operator paths.
+**In scope:** edge (Kong :8000), 11 business microservices (:8080), Kafka, gRPC, SQL Server (schemas), admin/operator paths.
 
 **Out of scope:** physical data-center controls, third-party OS patching (owned by platform team).
 
@@ -12,7 +12,7 @@ Last updated: 2026-09-22 · Companion to [security-policy](../00-governance/secu
 
 1. **Public** — browsers/mobile → Kong OSS **:8000**
 2. **Service network** — Docker DNS service names; services **:8080**
-3. **Data** — SQL Server + Redis; no direct public path
+3. **Data** — SQL Server; no direct public path
 4. **Admin** — Kong admin / ops runbooks (network-restricted)
 
 ## STRIDE summary
@@ -23,7 +23,7 @@ Last updated: 2026-09-22 · Companion to [security-policy](../00-governance/secu
 | T | Tampering | Replay of gRPC payload / Kafka message | TLS in transit; Kafka ACLs; payload schema registry (ADR-004) | platform |
 | R | Repudiation | "Who changed route assignment?" | Status history on application rows; no UPDATE/DELETE from app without trace | owning service |
 | I | Information disclosure | SQL injection across schemas | Parameterized queries; Liquibase-controlled DDL (ADR-009); least-privilege DB roles per schema | each service |
-| D | Denial of service | Stampede on `/health` or auth | Kong rate limiting; Redis for edge counters; backoff on gRPC | Kong + services |
+| D | Denial of service | Stampede on `/health` or auth | Kong local (per-node) rate limiting; backoff on gRPC | Kong + services |
 | E | Elevation of privilege | User calls another tenant's school data | Authorization at edge + service; row scope by school/tenant; service-boundary rules | iam + school |
 
 ## Entry-point review (per request path)

@@ -227,19 +227,6 @@ has consistent meaning. Each bounded context has its own Ubiquitous Language.
 
 ---
 
-### Bounded Context: Configuration
-
-| Field | Value |
-|-------|-------|
-| **Name** | Configuration |
-| **Responsibility** | Manages system-wide security and password configuration policies |
-| **Owning team** | Guardian Escolar Development Team |
-| **Microservice(s)** | `configuration-service` |
-| **Database** | SQL Server |
-| **Ubiquitous Language** | Password Policy, Security Setting, Configuration |
-
----
-
 ## 3. Context Map
 
 The Context Map shows relationships between bounded contexts. Relationships define
@@ -355,7 +342,7 @@ DDD classifies subdomains by their strategic value:
 |------|-------------|-----------|---------|
 | **Core Domain** | Where the business competitive advantage lies. What differentiates us. | MAXIMUM — build, don't buy | Real-time school transportation monitoring and student safety |
 | **Supporting Subdomain** | Necessary for the core but not differentiating. Can be outsourced. | MEDIUM | Route and bus management |
-| **Generic Subdomain** | Commodity. Off-the-shelf solution exists. | MINIMUM — buy/use OSS | Authentication, notifications, auditing |
+| **Generic Subdomain** | Commodity. Off-the-shelf solution exists. | MINIMUM — buy/use OSS | Authentication, notifications |
 
 ### Classification of this project's bounded contexts
 
@@ -370,7 +357,6 @@ DDD classifies subdomains by their strategic value:
 | Alerts | Supporting | Alerts support the core transportation monitoring and safety processes |
 | Geography | Generic | Geographic information such as cities is a common domain capability |
 | Security | Generic | Authentication, roles, permissions, and sessions are common capabilities with standard solutions available |
-| Configuration | Generic | Security and password configuration are supporting capabilities that can use standard mechanisms |
 
 ---
 

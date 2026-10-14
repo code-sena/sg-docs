@@ -12,9 +12,8 @@
 **Engine:** SQL Server
 **Schema:** `ForgotInformation`
 **Justification:** Shared SQL Server instance with logical schema isolation (ADR-002). No
-separate engine is introduced because the volume and access pattern (short-lived rows,
-occasional writes) does not justify adding new infrastructure (e.g. Redis) before it is
-actually needed — see `decisions.md` DEC-001 for the Redis alternative and when to revisit it.
+separate engine is introduced: the volume and access pattern (short-lived rows,
+occasional writes) does not justify adding new infrastructure — see `decisions.md` DEC-001.
 
 ---
 

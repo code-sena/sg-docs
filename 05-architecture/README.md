@@ -61,7 +61,7 @@ A record of ONE important architectural decision: what was decided, why, what al
 were evaluated, and what the consequences are. They are **short documents** (1-2 pages).
 
 **When to create an ADR:**
-- When choosing a message broker (RabbitMQ vs Kafka vs Redis Streams)
+- When choosing a message broker (RabbitMQ vs Kafka vs NATS)
 - When deciding the database strategy (one per service vs shared)
 - When choosing a communication pattern (REST vs gRPC vs events)
 - When choosing an authentication library

@@ -40,8 +40,7 @@ Not declared in any broker configuration yet. Kept here as the target contract.
 | `trip.status.changed` | route-service | notification consumers | Trip lifecycle | route-service events |
 | `location.sampled` *(optional high-volume)* | gps-service | analytics/read models | Batched points — consider separate store path | gps-service |
 | `notification.delivered` | notification-service | metrics | Delivery outcome | notification-service |
-| `config.changed` | configuration-service | all interested services | Feature flag updates | configuration-service |
-| `user.access.revoked` | iam-service | gateways/sessions | Security | Redis token blacklist |
+| `user.access.revoked` | iam-service | gateways/sessions | Security | In-memory deny list (iam-service) |
 
 > Fill producer/consumer codes to match ADRs and service READMEs as APIs stabilize; rename topics to final convention before M2.
 

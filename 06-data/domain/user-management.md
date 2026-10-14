@@ -179,7 +179,6 @@ ALTER TABLE Person DROP COLUMN LastName;
 |--------|------------|---------------|
 | **SQL Server** | ACID transactions, personal-data integrity, and relational memberships | Ephemeral counters or cache-only state |
 | **MongoDB** | Flexible documents and catalog-style data | Complex transactions across collections |
-| **Redis** | Cache, sessions, TTL state, and counters | Authoritative personal data |
 | **Elasticsearch** | Full-text search, analytics, and logs | Source of truth for personal records |
 
 ## Relationship diagram (per service)

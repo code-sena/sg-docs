@@ -24,8 +24,6 @@
 | Bus fleet unit | `Bus` | Store plate independently without FK-by-convention |
 | Route assignment | `Route` | Mutate GPS raw samples |
 | Position sample | `Gps` | Treat as source of truth for schedule (derived) |
-| Audit trail | Application status history | UPDATE/DELETE application rows |
-| Feature flags / settings | `Settings` | Hardcode env-specific flags in services |
 
 ## Per-schema highlights
 
@@ -70,13 +68,6 @@
 | Template.key | i18n template id | Not free-text body as source of truth |
 | Delivery.status | queued / sent / failed / read | Idempotent retries via Kafka (ADR-004) |
 | channel | push / sms / email / webhook | Channel-specific payload envelope |
-
-### `Settings`
-
-| Field | Meaning | Notes |
-|-------|---------|-------|
-| key / value / scope | Feature or operational setting | scope = global / school / user |
-| is_secret | Mask in API and logs | Never return secrets to clients |
 
 ### `Geographic` (supporting schema)
 

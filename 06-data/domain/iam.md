@@ -230,7 +230,6 @@ ALTER TABLE Profile DROP COLUMN PasswordHash;
 |--------|------------|---------------|
 | **SQL Server** | ACID transactions, RBAC relationships, and shared schemas | Ephemeral counters or unstructured event streams |
 | **MongoDB** | Flexible documents and catalog-style data | Complex transactions across collections |
-| **Redis** | Cache, sessions, TTL state, and counters | Source of truth for identity or authorization |
 | **Elasticsearch** | Full-text search, analytics, and logs | Authoritative identity data |
 
 ## Relationship diagram (per service)

@@ -36,7 +36,7 @@ Data models for each microservice.
 **Format per service:**
 ```markdown
 ## Service: [name]
-**DB Engine:** SQL Server (ADR-002) for all relational services; Redis only for API Gateway ephemeral state
+**DB Engine:** SQL Server (ADR-002) for all services
 **Justification:** [why this engine for this service]
 
 ### Table/Collection: [name]
@@ -95,7 +95,6 @@ how to handle migrations with data in production.
 There is no single answer. It depends on the service:
 - **SQL** (SQL Server): relational data, ACID transactions, fixed schema (ADR-002)
 - **Document** (MongoDB): hierarchical data, flexible schema, high variability
-- **Key-value** (Redis): cache, sessions, high-speed temporary data
 - **Time series** (InfluxDB, TimescaleDB): metrics, event logs
 
 ### How to handle consistency between services?

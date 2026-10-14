@@ -7,33 +7,28 @@
 
 ---
 
-## [DEC-001] OTP storage: SQL Server table instead of Redis
+## [DEC-001] OTP storage: SQL Server table
 
 **Date:** 2026-10-01
 **Status:** Active
 
 **Context:**
-The project documents Redis as the intended store for ephemeral/TTL state (see
-`09-microservices/services/01-api-gateway/data-model.md` and `.env.example`), but no Redis
-instance is deployed anywhere in the codebase yet.
+Verification codes have a short lifetime and low write volume. The question is whether to
+introduce a separate TTL store for them or to keep them in the infrastructure the project
+already runs.
 
 **Decision:**
-Store verification requests in the shared SQL Server instance (`ForgotInformation.VerificationRequest`,
-see `data-model.md`), with `ExpiresAt` enforced in application logic and a periodic cleanup job,
-instead of introducing Redis as net-new infrastructure for this first iteration.
-
-**Alternatives considered:**
-- Redis with native TTL: cleaner expiration semantics, but would make this service the one
-  to introduce brand-new infrastructure (Redis container, client library, ops runbook) purely
-  to support a feature that can work correctly on existing infrastructure.
+Store the one-time codes in the shared SQL Server instance
+(`ForgotInformation.VerificationRequest`, see `data-model.md`), with `ExpiresAt` enforced in
+application logic and a periodic cleanup job. No separate TTL store is introduced.
 
 **Consequences:**
 - ✅ No new infrastructure dependency; reuses the SQL Server instance and Liquibase pipeline every other service already uses
 - ✅ Verification requests are naturally covered by the existing SQL Server backup/ops story
 - ⚠️ Expiration is enforced by the application (`WHERE ExpiresAt > GETUTCDATE()`), not by the
   store itself — a cleanup job must run periodically to physically delete expired rows
-- ⚠️ If OTP volume grows significantly, this should be revisited in favor of Redis (the
-  decision should be superseded here, not silently changed in code)
+- ⚠️ If OTP volume grows significantly, this decision should be superseded here, not silently
+  changed in code
 
 ---
 
@@ -151,7 +146,7 @@ saw "code sent" and nothing arrived (notably in the mobile app).
 **Consequences:**
 - ✅ Users and support can tell what went wrong
 - ⚠️ Account/phone enumeration is possible; revisit if the threat model changes
-- ⚠️ When the gateway-level Redis rate limiting ships, this remains as a second layer
+- ⚠️ When the gateway-level rate limiting is in force, this remains as a second layer
 
 ---
 

@@ -6,8 +6,8 @@
 > Schema changes are always done with versioned migrations, never by modifying tables in place.
 
 > **DB engine note:** This document is technology-agnostic. The examples show standard SQL
-> compatible with most relational engines. For document databases
-> (MongoDB) or key-value stores (Redis), adapt the diagrams and schemas to the corresponding format.
+> compatible with most relational engines. For non-relational engines, adapt the diagrams
+> and schemas to the corresponding format.
 > The engine choice is documented in each service section — the scaffold does not assume which one to use.
 
 ---
@@ -150,7 +150,6 @@ V2__add_order_status.sql
 |--------|------------|---------------|
 | **SQL Server** | ACID transactions, RBAC relationships, and shared schemas | Ephemeral counters or unstructured event streams |
 | **MongoDB** | Flexible documents and catalog-style data | Complex transactions across collections |
-| **Redis** | Cache, sessions, TTL state, and counters | Source of truth for identity or authorization |
 | **Elasticsearch** | Full-text search, analytics, and logs | Authoritative identity data |
 
 ---

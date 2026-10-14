@@ -71,8 +71,8 @@
 }
 ```
 
-> **Why no email/phone value in the payload:** consumers (`audit-service`,
-> `notification-service`) only need to know *that* a change happened and *who* it happened
+> **Why no email/phone value in the payload:** consumers (`notification-service`)
+> only need to know *that* a change happened and *who* it happened
 > to. The new value is already authoritative in `ms-iam`/`ms-user-management`; re-broadcasting
 > it would create a second copy of PII across Kafka topics and consumer logs.
 
@@ -90,7 +90,7 @@ requests), it must be added here before being implemented.
 
 | Guarantee | Value | Implication |
 |-----------|-------|-------------|
-| At-least-once | Yes | `audit-service` and `notification-service` consumers must be idempotent (dedupe by `eventId`) |
+| At-least-once | Yes | `notification-service` consumers must be idempotent (dedupe by `eventId`) |
 | At-most-once | No | — |
 | Exactly-once | No | Not required — all four events are informational, not financial/transactional |
 
@@ -100,4 +100,4 @@ requests), it must be added here before being implemented.
 
 - **Dead Letter Topic:** `forgot-information.events.dlq`
 - **Retries:** 3 retries with exponential backoff before routing to the DLQ
-- **Alerts:** the team is alerted (per `13-operations/` conventions) when a message lands in the DLQ, since a missed event means `audit-service` loses a record of a credential change
+- **Alerts:** the team is alerted (per `13-operations/` conventions) when a message lands in the DLQ, since a missed event means `notification-service` never learns of a credential change

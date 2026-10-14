@@ -17,7 +17,7 @@ API or events — never through another schema.*
 | 1.1 | Each service owns **exactly one** schema (school-service also owns `Geographic`). |
 | 1.2 | A service may `SELECT/INSERT/UPDATE` **only** its own schema. |
 | 1.3 | DB login per service (`svc_<name>`) is granted rights on that schema only. |
-| 1.4 | API Gateway owns **no** SQL schema (Redis only). |
+| 1.4 | API Gateway owns **no** SQL schema (stateless, no datastore). |
 
 Authoritative list: [data-ownership-matrix.md](./data-ownership-matrix.md).
 

@@ -16,13 +16,11 @@ Last updated: 2026-09-22 · Engine: **SQL Server** single instance, schemas per 
 | Liquibase changelogs (git) | Git history | 0 | minutes | all services |
 | Kafka retention | Topic retention + mirror if needed | per topic | per topic | platform |
 | Kong config / routes | GitOps export | 0 | minutes | edge |
-| Redis | Ephemeral — **no** restore requirement | — | recreate | edge |
 
 > Replace RPO/RTO targets with signed-off numbers from stakeholders.
 
 ## What is NOT backed up as source of truth
 
-- Redis counters/sessions (ephemeral)
 - Container filesystem layers
 - Local developer machines
 

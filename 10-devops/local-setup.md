@@ -48,7 +48,6 @@ Verify these ports are free before starting:
 | 8000 | api-gateway (Kong OSS) | Public entry point |
 | 8080 | business services | each microservice (Docker DNS by name) |
 | 1433 | SQL Server | Relational database (monolith instance) |
-| 6379 | Redis | Cache and token blacklist |
 | 9092 | Kafka | Message broker (ADR-004) |
 
 **Check free ports:**
@@ -86,7 +85,6 @@ cp .env.example .env
 | Variable | Description | Value for local |
 |----------|-------------|----------------|
 | `ConnectionStrings__Default` / `MSSQL_*` | SQL Server connection | `Server=localhost,1433;Database=school_guardian;User Id=sa;Password=***;TrustServerCertificate=True` |
-| `REDIS_URL` | Redis connection | `redis://localhost:6379` |
 | `JWT_SECRET` | Key for signing JWT | `[generate with: openssl rand -base64 32]` |
 | `[VARIABLE]` | [description] | [example value] |
 

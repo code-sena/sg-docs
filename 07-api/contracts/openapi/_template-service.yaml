@@ -78,15 +78,11 @@ paths:
                       database:
                         type: string
                         enum: [ok, degraded, down]
-                      redis:
-                        type: string
-                        enum: [ok, degraded, down]
               example:
                 status: ok
                 timestamp: '2024-01-15T10:30:00Z'
                 dependencies:
                   database: ok
-                  redis: ok
         '503':
           description: Service unavailable (starting or a dependency is down)
 

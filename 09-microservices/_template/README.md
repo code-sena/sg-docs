@@ -22,7 +22,7 @@
 | Local port | [8001, 8002...] |
 | Repository | [Repo URL] |
 | Owner team | [team name] |
-| DB engine | [SQL Server / Redis / none] |
+| DB engine | [SQL Server / —] |
 | Status | [In development / In production / Deprecated] |
 
 ---

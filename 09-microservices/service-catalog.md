@@ -51,10 +51,10 @@
 
 ┌──────────────────────────────────────────────────────────────────────────────────────────┐
 │                               6. INFRASTRUCTURE                                          │
-│ ┌──────────────────────┐   ┌───────────────────────────┐                               │
-│ │ 01 - api-gateway     │   │ 11 - configuration-service│                               │
-│ │ (Punto de Entrada)   │   │ (Parámetros y Políticas)│                                 │
-│ └──────────────────────┘   └───────────────────────────┘                               │
+│ ┌──────────────────────┐                                                               │
+│ │ 01 - api-gateway     │                                                               │
+│ │ (Punto de Entrada)   │                                                               │
+│ └──────────────────────┘                                                               │
 └──────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -62,11 +62,11 @@
 
 ## Service registry
 
-> All services share a **single SQL Server instance** (ADR-002), each with its own schema for logical isolation and direct relational constraints (Foreign Keys) between schemas. All services listen on host port **8080**; on the Docker network they are reached by service name (DNS), so host port collisions do not occur. The API Gateway is Kong OSS (language-neutral) and is the only stateless service (uses Redis).
+> All services share a **single SQL Server instance** (ADR-002), each with its own schema for logical isolation and direct relational constraints (Foreign Keys) between schemas. All services listen on host port **8080**; on the Docker network they are reached by service name (DNS), so host port collisions do not occur. The API Gateway is Kong OSS (language-neutral) and is the only stateless service (no datastore; local per-node rate limiting).
 
 | # | Service | Domain | Main responsibility | Port | Schema | DB type | Stack | Status |
 |---|---------|--------|---------------------|------|--------|---------|-------|--------|
-| 01 | `api-gateway` | Infra | Routing, authentication, rate limiting | 8000 | — (Redis cache) | Redis (ephemeral) | Kong OSS | 🟡 In development |
+| 01 | `api-gateway` | Infra | Routing, authentication, rate limiting | 8000 | — | — (stateless) | Kong OSS | 🟡 In development |
 | 02 | `iam-service` | Identity | Identity, auth, roles, permissions, profiles, sessions | 8080 | `Iam` | Relational (shared) | Java + Spring Boot | 🟡 In development |
 | 03 | `user-management-service` | Identity | Persons, families, family members, driver licenses | 8080 | `UserManagement` | Relational (shared) | C# + ASP.NET | 🟡 In development |
 | 04 | `school-service` | School | Schools, campuses, school admins, cities | 8080 | `School` + `Geographic` | Relational (shared) | C# + ASP.NET | 🟡 In development |
@@ -74,12 +74,11 @@
 | 06 | `bus-service` | Transport | Bus fleet, brands, models, driver assignments | 8080 | `Bus` | Relational (shared) | C# + ASP.NET | 🟡 In development |
 | 07 | `route-service` | Transport | Routes, stops, schedules, executions, assignments | 8080 | `Route` | Relational (shared) | C# + ASP.NET | 🟡 In development |
 | 08 | `gps-service` | Tracking | GPS devices (VT03F protocol) and position history | 8080 | `Gps` | Relational (shared) | Java + Spring Boot | 🟡 In development |
-| 11 | `configuration-service` | Infra | Security settings and password policies | 8080 | `Settings` | Relational (shared) | C# + ASP.NET | 🟡 In development |
 
 **Statuses:** 🟢 Active in prod | 🟡 In development | 🔴 Planned | ⏸ Deprecated
 
 > **Data note (ADR-002):** All services share a **single SQL Server instance** (monolithic DB),
-> each with its own schema for logical isolation. Foreign keys connect tables across schemas directly. The API Gateway uses Redis for ephemeral cache only.
+> each with its own schema for logical isolation. Foreign keys connect tables across schemas directly. The API Gateway is stateless and owns no schema.
 
 ---
 
@@ -95,7 +94,7 @@
 | **Type** | Infrastructure service (not domain) |
 | **Stack** | Kong OSS |
 | **Port** | 8000 (HTTPS 8443) |
-| **DB** | Redis (token cache, rate limiting) |
+| **DB** | None (stateless, no datastore) |
 | **Communicates with** | All internal services |
 | **Externally exposed** | Yes — it is the only entry point |
 
@@ -204,19 +203,6 @@
 
 ---
 
-### 11 — `configuration-service`
-
-| Field | Value |
-|-------|-------|
-| **Folder** | `09-microservices/services/11-configuration-service/` |
-| **Domain** | Infrastructure |
-| **Responsibility** | Security settings and password policies |
-| **Stack** | C# + ASP.NET |
-| **Schema** | `Settings` |
-| **Tables** | SecuritySettings, PasswordPolicies |
-
----
-
 ## Service communication matrix
 
 > **Channels:** synchronous **gRPC** (ADR-005) and asynchronous **Kafka** (ADR-004). Client-facing REST goes only through the Kong gateway.
@@ -234,7 +220,6 @@
 | notification-service | iam-service | Kafka | Asynchronous | Notify delivery status of alerts |
 | school-service | route-service | gRPC | Synchronous | Query school stop locations |
 | user-management-service | iam-service | gRPC | Synchronous | Resolve person identity for profiles |
-| configuration-service | all services | Kafka | Asynchronous | Broadcast security setting changes |
 
 ---
 
@@ -253,7 +238,6 @@ Others access via API or events, never directly to the DB.
 | Bus, DriverAssignemts, Brand, Model | bus-service | REST API |
 | Route, Stop, RouteStop, RouteBusAssignments, RouteStudentAssignments, RouteSchedule, RouteExecution | route-service | REST API + events |
 | GpsDevice, GpsLocation | gps-service | REST query |
-| SecuritySettings, PasswordPolicies | configuration-service | REST API |
 
 ---
 

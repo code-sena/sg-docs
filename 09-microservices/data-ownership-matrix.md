@@ -20,10 +20,8 @@ all services share a single SQL Server instance. Each service owns exactly **one
 | `Bus` | bus-service | Transport | 🟡 In development |
 | `Route` | route-service | Transport | 🟡 In development |
 | `Gps` | gps-service | Tracking | 🟡 In development |
-| `Settings` | configuration-service | Infrastructure | 🟡 In development |
 
-**API Gateway** is stateless: it does not own any SQL Server schema (it only uses Redis for
-tokens/cache/rate-limiting).
+**API Gateway** is stateless: it does not own any SQL Server schema (no datastore; token revocation lives in iam-service's in-memory deny list).
 
 ## Ownership matrix
 
@@ -40,7 +38,6 @@ tokens/cache/rate-limiting).
 | RouteBusAssignments, RouteStudentAssignments | route-service | `Route` | REST API |
 | RouteSchedule, RouteExecution | route-service | `Route` | REST API + `route.*` events |
 | GpsDevice, GpsLocation | gps-service | `Gps` | Consumes GPS stream; REST query |
-| SecuritySettings, PasswordPolicies | configuration-service | `Settings` | REST API |
 
 > **Rule:** a service never queries or updates ANOTHER service's schema directly from application code. Cross-schema foreign keys maintain direct relational integrity in SQL Server per ADR-002, while application-level access routes through the owner's API or events.
 
@@ -56,7 +53,6 @@ tokens/cache/rate-limiting).
 | `Bus` | `svc_bus` | SELECT / INSERT / UPDATE on `Bus` only |
 | `Route` | `svc_route` | SELECT / INSERT / UPDATE on `Route` only |
 | `Gps` | `svc_gps` | SELECT / INSERT / UPDATE on `Gps` only |
-| `Settings` | `svc_configuration` | SELECT / INSERT / UPDATE on `Settings` only |
 
 > One login/user per service, limited to its own schema (see ADR-002 risk mitigation).
 

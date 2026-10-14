@@ -11,9 +11,9 @@
 **Context:** There are two strategies for verifying JWT tokens: (A) the gateway verifies the token
 and passes user context as headers; (B) each microservice verifies its own token.
 
-**Decision:** Strategy A — the gateway verifies the JWT (signature + expiration + blacklist)
+**Decision:** Strategy A — the gateway verifies the JWT (signature + expiration)
 and attaches `X-User-Id` and `X-User-Role` as internal headers. Microservices trust
-these headers without re-verifying the token.
+these headers without re-verifying the token. (Token revocation is handled by iam-service's in-memory deny list, not by the gateway.)
 
 **Consequences:**
 - Microservices are simpler (no JWT library required)
@@ -34,7 +34,7 @@ authenticated endpoints.
 **Consequences:**
 - IP rate limit does not penalize users on the same network (corporate NAT)
 - User-id rate limit requires the token to be verified before applying the limit
-- Implementation: Redis bucket with key `rate:{ip}:{path}` or `rate:{userId}:{path}`
+- Implementation: local (per-node) in-memory bucket with key `rate:{ip}:{path}` or `rate:{userId}:{path}`
 
 ---
 

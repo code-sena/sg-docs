@@ -16,7 +16,7 @@ Web (Angular)  ─┐
 Mobile (Expo)  ─┼─ HTTPS + Bearer JWT ─▶ API Gateway (Kong OSS) :8000 ─▶ microservices
 Operators/API  ─┘         │                    │
                           │                    ├─ verify RS256 (JWKS, local cache)
-                          │                    └─ inject X-User-Id, X-User-Role
+                          │                    └─ inject X-User-* headers (strip inbound)
                           ▼
                     iam-service :8080
                     (issues/revokes tokens, owns RBAC)
@@ -24,9 +24,9 @@ Operators/API  ─┘         │                    │
 
 | Layer | Responsibility |
 |-------|----------------|
-| Gateway | Validate signature, expiry, blacklist; enforce rate limits; inject identity headers |
-| Services | Trust `X-User-Id` / `X-User-Role` **only** from the gateway; never accept them from clients |
-| Clients | Store refresh token securely; never embed secrets in apps |
+| Gateway | Validate signature (RS256/JWKS) and expiry; enforce rate limits; strip and then inject identity headers |
+| Services | Trust `X-User-*` **only** from the gateway; never accept them from clients; requests with no headers stay anonymous |
+| Clients | Store the refresh token securely; never embed secrets in apps |
 
 **Critical:** the gateway **strips** any inbound `X-User-*` headers from the
 public internet before injecting authoritative values.
@@ -35,28 +35,37 @@ public internet before injecting authoritative values.
 
 ## 2. Token model
 
+Both tokens are **RS256 JWTs** signed by `iam-service`. The access token is
+returned in the response body; the refresh token is delivered as an
+`HttpOnly` cookie on web and as a bearer value on mobile.
+
 | Token | Algorithm | TTL | Storage (client) | Purpose |
 |-------|-----------|-----|------------------|---------|
-| Access token | RS256 | **1 hour** | Memory (mobile: SecureStore) | Call APIs |
-| Refresh token | Opaque/SHA-256 id | **7 days** (sliding on use) | httpOnly cookie (web) / SecureStore (mobile) | Obtain new access token |
+| Access token | RS256 (`kid=sg-iam`) | **15 minutes** | Memory (mobile: SecureStore) | Call APIs |
+| Refresh token | RS256 | **30 days** | httpOnly cookie (web) / SecureStore (mobile) | Obtain a new token pair |
 
-Claims in access token:
+Claims in the access token (the refresh token uses the same identity claims but
+`type: "refresh"` and no `jti`):
 
 ```json
 {
   "sub": "profile-uuid",
-  "roles": ["ADMIN"],
-  "permissions": ["route.create", "route.update"],
+  "personId": "person-uuid",
+  "roleId": "role-uuid",
+  "type": "access",
+  "jti": "token-uuid",
+  "email": "user@example.com",
+  "campusId": "campus-uuid",
+  "schoolId": "school-uuid",
   "iss": "school-guardian-iam",
   "aud": "school-guardian-api",
   "iat": 1760000000,
-  "exp": 1760003600,
-  "jti": "token-uuid"
+  "exp": 1760000900
 }
 ```
 
-Public keys are published at `GET /.well-known/jwks.json` (see contract `jwks`).
-Services/gateway fetch JWKS and cache it (refresh on unknown `kid`, min 5 min).
+Public keys are published at `GET /.well-known/jwks.json`. The gateway fetches
+the JWKS and caches it (refresh on an unknown `kid`).
 
 ---
 
@@ -70,7 +79,7 @@ create accounts; IAM only authenticates them.
 ```
 POST /api/v1/auth/login
 { "email": "...", "password": "..." }
-→ 200 { accessToken, refreshToken, expiresIn }
+→ 200 { accessToken, expiresAt, ... }   (refresh token in an HttpOnly cookie)
 → 401 INVALID_CREDENTIALS (generic — never reveals if email exists)
 ```
 
@@ -78,25 +87,31 @@ POST /api/v1/auth/login
 
 ```
 POST /api/v1/auth/refresh
-Authorization: Bearer <refresh-token>
-→ 200 new pair; old refresh token rotated (one-time use)
-→ 401 REFRESH_REUSED (revoke entire session family — possible theft)
+   Web:     HttpOnly refresh cookie
+   Mobile:  Authorization: Bearer <refresh-token>
+→ 200 new access + refresh pair (both rotated)
+→ 401 if the refresh token is expired, malformed, or the account is inactive
 ```
 
 ### 3.3 Logout
 
 ```
 POST /api/v1/auth/logout
-→ 204: add access `jti` to blacklist + revoke refresh session
+→ 204: the access-token `jti` is added to the in-memory deny list and the
+   refresh cookie is cleared
 ```
 
-### 3.4 Password change / reset
+### 3.4 Password reset / account recovery
 
-- Change (authenticated): `POST /api/v1/auth/change-password`
-  (current + new password; policy from `configuration-service`).
-- Forgot: `POST /api/v1/auth/forgot-password` → code by email/notification →
-  `POST /api/v1/auth/reset-password`.
-- After reset/change: revoke all sessions for that profile.
+Handled by the `forgot-information` service (public routes):
+
+- Forgot: `POST /api/v1/password/forgot` → a verification code is sent by email.
+- Verify: `POST /api/v1/password/forgot/verify`.
+- Reset: `POST /api/v1/password/reset`.
+- Email/phone changes use `POST /api/v1/email/change/*` and
+  `POST /api/v1/phone/change/*` respectively.
+
+Password policy is owned by `iam-service`, which enforces it directly.
 
 ---
 
@@ -124,7 +139,7 @@ POST /api/v1/auth/logout
 
 | Endpoint class | Auth | Example |
 |----------------|------|---------|
-| Public | None | `/health`, `/auth/login`, `/auth/forgot-password`, JWKS |
+| Public | None | `/health`, `/api/v1/auth/*`, `/api/v1/password/*`, JWKS |
 | Authenticated | Valid JWT | Most CRUD |
 | Role-gated | JWT + role | `/superadmin/*` → SUPER_ADMIN only |
 | Permission-gated | JWT + permission | `route.create`, `user.deactivate` |
@@ -134,22 +149,34 @@ POST /api/v1/auth/logout
 
 ## 6. Internal headers (gateway → service)
 
+The gateway verifies the token and then injects these headers; it also strips
+any inbound `X-User-*` value so a client can never spoof identity.
+
 | Header | Example | Rules |
 |--------|---------|-------|
-| `X-User-Id` | profile UUID | Injected by gateway; trusted by services |
-| `X-User-Role` | `ADMIN` | Injected by gateway |
+| `X-User-Id` | profile UUID (from `sub`) | Injected by gateway; trusted by services |
+| `X-User-Role` | role UUID (from `roleId`) | Injected by gateway |
+| `X-User-Email` | `user@example.com` | Injected by gateway |
+| `X-Campus-Id` | campus UUID | Injected by gateway when present |
+| `X-School-Id` | school UUID | Injected by gateway when present |
 | `X-Correlation-Id` | UUID | Propagated end-to-end; logged everywhere |
 
-Clients **cannot** set these past the edge.
+Services build the request identity from these headers and treat a request with
+no headers as anonymous (used by internal gRPC/REST calls).
 
 ---
 
 ## 7. Session & revocation
 
-- Access-token revocation relies on short TTL + **blacklist** in Redis
-  (logout, password reset, admin disable).
-- Refresh sessions live in `Iam.SessionProfile`; reuse detection rotates families.
-- Deactivated profile: login fails; existing access dies at TTL or blacklist push.
+- `iam-service` keeps an **in-memory deny list** (`InMemoryTokenDenyList`) of
+  revoked access-token `jti` values, keyed by their expiry and purged hourly.
+  Because each access token lives only 15 minutes, revocation is effective
+  within that window.
+- Refresh tokens are self-contained (no server-side session row); rotation
+  issues a fresh pair on every refresh and an expired/invalid refresh token is
+  rejected.
+- Deactivated profile: login fails and refresh is rejected; an already-issued
+  access token dies at its short TTL (or sooner if logged out).
 
 ---
 
@@ -161,17 +188,20 @@ Clients **cannot** set these past the edge.
 - TLS 1.2+ everywhere; HTTP only inside compose network.
 - Secrets (signing key, DB) only via environment/secret manager — never Git.
 - RS256 private key lives **only** in `iam-service`; all others use public JWKS.
-- Audit: login success/failure, password reset, role change → owning service status/log history.
+- Logging: login success/failure, password reset and role changes are recorded by the owning service's logs.
 
 ---
 
 ## 9. Service-to-service calls
 
-Default: authenticated user context forwarded as headers (same request path).
+Default: the gateway-injected identity headers travel with the request, so a
+downstream service sees the same user context.
 
-Machine jobs (no user): use client credentials style service token **or**
-mutual TLS inside the cluster — decision tracked in service `decisions.md`.
-gRPC internal calls reuse the same JWT claims (metadata `authorization`).
+Internal calls that do not originate from an authenticated request (gRPC
+between services, background jobs) carry **no** `X-User-*` headers and are
+therefore treated as anonymous — services must not assume an identity is
+present. Cross-service calls that must act on behalf of a user forward the
+`X-User-*` headers explicitly.
 
 ---
 
@@ -179,9 +209,9 @@ gRPC internal calls reuse the same JWT claims (metadata `authorization`).
 
 - [ ] Login/refresh/logout implemented per contract
 - [ ] RS256 + JWKS; no HS256 shared secrets
-- [ ] Access TTL ≤ 1 h; refresh rotation + reuse detection
-- [ ] Gateway strips client `X-User-*`
+- [x] Access TTL 15 min; refresh rotation on every use
+- [x] Gateway strips client `X-User-*` before injecting
 - [ ] RBAC permissions mapped to routes; default deny
 - [ ] Rate limit on login/forgot-password
 - [ ] No credentials in logs, URLs, or client bundles
-- [ ] Session revocation on disable/password reset
+- [ ] Session revocation on logout (in-memory deny list)
