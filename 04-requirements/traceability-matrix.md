@@ -34,7 +34,7 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 | FR-3.3 | Update route data | HU-ROUTE-001 | TBD | route-service | ✅ Done |
 | FR-3.4 | Delete route data (only when no active trip depends on it) | HU-ROUTE-001 | TBD | route-service | ✅ Done (delete guard rejects routes with an active trip) |
 | FR-3.5 | Assign/unassign a bus to a route (one bus per route, one route per bus) | HU-ROUTE-005 | TBD | route-service | ✅ Done (assign and unassign) |
-| FR-3.8 | Create, edit, and activate/deactivate buses (unique plate, capacity > 0) | HU-FLEET-001 | TBD | fleet-service | 🟡 In progress (backend create fixed and PATCH unblocked at the gateway; admin activate/deactivate button pending in the web admin) |
+| FR-3.8 | Create, edit, and activate/deactivate buses (unique plate, capacity > 0) | HU-FLEET-001 | buses.service.spec.ts (PATCH /buses/{id}/status) | fleet-service | 🟡 In progress (backend create fixed and PATCH unblocked at the gateway; admin activate/deactivate implemented in the web admin — PR #109 pending merge) |
 | FR-3.6 | Assign/unassign a driver to a bus (a driver is responsible for that bus until reassigned); route coverage is derived from the bus assigned to the route | HU-BUS-002 | TBD | bus-service | 🟡 In progress (logic exists; profile lookup calls the wrong service) |
 | FR-3.7 | Assign students to a route indicating their assigned stop, used for both boarding and alighting (the stop must belong to the route) | HU-ROUTE-008 | TBD | route-service | ✅ Done |
 | FR-4.1 | Generate an individual QR code for each student (encodes the student identifier, resolved on scan) | HU-QR-004 | TBD | mobile-client | ✅ Done |
@@ -48,8 +48,8 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 | FR-6.3 | Alert on GPS signal loss, showing the last known position with a "no signal" marker | HU-GPS-002 | TBD | gps-service | 🔴 Pending (gps-service not implemented yet) |
 | FR-8.1 | Report an incident/emergency during a trip with type and optional description | HU-INCIDENT-001 | TBD | notification-service | 🔴 Pending |
 | FR-8.2 | Automatically notify the school and the guardians of the students on board | HU-INCIDENT-001 | TBD | notification-service | 🔴 Pending |
-| FR-9.1 | The guardian views their child's route details (bus, driver, ordered stops, and scheduled times) | HU-ROUTE-004 | TBD | route-service | 🟡 In progress (backend ready: GET /routes/student/{studentId} now returns bus, driver, ordered stops and schedules; mobile app view pending) |
-| FR-9.2 | The driver views their assigned route with ordered stops and scheduled times in the app | HU-ROUTE-002 | TBD | route-service | 🟡 In progress (backend ready: GET /routes/today now returns bus, stops and schedules; mobile app view pending) |
+| FR-9.1 | The guardian views their child's route details (bus, driver, ordered stops, and scheduled times) | HU-ROUTE-004 | familyService.test.mjs (guardian-to-child resolution) | route-service | ✅ Done (mobile view shows bus, driver, ordered stops and scheduled times — PR #107 merged; a guardian with several linked students currently sees the first one, no child picker yet) |
+| FR-9.2 | The driver views their assigned route with ordered stops and scheduled times in the app | HU-ROUTE-002 | TBD | route-service | ✅ Done (mobile driver view shows the assigned bus, ordered stops and scheduled times — PR #107 merged) |
 | FR-10.1 | Customize the system colors (theme) | HU-UI-001 | TBD | no apply (frontend) | ⬜ No apply (frontend) |
 | FR-10.2 | Configure the interface in at least four languages | HU-UI-002 | TBD | no apply (frontend) | ⬜ No apply (frontend) |
 
