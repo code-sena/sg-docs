@@ -27,7 +27,7 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 | FR-1.2 | Update user data | HU-USER-004 | TBD | user-management-service | ✅ Done |
 | FR-1.3 | Activate/deactivate user accounts (deactivation must block system access and prevent assignments) | HU-USER-004 | TBD | user-management-service, iam-service | 🟡 In progress (deactivation blocks login, but there is no status-change endpoint) |
 | FR-1.4 | Link one or more students to a guardian account | HU-USER-003 | TBD | user-management-service | ✅ Done |
-| FR-2.1 | Authenticate users with credentials and issue a JWT (1-hour expiration, RBAC per role) | HU-IAM-001 | TBD | iam-service | 🟡 In progress (login issues the JWT; RBAC is not enforced yet) |
+| FR-2.1 | Authenticate users with credentials and issue a JWT carrying the role, identification number, school and permissions (RBAC enforced per endpoint) | HU-IAM-001 | TBD | iam-service | 🟡 In progress (login issues the JWT; RBAC is not enforced yet) |
 | FR-2.2 | Sign out and renew the access token with a refresh token (7-day validity) | HU-IAM-001 | TBD | iam-service | ✅ Done |
 | FR-3.1 | Create a new route entering its data, ordered stops, and schedules | HU-ROUTE-001 | TBD | route-service | 🟡 In progress (routes and stops yes; schedules have no write endpoint) |
 | FR-3.2 | Validate route uniqueness before persisting it | HU-ROUTE-001 | TBD | route-service | ✅ Done |
@@ -36,20 +36,17 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 | FR-3.5 | Assign/unassign a bus to a route (one bus per route, one route per bus) | HU-ROUTE-005 | TBD | route-service | 🟡 In progress (assign only; no unassign) |
 | FR-3.8 | Create, edit, and activate/deactivate buses (unique plate, capacity > 0) | HU-FLEET-001 | TBD | fleet-service | 🟡 In progress (CRUD exists; create fails at runtime, PATCH blocked at gateway) |
 | FR-3.6 | Assign/unassign a driver to a bus (a driver is responsible for that bus until reassigned); route coverage is derived from the bus assigned to the route | HU-BUS-002 | TBD | bus-service | 🟡 In progress (logic exists; profile lookup calls the wrong service) |
-| FR-3.7 | Assign students to a route indicating their boarding and alighting stop (stops must belong to the route) | HU-ROUTE-008 | TBD | route-service | ✅ Done |
+| FR-3.7 | Assign students to a route indicating their assigned stop, used for both boarding and alighting (the stop must belong to the route) | HU-ROUTE-008 | TBD | route-service | ✅ Done |
 | FR-4.1 | Generate an individual QR code for each student, with rotation/expiration policy | HU-QR-004 | TBD | iam-service | 🔴 Pending |
 | FR-4.2 | Read the student's QR code to register their boarding (validates the student is assigned to the route) | HU-QR-001 | TBD | notification-service | ✅ Done |
 | FR-4.3 | Read the student's QR code to register their alighting (requires an active boarding) | HU-QR-002 | TBD | notification-service | ✅ Done |
 | FR-5.1 | Detect the student's boarding event | HU-QR-001 | TBD | notification-service | ✅ Done |
-| FR-5.2 | Automatically send a real-time notification to the guardian with boarding time and stop | HU-NOTIF-001 | TBD | notification-service | ✅ Done |
-| FR-5.3 | Automatically send a real-time notification to the guardian with alighting time and location | HU-NOTIF-001 | TBD | notification-service | 🟡 In progress (notification sends the stop name, not the coordinates) |
-| FR-5.4 | Alert the guardian when the bus stays stopped beyond the configured threshold, including the location | HU-NOTIF-005 | TBD | notification-service | 🔴 Pending |
+| FR-5.2 | Automatically send a real-time notification to the guardian with boarding time and the location of the assigned stop | HU-NOTIF-001 | TBD | notification-service | ✅ Done |
+| FR-5.3 | Automatically send a real-time notification to the guardian with alighting time and the location of the assigned stop | HU-NOTIF-001 | TBD | notification-service | 🟡 In progress (notification sends the stop name, not the coordinates) |
 | FR-6.1 | Continuously capture the bus GPS location | HU-GPS-002 | TBD | gps-service | 🔴 Pending (gps-service not implemented yet) |
 | FR-6.2 | Display the bus location on an interactive map, updating without manual refresh | HU-GPS-002 | TBD | gps-service | 🔴 Pending (gps-service not implemented yet) |
 | FR-6.3 | Alert on GPS signal loss, showing the last known position with a "no signal" marker | HU-GPS-002 | TBD | gps-service | 🔴 Pending (gps-service not implemented yet) |
-| FR-7.1 | Start a trip (only one active trip per bus at a time) | HU-ROUTE-003 | TBD | route-service | 🟡 In progress (endpoint works; one-active-trip-per-bus rule missing) |
-| FR-7.2 | Finish a trip, validating there are no pending alightings | HU-ROUTE-003 | TBD | route-service | 🟡 In progress (endpoint works; pending-alighting validation missing) |
-| FR-8.1 | Report an incident/emergency during a trip with type, optional description, and GPS location | HU-INCIDENT-001 | TBD | notification-service | 🔴 Pending |
+| FR-8.1 | Report an incident/emergency during a trip with type and optional description | HU-INCIDENT-001 | TBD | notification-service | 🔴 Pending |
 | FR-8.2 | Automatically notify the school and the guardians of the students on board | HU-INCIDENT-001 | TBD | notification-service | 🔴 Pending |
 | FR-9.1 | The guardian views their child's route details (bus, driver, ordered stops, and scheduled times) | HU-ROUTE-004 | TBD | route-service | 🟡 In progress (stops only; bus, driver and scheduled times missing) |
 | FR-9.2 | The driver views their assigned route with ordered stops and scheduled times in the app | HU-ROUTE-002 | TBD | route-service | 🟡 In progress (requires an active trip; bus and schedules missing) |
@@ -85,7 +82,6 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 | HU-QR-001 | Driver scans the student's QR code to register their boarding | FR-4.2, FR-5.1 | Sprint 2 |
 | HU-QR-002 | Driver scans the student's QR code to register their alighting | FR-4.3 | Sprint 2 |
 | HU-ROUTE-002 | Driver views their assigned route with stops and schedules | FR-9.2 | Sprint 2 |
-| HU-ROUTE-003 | Driver starts and finishes the route trip | FR-7.1, FR-7.2 | Sprint 2 |
 | HU-FLEET-001 | Administrator manages the bus fleet | FR-3.8 | Sprint 2 |
 | HU-ROUTE-005 | Administrator assigns a bus to a route | FR-3.5 | Sprint 2 |
 | HU-BUS-002 | Administrator assigns a driver to a bus | FR-3.6 | Sprint 2 |
@@ -93,7 +89,6 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 | HU-NOTIF-001 | Real-time pickup/drop-off notifications to guardians | FR-5.2, FR-5.3 | Sprint 3 |
 | HU-ROUTE-004 | Guardian views the details of their child's route | FR-9.1 | Sprint 3 |
 | HU-GPS-002 | Real-time bus location on the map | FR-6.1, FR-6.2, FR-6.3 | Sprint 4 |
-| HU-NOTIF-005 | Alert when the bus stays stopped too long | FR-5.4 | Sprint 5 |
 | HU-INCIDENT-001 | Driver reports an incident or emergency during the trip | FR-8.1, FR-8.2 | Sprint 5 |
 | HU-UI-001 | User customizes the app theme (colors) | FR-10.1 | Sprint 5 |
 | HU-UI-002 | User chooses the interface language | FR-10.2 | Sprint 5 |
@@ -106,7 +101,7 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 
 | Gap type | Description | Required action | Owner | Date |
 |----------|-------------|----------------|-------|------|
-| HU without test | No HU has an accepted acceptance test (0/19) | Define acceptance tests in the 11-quality phase | QA / Dev | — |
+| HU without test | No HU has an accepted acceptance test (0/18) | Define acceptance tests in the 11-quality phase | QA / Dev | — |
 | NFR without value | NFR-001..008 are still the generic template (values [N] / [list]) | Define values in `non-functional.md` | Architect | — |
 
 ---

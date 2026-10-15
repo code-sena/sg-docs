@@ -7,14 +7,13 @@
 
 - **Auth + accounts:** HU-IAM-001, HU-USER-004, HU-USER-003 (Admin web)
 - **Routes / fleet foundation:** HU-ROUTE-001, HU-FLEET-001, HU-ROUTE-005, HU-BUS-002, HU-ROUTE-008 (Admin)
-- **Driver mobile:** HU-ROUTE-002, HU-ROUTE-003, HU-QR-001, HU-QR-002
+- **Driver mobile:** HU-ROUTE-002, HU-QR-001, HU-QR-002
 - **Student mobile:** HU-QR-004
 - **Guardian mobile:** HU-ROUTE-004, HU-NOTIF-001, HU-GPS-002
 - **Edge:** Kong **:8000** → services **:8080**
 
 ## Next
 
-- HU-NOTIF-005 prolonged-stop alert
 - HU-INCIDENT-001 driver incident report
 - HU-UI-001 / HU-UI-002 theme + language
 - Training pack (`14-training/`)
