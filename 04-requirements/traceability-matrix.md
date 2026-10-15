@@ -34,7 +34,7 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 | FR-3.3 | Update route data | HU-ROUTE-001 | TBD | route-service | ✅ Done |
 | FR-3.4 | Delete route data (only when no active trip depends on it) | HU-ROUTE-001 | TBD | route-service | ✅ Done (delete guard rejects routes with an active trip) |
 | FR-3.5 | Assign/unassign a bus to a route (one bus per route, one route per bus) | HU-ROUTE-005 | TBD | route-service | ✅ Done (assign and unassign) |
-| FR-3.8 | Create, edit, and activate/deactivate buses (unique plate, capacity > 0) | HU-FLEET-001 | buses.service.spec.ts (PATCH /buses/{id}/status) | fleet-service | 🟡 In progress (backend create fixed and PATCH unblocked at the gateway; admin activate/deactivate implemented in the web admin — PR #109 pending merge) |
+| FR-3.8 | Create, edit, and activate/deactivate buses (unique plate, capacity > 0) | HU-FLEET-001 | buses.service.spec.ts (PATCH /buses/{id}/status) | fleet-service | ✅ Done (create/edit plus admin activate/deactivate; PATCH /fleet/api/buses/{id}/status reachable through the gateway — GuardianEscolar PR #109 merged) |
 | FR-3.6 | Assign/unassign a driver to a bus (a driver is responsible for that bus until reassigned); route coverage is derived from the bus assigned to the route | HU-BUS-002 | TBD | bus-service | 🟡 In progress (logic exists; profile lookup calls the wrong service) |
 | FR-3.7 | Assign students to a route indicating their assigned stop, used for both boarding and alighting (the stop must belong to the route) | HU-ROUTE-008 | TBD | route-service | ✅ Done |
 | FR-4.1 | Generate an individual QR code for each student (encodes the student identifier, resolved on scan) | HU-QR-004 | TBD | mobile-client | ✅ Done |
