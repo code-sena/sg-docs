@@ -25,16 +25,16 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 |-------|---------------|-------|---------------------|---------|--------|
 | FR-1.1 | Create accounts for students, drivers, guardians, and administrators with their assigned role | HU-USER-004 | TBD | user-management-service, iam-service | ✅ Done |
 | FR-1.2 | Update user data | HU-USER-004 | TBD | user-management-service | ✅ Done |
-| FR-1.3 | Activate/deactivate user accounts (deactivation must block system access and prevent assignments) | HU-USER-004 | TBD | user-management-service, iam-service | 🟡 In progress (deactivation blocks login, but there is no status-change endpoint) |
+| FR-1.3 | Activate/deactivate user accounts (deactivation must block system access and prevent assignments) | HU-USER-004 | TBD | user-management-service, iam-service | ✅ Done (status-change endpoint in user-management; iam-service reactivates/deactivates on user.status.changed) |
 | FR-1.4 | Link one or more students to a guardian account | HU-USER-003 | TBD | user-management-service | ✅ Done |
-| FR-2.1 | Authenticate users with credentials and issue a JWT carrying the role, identification number, school and permissions (RBAC enforced per endpoint) | HU-IAM-001 | TBD | iam-service | 🟡 In progress (login issues the JWT; RBAC is not enforced yet) |
+| FR-2.1 | Authenticate users with credentials and issue a JWT carrying the role, identification number, school and permissions (RBAC enforced per endpoint) | HU-IAM-001 | TBD | iam-service | ✅ Done (JWT carries permissions; every service enforces them from the gateway headers) |
 | FR-2.2 | Sign out and renew the access token with a refresh token (7-day validity) | HU-IAM-001 | TBD | iam-service | ✅ Done |
-| FR-3.1 | Create a new route entering its data, ordered stops, and schedules | HU-ROUTE-001 | TBD | route-service | 🟡 In progress (routes and stops yes; schedules have no write endpoint) |
+| FR-3.1 | Create a new route entering its data, ordered stops, and schedules | HU-ROUTE-001 | TBD | route-service | ✅ Done (routes, ordered stops and schedules write endpoints) |
 | FR-3.2 | Validate route uniqueness before persisting it | HU-ROUTE-001 | TBD | route-service | ✅ Done |
 | FR-3.3 | Update route data | HU-ROUTE-001 | TBD | route-service | ✅ Done |
-| FR-3.4 | Delete route data (only when no active trip depends on it) | HU-ROUTE-001 | TBD | route-service | 🟡 In progress (delete works; active-trip guard missing) |
-| FR-3.5 | Assign/unassign a bus to a route (one bus per route, one route per bus) | HU-ROUTE-005 | TBD | route-service | 🟡 In progress (assign only; no unassign) |
-| FR-3.8 | Create, edit, and activate/deactivate buses (unique plate, capacity > 0) | HU-FLEET-001 | TBD | fleet-service | 🟡 In progress (CRUD exists; create fails at runtime, PATCH blocked at gateway) |
+| FR-3.4 | Delete route data (only when no active trip depends on it) | HU-ROUTE-001 | TBD | route-service | ✅ Done (delete guard rejects routes with an active trip) |
+| FR-3.5 | Assign/unassign a bus to a route (one bus per route, one route per bus) | HU-ROUTE-005 | TBD | route-service | ✅ Done (assign and unassign) |
+| FR-3.8 | Create, edit, and activate/deactivate buses (unique plate, capacity > 0) | HU-FLEET-001 | TBD | fleet-service | 🟡 In progress (backend create fixed and PATCH unblocked at the gateway; admin activate/deactivate button pending in the web admin) |
 | FR-3.6 | Assign/unassign a driver to a bus (a driver is responsible for that bus until reassigned); route coverage is derived from the bus assigned to the route | HU-BUS-002 | TBD | bus-service | 🟡 In progress (logic exists; profile lookup calls the wrong service) |
 | FR-3.7 | Assign students to a route indicating their assigned stop, used for both boarding and alighting (the stop must belong to the route) | HU-ROUTE-008 | TBD | route-service | ✅ Done |
 | FR-4.1 | Generate an individual QR code for each student (encodes the student identifier, resolved on scan) | HU-QR-004 | TBD | mobile-client | ✅ Done |
@@ -48,8 +48,8 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 | FR-6.3 | Alert on GPS signal loss, showing the last known position with a "no signal" marker | HU-GPS-002 | TBD | gps-service | 🔴 Pending (gps-service not implemented yet) |
 | FR-8.1 | Report an incident/emergency during a trip with type and optional description | HU-INCIDENT-001 | TBD | notification-service | 🔴 Pending |
 | FR-8.2 | Automatically notify the school and the guardians of the students on board | HU-INCIDENT-001 | TBD | notification-service | 🔴 Pending |
-| FR-9.1 | The guardian views their child's route details (bus, driver, ordered stops, and scheduled times) | HU-ROUTE-004 | TBD | route-service | 🟡 In progress (stops only; bus, driver and scheduled times missing) |
-| FR-9.2 | The driver views their assigned route with ordered stops and scheduled times in the app | HU-ROUTE-002 | TBD | route-service | 🟡 In progress (requires an active trip; bus and schedules missing) |
+| FR-9.1 | The guardian views their child's route details (bus, driver, ordered stops, and scheduled times) | HU-ROUTE-004 | TBD | route-service | 🟡 In progress (backend ready: GET /routes/student/{studentId} now returns bus, driver, ordered stops and schedules; mobile app view pending) |
+| FR-9.2 | The driver views their assigned route with ordered stops and scheduled times in the app | HU-ROUTE-002 | TBD | route-service | 🟡 In progress (backend ready: GET /routes/today now returns bus, stops and schedules; mobile app view pending) |
 | FR-10.1 | Customize the system colors (theme) | HU-UI-001 | TBD | no apply (frontend) | ⬜ No apply (frontend) |
 | FR-10.2 | Configure the interface in at least four languages | HU-UI-002 | TBD | no apply (frontend) | ⬜ No apply (frontend) |
 
