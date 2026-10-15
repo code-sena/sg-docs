@@ -3,7 +3,7 @@ info:
   title: "School API"
   version: 1.0.0
   description: |
-    Schools, campuses, courses, course groups, and cities (Geographic).
+    Schools, campuses, school admins, and cities (Geographic).
 
     ## Autenticacion
     All endpoints except /health require JWT:
@@ -35,7 +35,7 @@ security:
 
 tags:
   - name: School
-    description: Schools, campuses, courses, course groups, and cities (Geographic).
+    description: Schools, campuses, school admins, and cities (Geographic).
   - name: Health
     description: Health checks
 
@@ -157,44 +157,6 @@ paths:
   /campuses:
     post:
       summary: Create campus
-      tags: [School]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { type: object, additionalProperties: true }
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /courses:
-    get:
-      summary: List courses
-      tags: [School]
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /courses:
-    post:
-      summary: Create course
       tags: [School]
       requestBody:
         required: true

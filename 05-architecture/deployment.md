@@ -15,7 +15,7 @@ Browser / Mobile
                                     │
                     ┌───────────────▼──────────────────┐
                     │ SQL Server (schemas per service) │
-                    │ Redis · Kafka                    │
+                    │ Kafka                            │
                     └──────────────────────────────────┘
 ```
 

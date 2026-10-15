@@ -1,6 +1,6 @@
 # Product backlog
 
-> **Aligned 1:1 with** [`04-requirements/user-stories.md`](../04-requirements/user-stories.md) (Cut 1 = **20 HUs**).
+> **Aligned 1:1 with** [`04-requirements/user-stories.md`](../04-requirements/user-stories.md) (Cut 1 = **18 HUs**).
 > This file is the product view (value, role, priority). Formal AC / services / endpoints live only in `04-requirements/`.
 > Last updated: 2026-10-03
 
@@ -42,7 +42,6 @@ Canonical labels in HUs: `administrator` · `parent`/`guardian` · `student` · 
 | HU | Title (short) | Role | Platform | Priority | Status |
 |----|---------------|------|----------|----------|--------|
 | HU-NOTIF-001 | Pickup / drop-off notifications | Parent / guardian | Mobile | High | Done |
-| HU-NOTIF-005 | Alert on prolonged stop | Parent / guardian | Mobile | Medium | Backlog |
 
 ### EP-003 — Route & Fleet Management
 
@@ -50,9 +49,8 @@ Canonical labels in HUs: `administrator` · `parent`/`guardian` · `student` · 
 |----|---------------|------|----------|----------|--------|
 | HU-ROUTE-001 | Create / manage routes (stops, schedules) | Admin | Web | High | Done |
 | HU-ROUTE-002 | View my assigned route | Driver | Mobile | High | Done |
-| HU-ROUTE-003 | Start / finish trip | Driver | Mobile | Medium | Done |
 | HU-ROUTE-004 | View child's route details | Parent / guardian | Mobile | Medium | Done |
-| HU-ROUTE-008 | Assign students to route + stops | Admin | Web | High | In progress |
+| HU-ROUTE-008 | Assign students to route + assigned stop | Admin | Web | High | In progress |
 | HU-FLEET-001 | Manage bus fleet (CRUD, activate/deactivate) | Admin | Web | Medium | Done |
 | HU-ROUTE-005 | Assign bus to route | Admin | Web | Medium | In progress |
 | HU-BUS-002 | Assign driver to bus | Admin | Web | High | In progress |
@@ -93,7 +91,7 @@ Canonical labels in HUs: `administrator` · `parent`/`guardian` · `student` · 
 | Band | HUs |
 |------|-----|
 | High | HU-IAM-001, HU-ROUTE-001, HU-NOTIF-001, HU-USER-003, HU-USER-004, HU-QR-001, HU-QR-002, HU-ROUTE-002, HU-ROUTE-008, HU-BUS-002 |
-| Medium | HU-GPS-002, HU-NOTIF-005, HU-ROUTE-003, HU-INCIDENT-001, HU-ROUTE-004, HU-QR-004, HU-FLEET-001, HU-ROUTE-005 |
+| Medium | HU-GPS-002, HU-INCIDENT-001, HU-ROUTE-004, HU-QR-004, HU-FLEET-001, HU-ROUTE-005 |
 | Low | HU-UI-001, HU-UI-002 |
 
 ---

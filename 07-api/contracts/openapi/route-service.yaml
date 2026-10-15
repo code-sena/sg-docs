@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: "Route API"
-  version: 1.0.0
+  version: 1.1.0
   description: |
     Routes, stops, schedules, executions, and bus/student assignments.
 
@@ -21,6 +21,11 @@ info:
 
     ## Paginacion
     Listas: ?page=1&limit=20
+
+    ## Datos de bus y conductor (FR-9.1, FR-9.2)
+    El bus y su conductor pertenecen a fleet-service. route-service los resuelve
+    por gRPC interno (route.v1.RouteService, ADR-005) y los expone dentro de
+    RouteDetail; nunca consulta el esquema de otro servicio.
 
 servers:
   - url: http://localhost:8080
@@ -56,6 +61,7 @@ paths:
                   status: { type: string, example: ok }
                   version: { type: string, example: 1.0.0 }
                   db: { type: string, example: connected }
+
   /routes:
     get:
       summary: List routes
@@ -73,10 +79,9 @@ paths:
                 properties:
                   data:
                     type: array
-                    items: { type: object }
+                    items: { $ref: '#/components/schemas/RouteDetail' }
                   pagination: { $ref: '#/components/schemas/PageMeta' }
         '401': { $ref: '#/components/responses/Unauthorized' }
-  /routes:
     post:
       summary: Create route
       tags: [Route]
@@ -93,33 +98,50 @@ paths:
               schema: { type: object }
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
-  /routes/{id}:
+
+  /routes/search:
     get:
-      summary: Get route
+      summary: Search routes
       tags: [Route]
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: { type: object }
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/RouteDetail' }
+                  pagination: { $ref: '#/components/schemas/PageMeta' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /routes/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      summary: Get route
+      tags: [Route]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RouteDetail' }
         '404': { $ref: '#/components/responses/NotFound' }
         '401': { $ref: '#/components/responses/Unauthorized' }
-  /routes/{id}:
     put:
       summary: Update route
       tags: [Route]
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
       requestBody:
         required: true
         content:
@@ -130,23 +152,20 @@ paths:
           description: OK
           content:
             application/json:
-              schema: { type: object }
+              schema: { $ref: '#/components/schemas/RouteDetail' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
-  /routes/{id}:
     delete:
-      summary: Delete route
+      summary: Delete route (only when no active trip depends on it)
       tags: [Route]
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
       responses:
         '204': { description: Deleted }
         '404': { $ref: '#/components/responses/NotFound' }
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
   /routes/{id}/stops:
     post:
       summary: Add stop
@@ -170,15 +189,16 @@ paths:
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
+
   /routes/{id}/bus:
-    post:
-      summary: Assign bus
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    put:
+      summary: Assign bus (one bus per route, one route per bus)
       tags: [Route]
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
       requestBody:
         required: true
         content:
@@ -193,9 +213,17 @@ paths:
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      summary: Unassign bus
+      tags: [Route]
+      responses:
+        '204': { description: Unassigned }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
   /routes/{id}/students:
     post:
-      summary: Assign student
+      summary: Assign student to a stop of the route
       tags: [Route]
       parameters:
         - name: id
@@ -216,12 +244,119 @@ paths:
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
+
+  /routes/{id}/students/{studentProfileId}:
+    get:
+      summary: Get the stop assigned to a student on this route
+      tags: [Route]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: studentProfileId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StopDetail' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
   /routes/{id}/schedules:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
     get:
       summary: List schedules
       tags: [Route]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ScheduleDetail' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      summary: Create schedule for the active bus assignment
+      tags: [Route]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [dayOfWeek, direction, startTime]
+              properties:
+                dayOfWeek: { type: string, enum: [Monday, Tuesday, Wednesday, Thursday, Friday] }
+                direction: { type: string, enum: [Ida, Vuelta] }
+                startTime: { type: string, example: "06:30:00" }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ScheduleDetail' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /routes/current:
+    get:
+      summary: Current route of a driver (FR-7)
+      tags: [Route]
       parameters:
-        - name: id
+        - name: driverId
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RouteDetail' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /routes/today:
+    get:
+      summary: Today's route of a driver (FR-9.2)
+      description: |
+        Always responds 200 with a status envelope (Active, Scheduled, or
+        NoRoute) instead of 404, so the app can show a friendly empty state.
+      tags: [Route]
+      parameters:
+        - name: driverId
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DriverRouteToday' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /routes/student/{studentId}:
+    get:
+      summary: Route of the student linked to the requesting guardian (FR-9.1)
+      description: |
+        Returns the student's route with the bus, driver, ordered stops and
+        scheduled times. Responds 404 when the student has no active assignment.
+      tags: [Route]
+      parameters:
+        - name: studentId
           in: path
           required: true
           schema: { type: string, format: uuid }
@@ -230,9 +365,10 @@ paths:
           description: OK
           content:
             application/json:
-              schema: { type: object }
+              schema: { $ref: '#/components/schemas/RouteDetail' }
         '404': { $ref: '#/components/responses/NotFound' }
         '401': { $ref: '#/components/responses/Unauthorized' }
+
   /executions:
     get:
       summary: List executions
@@ -253,7 +389,6 @@ paths:
                     items: { type: object }
                   pagination: { $ref: '#/components/schemas/PageMeta' }
         '401': { $ref: '#/components/responses/Unauthorized' }
-  /executions:
     post:
       summary: Start execution
       tags: [Route]
@@ -314,6 +449,68 @@ components:
         application/json:
           schema: { $ref: '#/components/schemas/ErrorResponse' }
   schemas:
+    RouteDetail:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        campuseId: { type: string, format: uuid }
+        targetSector: { type: string }
+        startTime: { type: string, example: "06:00:00" }
+        endTime: { type: string, example: "08:00:00" }
+        status: { type: string, enum: [Active, Inactive] }
+        stops:
+          type: array
+          description: Ordered stops of the route.
+          items: { $ref: '#/components/schemas/StopDetail' }
+        schedules:
+          type: array
+          description: Scheduled times of the active bus assignment.
+          items: { $ref: '#/components/schemas/ScheduleDetail' }
+        bus: { $ref: '#/components/schemas/BusDetail' }
+    StopDetail:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        address: { type: string }
+        latitude: { type: number, format: double }
+        longitude: { type: number, format: double }
+        orderSequence: { type: integer }
+    ScheduleDetail:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        dayOfWeek: { type: string, enum: [Monday, Tuesday, Wednesday, Thursday, Friday] }
+        direction: { type: string, enum: [Ida, Vuelta] }
+        startTime: { type: string, example: "06:30:00" }
+    BusDetail:
+      type: object
+      description: |
+        Bus of the route and its assigned driver, resolved from fleet-service
+        over gRPC. Null when the route has no active bus assignment.
+      properties:
+        id: { type: string, format: uuid }
+        plate: { type: string }
+        capacity: { type: integer }
+        driverProfileId: { type: string, format: uuid, nullable: true }
+        driverName: { type: string }
+    DriverRouteToday:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ACTIVE, SCHEDULED, NO_ROUTE, NO_SCHEDULE]
+          description: |
+            ACTIVE = inside the scheduled window; SCHEDULED = not due yet (or
+            already past); NO_ROUTE = the driver has no bus/route; NO_SCHEDULE =
+            the route has no active schedules.
+        route: { $ref: '#/components/schemas/RouteDetail' }
+        nextOccurrence:
+          type: string
+          format: date-time
+          nullable: true
+          description: Next departure in local time (UTC-5) when SCHEDULED.
     ErrorResponse:
       type: object
       required: [error, message]

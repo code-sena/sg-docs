@@ -1,6 +1,6 @@
 # School
 
-> Schools, campuses, courses, course groups, and cities (Geographic).
+> Schools, campuses, school admins, and cities (Geographic).
 
 ## Location in the architecture
 
@@ -17,7 +17,7 @@
 ## Responsibilities (what this service DOES)
 
 - CRUD schools and campuses
-- Manage courses and course groups
+- Link admin profiles to their school (SchoolAdmin)
 - Own City catalog (Geographic schema)
 - Provide school/location reference data to route-service
 
@@ -36,8 +36,6 @@
 | PUT | `/schools/{id}` | Update school |
 | GET | `/campuses` | List campuses |
 | POST | `/campuses` | Create campus |
-| GET | `/courses` | List courses |
-| POST | `/courses` | Create course |
 | GET | `/cities` | List cities |
 | POST | `/cities` | Create city |
 
@@ -50,7 +48,7 @@ curl http://localhost:8080/health
 
 ## Related documents
 
-- [data-model.md](./data-model.md) — schema `School + Geographic`; tables: School, SchoolCampus, Course, CourseGroup, City
+- [data-model.md](./data-model.md) — schema `School + Geographic`; tables: School, SchoolCampus, SchoolAdmin, City
 - [events.md](./events.md) — publishes/consumes
 - [decisions.md](./decisions.md) — service-level decisions
 - [runbook.md](./runbook.md) — production operations

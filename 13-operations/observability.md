@@ -200,7 +200,7 @@ const sdk = new NodeSDK({
     url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
   }),
   instrumentations: [
-    // Automatically instruments: HTTP, Express, SQL Server, Redis
+    // Automatically instruments: HTTP, Express, SQL Server
     getNodeAutoInstrumentations(),
   ],
 });

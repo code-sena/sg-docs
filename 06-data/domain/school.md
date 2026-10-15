@@ -73,16 +73,17 @@ CREATE TABLE SchoolCampus (
 1. Campus is separate because a school can operate multiple locations.
 2. Status supports campus closure while preserving enrollment history.
 
-### Table: Course
+### Table: SchoolAdmin
 
-**Purpose:** Represents a course offered at a campus.
+**Purpose:** Links an administrator profile to the single school it manages.
 
 ```sql
-CREATE TABLE Course (
+CREATE TABLE School.SchoolAdmin (
     Id UNIQUEIDENTIFIER PRIMARY KEY,
-    CampusId UNIQUEIDENTIFIER NOT NULL,
-    Name VARCHAR(10) NOT NULL, 
-    Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
+    SchoolId UNIQUEIDENTIFIER NOT NULL,
+    ProfileId UNIQUEIDENTIFIER NOT NULL,
+    Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active',
+    CONSTRAINT UQ_SchoolAdmin_Profile UNIQUE (ProfileId)
 );
 ```
 
@@ -90,14 +91,14 @@ CREATE TABLE Course (
 
 | Column | Type | Description | Example |
 |--------|------|-------------|---------|
-| Id | UNIQUEIDENTIFIER | Course identifier | `550e8400-...` |
-| CampusId | UNIQUEIDENTIFIER | Campus reference | `550e8400-...` |
-| Name | VARCHAR(10) | Course name or code | `5A` |
+| Id | UNIQUEIDENTIFIER | Link identifier | `550e8400-...` |
+| SchoolId | UNIQUEIDENTIFIER | Managed school | `550e8400-...` |
+| ProfileId | UNIQUEIDENTIFIER | Administrator profile (Iam.Profile, unique: one school per admin) | `550e8400-...` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
 
 **Modeling decisions:**
-1. Course is an offering; enrollment is represented separately by CourseGroup.
-2. Campus ownership avoids duplicating school data.
+1. One admin manages exactly one school; `UQ_SchoolAdmin_Profile` enforces it in the database, not just in code.
+2. Profile ownership stays in Iam; this table is only the school-side link.
 
 ### Indexes
 
@@ -105,9 +106,7 @@ CREATE TABLE Course (
 |--------|--------|------|---------------|
 | IX_School_CityId | CityId | Nonclustered | Geographic school lookup |
 | IX_SchoolCampus_SchoolId | SchoolId | Nonclustered | Campus lookup |
-| IX_Course_CampusId | CampusId | Nonclustered | Campus course lookup |
-| IX_CourseGroup_ProfileId | ProfileId | Nonclustered | Student course lookup |
-| IX_Course_Name | Name | Nonclustered | Course name lookup |
+| UQ_SchoolAdmin_Profile | ProfileId | Unique | One school per admin |
 
 ## Migration strategy
 
@@ -130,11 +129,8 @@ Status changes preserve historical school and enrollment records.
 
 ```sql
 ALTER TABLE School ADD EmergencyPhone VARCHAR(20) NULL;
-CREATE INDEX IX_Course_Name ON Course (Name);
 CREATE INDEX IX_School_CityId ON School (CityId);
 CREATE INDEX IX_SchoolCampus_SchoolId ON SchoolCampus (SchoolId);
-CREATE INDEX IX_Course_CampusId ON Course (CampusId);
-CREATE INDEX IX_CourseGroup_ProfileId ON CourseGroup (ProfileId);
 ```
 
 **Incompatible changes (require 2-phase migration):**
@@ -151,7 +147,6 @@ ALTER TABLE School DROP COLUMN Name;
 |--------|------------|---------------|
 | **SQL Server** | ACID transactions, school hierarchy, and geographic references | Ephemeral counters or unstructured documents |
 | **MongoDB** | Flexible documents and catalog-style data | Complex transactions across collections |
-| **Redis** | Cache, sessions, TTL state, and counters | Source of truth for schools or enrollments |
 | **Elasticsearch** | Full-text search, analytics, and logs | Authoritative school data |
 
 ## Relationship diagram (per service)
@@ -160,8 +155,8 @@ ALTER TABLE School DROP COLUMN Name;
 erDiagram
 	City ||--o{ School : locates
 	School ||--o{ SchoolCampus : operates
-	SchoolCampus ||--o{ Course : offers
-	Course ||--o{ CourseGroup : enrolls
+	School ||--o{ SchoolAdmin : managed_by
+	Profile ||--o{ SchoolAdmin : administrates
 ```
 
 ## Correlations

@@ -61,7 +61,7 @@ School Guardian needs to authenticate users (parents, drivers, administrators) a
 
 | Alternative | Stateless | Validation without DB | Multi-stack | Invalidable | Rating |
 |-------------|----------|----------------------|------------|-------------|--------|
-| JWT RS256 (CHOSEN) | Yes | Yes (public key) | Yes (official libs) | Yes (Redis blacklist + refresh tokens) | 9 |
+| JWT RS256 (CHOSEN) | Yes | Yes (public key) | Yes (official libs) | Yes (in-memory deny list + refresh tokens) | 9 |
 | JWT HS256 (HMAC) | Yes | Yes (shared secret) | Yes | Yes | 7 |
 | Sessions + Cookie | No (server-side) | No (DB query) | N/A | Yes (destroy session) | 4 |
 | OAuth 2.0 + opaque token | Yes | Yes (introspection) | Yes | Yes | 7 |
@@ -80,7 +80,7 @@ School Guardian needs to authenticate users (parents, drivers, administrators) a
 
 **Negative / Trade-offs:**
 - RS256 is slower than HS256 (asymmetric) — negligible difference at our scale.
-- Tokens are not immediately invalidable on logout (mitigated with short TTL + Redis blacklist for refresh tokens).
+- Tokens are not immediately invalidable on logout (mitigated with a short access-token TTL + an in-memory deny list in iam-service, keyed by `jti`).
 
 **Impact on the system:**
 - Affected services: iam-service (generates tokens), API Gateway (validates), all services (read claims).
@@ -97,7 +97,7 @@ School Guardian needs to authenticate users (parents, drivers, administrators) a
 | Risk | Probability | Impact | Mitigation |
 |------|-------------|--------|-----------|
 | Private key compromised | Low | High | Store in vault/secrets, rotate periodically, JWKS |
-| Token not immediately invalid on logout | Medium | Medium | Short TTL (15 min) + Redis blacklist for refresh tokens |
+| Token not immediately invalid on logout | Medium | Medium | Short access-token TTL (15 min) + in-memory deny list in iam-service (keyed by `jti`) |
 | JWT payload contains sensitive data | Medium | High | Minimal claims only (sub, role, email), never sensitive PII |
 
 ---

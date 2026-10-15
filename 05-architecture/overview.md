@@ -83,21 +83,16 @@ flowchart TB
     bus["bus-service:8080<br/>C#"]
     rt["route-service:8080<br/>C#"]
     gps["gps-service:8080<br/>Java + Spring Boot"]
-    exc["exceptional-service:8080<br/>C#"]
-    aud["audit-service:8080<br/>C#"]
-    cfg["configuration-service:8080<br/>C#"]
   end
 
   kafka["Apache Kafka<br/>events"]
-  redis["Redis<br/>session cache / rate limit"]
-  db[("SQL Server<br/>schemas: Iam, UserManagement,<br/>School, Geographic, Notification,<br/>Bus, Route, Gps, Exceptional,<br/>Audit, Configuration")]
+  db[("SQL Server<br/>schemas: Iam, UserManagement,<br/>School, Geographic, Notification,<br/>Bus, Route, Gps")]
 
   web --> gw
   mob --> gw
-  gw --> iam & um & sch & notif & bus & rt & gps & exc & aud & cfg
-  gw --- redis
-  iam & notif & rt & gps & aud & cfg --> kafka
-  kafka --> notif & aud & cfg & rt & gps
+  gw --> iam & um & sch & notif & bus & rt & gps
+  iam & notif & rt & gps --> kafka
+  kafka --> notif & rt & gps
   services --> db
 ```
 
@@ -105,11 +100,10 @@ flowchart TB
 |-----------|----------------|-------|
 | Web SPA | Admin & super-admin UI | Angular 21 |
 | Mobile | Guardian/driver UX | React + Expo |
-| API Gateway | Single entry, JWT, routing, rate limit | Stateless + Redis |
-| 11 microservices | Bounded contexts | Polyglot; details in catalog |
+| API Gateway | Single entry, JWT, routing, rate limit | Stateless, local (per-node) rate limiting |
+| 8 services (gateway + 7 domain/infra) | Bounded contexts | Polyglot; details in catalog |
 | Kafka | Async domain events | ADR-004 |
 | SQL Server | Persistence | One instance, schema per service (ADR-002) |
-| Redis | Ephemeral state | Tokens cache, rate limits |
 
 Full registry, ports, stacks: [`09-microservices/service-catalog.md`](../09-microservices/service-catalog.md).
 
@@ -119,7 +113,7 @@ Full registry, ports, stacks: [`09-microservices/service-catalog.md`](../09-micr
 
 | # | Service | Stack | Schema | Port |
 |---|---------|-------|--------|------|
-| 01 | api-gateway (Kong OSS) | Kong OSS | — (Redis only) | **8000** |
+| 01 | api-gateway (Kong OSS) | Kong OSS | — | **8000** |
 | 02 | iam-service | Java + Spring Boot | `Iam` | 8080 |
 | 03 | user-management-service | C# + ASP.NET | `UserManagement` | 8080 |
 | 04 | school-service | C# + ASP.NET | `School` + `Geographic` | 8080 |
@@ -127,11 +121,8 @@ Full registry, ports, stacks: [`09-microservices/service-catalog.md`](../09-micr
 | 06 | bus-service | C# + ASP.NET | `Bus` | 8080 |
 | 07 | route-service | C# + ASP.NET | `Route` | 8080 |
 | 08 | gps-service | Java + Spring Boot | `Gps` | 8080 |
-| 09 | exceptional-service | C# + ASP.NET | `Exceptional` | 8080 |
-| 10 | audit-service | C# + ASP.NET | `Audit` | 8080 |
-| 11 | configuration-service | C# + ASP.NET | `Configuration` | 8080 |
 
-> **Count authority:** 11 services. Older ADR text mentioning "7 microservices"
+> **Count authority:** 8 services (gateway + 7). Older ADR text mentioning "7 microservices"
 > predates the split and must not be used for capacity or routing math.
 
 ---
@@ -167,7 +158,7 @@ logins per schema, secrets out of Git, audit trail for sensitive actions.
 |---------|------------|-------------|
 | API Gateway (edge) | All client traffic | ADR-006 |
 | CQRS-lite (read models) | Dashboards aggregating events | pattern-guide |
-| Event-driven choreography (Kafka) | Boarding, alerts, audit ingest | ADR-004 |
+| Event-driven choreography (Kafka) | Boarding, alerts | ADR-004 |
 | Sync RPC (gRPC) | Service-to-service queries/commands | ADR-005 |
 | Saga / compensations | Multi-service assignments | service `events.md` |
 | Hexagonal (ports & adapters) | Java services (iam, gps) | [hexagonal-architecture.md](./hexagonal-architecture.md) |
@@ -184,12 +175,12 @@ Deeper catalogue: [pattern-guide.md](./pattern-guide.md).
 |---------|----------|
 | Authentication | JWT RS256 via gateway (ADR-008) — [auth doc](../07-api/authentication.md) |
 | Authorization | RBAC in `iam-service`; permissions in token |
-| Config | Env vars per compose; centralized later (config service for *business* settings) |
+| Config | Env vars per compose; centralized later for *business* settings |
 | Logging | JSON structured + correlation id |
 | Tracing | OpenTelemetry-compatible spans across HTTP/gRPC/Kafka |
 | Migrations | Liquibase per service (ADR-009) |
 | API docs | **Scalar** UI over OpenAPI (ADR-007) — replaces Swagger UI |
-| Rate limiting | Gateway (Redis counters) |
+| Rate limiting | Gateway (local/in-memory, per node) |
 | Secrets | Environment / secret manager — never committed |
 | i18n | UI Spanish-first; EN/FR/PT planned (product i18n) |
 

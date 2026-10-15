@@ -73,7 +73,6 @@ src/
     "typeorm": "^0.3.x",        // ORM
     "mssql": "^11.x",           // SQL Server driver
     // "mongoose": "^8.x",       // If you use MongoDB
-    // "ioredis": "^5.x",        // If you use Redis
 
     // Messaging infrastructure (if applicable)
     // "kafkajs": "^2.x",

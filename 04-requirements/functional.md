@@ -25,7 +25,7 @@
 
 | ID | Requirement | Service | Source (HU) | Priority |
 |----|-------------|---------|-------------|----------|
-| FR-2.1 | Authenticate users with credentials and issue a JWT (1-hour expiration, RBAC per role) | iam-service | HU-IAM-001 | High |
+| FR-2.1 | Authenticate users with credentials and issue a JWT carrying the role, identification number, school and permissions (RBAC enforced per endpoint) | iam-service | HU-IAM-001 | High |
 | FR-2.2 | Sign out and renew the access token with a refresh token (7-day validity) | iam-service | HU-IAM-001 | High |
 
 > **Note:** User accounts are not self-registered. The administrator creates all accounts
@@ -44,7 +44,7 @@
 | FR-3.5 | Assign/unassign a bus to a route (one bus per route, one route per bus) | route-service | HU-ROUTE-005 | Medium |
 | FR-3.8 | Create, edit, and activate/deactivate buses (unique plate, capacity > 0) | fleet-service | HU-FLEET-001 | Medium |
 | FR-3.6 | Assign/unassign a driver to a bus (a driver is responsible for that bus until reassigned); route coverage is derived from the bus assigned to the route | bus-service | HU-BUS-002 | High |
-| FR-3.7 | Assign students to a route indicating their boarding and alighting stop (stops must belong to the route) | route-service | HU-ROUTE-008 | High |
+| FR-3.7 | Assign students to a route indicating their assigned stop, used for both boarding and alighting (the stop must belong to the route) | route-service | HU-ROUTE-008 | High |
 
 > **Decision (FR-3.6 / HU-BUS-002):** The driver is assigned to the bus (`DriverAssignemts`,
 > bus-service) and reaches their routes transitively through the bus assigned to the route
@@ -56,7 +56,7 @@
 
 | ID | Requirement | Service | Source (HU) | Priority |
 |----|-------------|---------|-------------|----------|
-| FR-4.1 | Generate an individual QR code for each student, with rotation/expiration policy | iam-service | HU-QR-004 | Medium |
+| FR-4.1 | Generate an individual QR code for each student (encodes the student identifier, resolved on scan) | mobile-client | HU-QR-004 | Medium |
 | FR-4.2 | Read the student's QR code to register their boarding (validates the student is assigned to the route) | notification-service | HU-QR-001 | High |
 | FR-4.3 | Read the student's QR code to register their alighting (requires an active boarding) | notification-service | HU-QR-002 | High |
 
@@ -67,9 +67,8 @@
 | ID | Requirement | Service | Source (HU) | Priority |
 |----|-------------|---------|-------------|----------|
 | FR-5.1 | Detect the student's boarding event | notification-service | HU-QR-001 | High |
-| FR-5.2 | Automatically send a real-time notification to the guardian with boarding time and stop | notification-service | HU-NOTIF-001 | High |
-| FR-5.3 | Automatically send a real-time notification to the guardian with alighting time and location | notification-service | HU-NOTIF-001 | High |
-| FR-5.4 | Alert the guardian when the bus stays stopped beyond the configured threshold, including the location | notification-service | HU-NOTIF-005 | Medium |
+| FR-5.2 | Automatically send a real-time notification to the guardian with boarding time and the location of the assigned stop | notification-service | HU-NOTIF-001 | High |
+| FR-5.3 | Automatically send a real-time notification to the guardian with alighting time and the location of the assigned stop | notification-service | HU-NOTIF-001 | High |
 
 ---
 
@@ -85,24 +84,14 @@
 
 ---
 
-## RF-07 — Trip Management
-
-| ID | Requirement | Service | Source (HU) | Priority |
-|----|-------------|---------|-------------|----------|
-| FR-7.1 | Start a trip (only one active trip per bus at a time) | route-service | HU-ROUTE-003 | Medium |
-| FR-7.2 | Finish a trip, validating there are no pending alightings | route-service | HU-ROUTE-003 | Medium |
-
----
-
 ## RF-08 — Incidents
 
 | ID | Requirement | Service | Source (HU) | Priority |
 |----|-------------|---------|-------------|----------|
-| FR-8.1 | Report an incident/emergency during a trip with type, optional description, and GPS location | notification-service | HU-INCIDENT-001 | Medium |
+| FR-8.1 | Report an incident/emergency during a trip with type and optional description | notification-service | HU-INCIDENT-001 | Medium |
 | FR-8.2 | Automatically notify the school and the guardians of the students on board | notification-service | HU-INCIDENT-001 | High |
 
 > **Note:** The incident report is modeled as the `Alert` entity in `notification-service` (`AlertType`, `Alert`, `AlertRecipient`).
-> The Exceptional service is for out-of-pattern driver/route usage, not for emergency reports.
 
 ---
 

@@ -176,7 +176,6 @@ ALTER TABLE Alert DROP COLUMN DateTime;
 |--------|------------|---------------|
 | **SQL Server** | ACID event, alert, recipient, and catalog records | Ephemeral counters or cache-only state |
 | **MongoDB** | Flexible documents and catalog-style data | Complex transactions across collections |
-| **Redis** | Cache, sessions, TTL state, and notification queues | Durable alert history or source-of-truth records |
 | **Elasticsearch** | Full-text search, analytics, and operational logs | Authoritative notification data |
 
 ## Relationship diagram (per service)
