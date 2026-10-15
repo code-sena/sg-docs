@@ -1,6 +1,6 @@
 # Event catalog (Kafka)
 
-> Canonical async contracts. Topics versioned additively (ADR-004). Last updated: 2026-10-04
+> Canonical async contracts. Topics versioned additively (ADR-004). Last updated: 2026-10-15
 > Per-service event *docs* also live in `services/*/events.md` — this file is the **cross-service index**.
 
 ## Conventions
@@ -26,7 +26,7 @@ Declared in `backend/kafka/init/topics.conf` and wired in code today.
 | `admin.created` | user-management-service (`CreateAdminService`) | iam-service (`PersonCreatedConsumer`, groupId `iam`) | New admin person → IAM profile/role |
 | `parent.created` | user-management-service (`CreateParentService`) | iam-service (`PersonCreatedConsumer`, groupId `iam`) | New guardian person → IAM profile/role |
 | `profile.created` | iam-service (`CreateProfileService`) | — (no consumer yet) | IAM profile created for a person |
-| `student.scanned` | notification-service (`ProcessScanService`) | notification-service (`StudentScannedConsumer`) | QR boarding/alighting scan → push to guardian |
+| `student.scanned` | notification-service (`ProcessScanService`) | notification-service (`StudentScannedConsumer`) | QR boarding/alighting scan → push to guardian (payload carries the assigned stop: name, address, latitude, longitude) |
 
 > Naming in use is `<entity>.<action>`, not the `<domain>.<entity>.<action>` convention above.
 > Rename additively before M2 rather than in place (ADR-004).
