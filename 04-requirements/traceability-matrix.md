@@ -37,7 +37,7 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 | FR-3.8 | Create, edit, and activate/deactivate buses (unique plate, capacity > 0) | HU-FLEET-001 | TBD | fleet-service | 🟡 In progress (CRUD exists; create fails at runtime, PATCH blocked at gateway) |
 | FR-3.6 | Assign/unassign a driver to a bus (a driver is responsible for that bus until reassigned); route coverage is derived from the bus assigned to the route | HU-BUS-002 | TBD | bus-service | 🟡 In progress (logic exists; profile lookup calls the wrong service) |
 | FR-3.7 | Assign students to a route indicating their assigned stop, used for both boarding and alighting (the stop must belong to the route) | HU-ROUTE-008 | TBD | route-service | ✅ Done |
-| FR-4.1 | Generate an individual QR code for each student, with rotation/expiration policy | HU-QR-004 | TBD | iam-service | 🔴 Pending |
+| FR-4.1 | Generate an individual QR code for each student (encodes the student identifier, resolved on scan) | HU-QR-004 | TBD | mobile-client | ✅ Done |
 | FR-4.2 | Read the student's QR code to register their boarding (validates the student is assigned to the route) | HU-QR-001 | TBD | notification-service | ✅ Done |
 | FR-4.3 | Read the student's QR code to register their alighting (requires an active boarding) | HU-QR-002 | TBD | notification-service | ✅ Done |
 | FR-5.1 | Detect the student's boarding event | HU-QR-001 | TBD | notification-service | ✅ Done |

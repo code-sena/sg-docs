@@ -56,7 +56,7 @@
 
 | ID | Requirement | Service | Source (HU) | Priority |
 |----|-------------|---------|-------------|----------|
-| FR-4.1 | Generate an individual QR code for each student, with rotation/expiration policy | iam-service | HU-QR-004 | Medium |
+| FR-4.1 | Generate an individual QR code for each student (encodes the student identifier, resolved on scan) | mobile-client | HU-QR-004 | Medium |
 | FR-4.2 | Read the student's QR code to register their boarding (validates the student is assigned to the route) | notification-service | HU-QR-001 | High |
 | FR-4.3 | Read the student's QR code to register their alighting (requires an active boarding) | notification-service | HU-QR-002 | High |
 

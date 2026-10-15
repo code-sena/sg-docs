@@ -667,18 +667,18 @@ Scenario 1: View a valid QR code (happy path)
   And the screen shows their name for visual verification
 
 Scenario 2: QR not available (error case)
-  Given the student's QR code has expired or the student has been deactivated
+  Given the student has been deactivated
   When the student attempts to view their QR code
   Then the app shows the message "QR not available"
 ```
 
 **Technical notes:**
 
-> The QR code encodes a unique student identifier that the boarding-service resolves.
-> It must support rotation/expiration and be regenerated when credentials are replaced.
+> The QR code encodes a unique student identifier that the notification service resolves on
+> scan. It is rendered by the mobile app; there is no rotation/expiration policy.
 
-- **Responsible service(s):** student-service
-- **Endpoint(s) implemented:** `GET /api/v1/students/{studentId}/qr`
+- **Responsible service(s):** mobile-client
+- **Endpoint(s) implemented:** — (rendered locally in the mobile app; the boarding is resolved via `POST /api/v1/notifications/scan`)
 - **Events generated:** —
 - **Required permissions:** authenticated student (JWT), only their own QR code
 
@@ -688,7 +688,7 @@ Scenario 2: QR not available (error case)
 > See: [`00-governance/definition-of-done.md`](../00-governance/definition-of-done.md)
 
 **Additional checks specific to this HU (if applicable):**
-- [ ] QR rotation/expiration policy defined and implemented
+- [ ] QR rendered from the authenticated student's own identifier
 - [ ] Additional checks reviewed by the service owner
 
 **Estimation and priority:**
