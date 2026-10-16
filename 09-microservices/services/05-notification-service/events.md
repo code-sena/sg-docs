@@ -6,9 +6,16 @@
 
 | Event | Topic | When | Payload (key fields) |
 |-------|-------|------|----------------------|
-| BoardingRegistered | `notification.boarding.registered` | QR scan saved | `{boardingId, studentProfileId, busId}` |
-| AlertRaised | `notification.alert.raised` | Alert created | `{alertId, alertTypeId}` |
-| AlertDelivered | `notification.alert.delivered` | Delivery ack | `{alertId, channel}` |
+| StudentScanned | `student.scanned` | QR scan saved (boarding or alighting) | `{boardingId, alertId, studentProfileId, routeExecutionId, boardingType, timestamp, stopName, stopAddress, latitude, longitude}` |
+| IncidentReported | `incident.reported` | Driver reports an incident or emergency during the trip (FR-8.1) | `{alertId, routeExecutionId, reportedByProfileId, alertTypeId, description, studentsOnBoard[], recipients[], timestamp}` |
+
+> **The topics above are the ones the service actually publishes.** An earlier revision of this
+> document proposed the names `notification.boarding.registered`, `notification.alert.raised` and
+> `notification.alert.delivered`, none of which exist in the code. It also proposed the envelope
+> below, which is **not** used: `KafkaEventPublisher` serialises the event object as the message
+> value and sets a generated `Guid` as the Kafka key, so the "ordering per key (`aggregateId`)"
+> claim further down does not hold either. Treat the envelope, the `notification.*` names and the
+> ordering guarantee as the target design, not as the current behaviour.
 
 ### Common envelope
 
@@ -27,15 +34,15 @@
 
 | Event | Published by | Topic | Action |
 |-------|--------------|-------|--------|
-| RouteExecuted / boarding context | route-service | `route.*` | Create boarding record |
-| GpsAnomalyDetected | gps-service | `gps.anomaly` | Raise alert to recipients |
+| StudentScanned | notification-service (itself) | `student.scanned` | Create the `AlertRecipient` rows for the student's guardians and send the Expo push |
+| GpsAnomalyDetected | gps-service | `gps.anomaly` | Raise alert to recipients — **not implemented**: gps-service and this consumer do not exist yet (FR-6.x is pending) |
 
 ## Delivery guarantees
 
 | Guarantee | Value | Implication |
 |-----------|-------|-------------|
 | At-least-once | Yes | Consumers idempotent by `eventId` |
-| Ordering | Per key (`aggregateId`) | No global order assumed |
+| Ordering | None assumed (the Kafka key is a generated `Guid`) | No global or per-aggregate order assumed |
 
 ## Error handling
 
