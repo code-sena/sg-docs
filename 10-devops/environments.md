@@ -38,7 +38,6 @@ Examples:
 | Variable | Local | Dev | Staging | Production |
 |----------|-------|-----|---------|------------|
 | `ConnectionStrings__Default` | `Server=localhost,1433;Database=school_guardian;User Id=sa;Password=***;TrustServerCertificate=True` | Vault | Vault | Vault |
-| `REDIS_URL` | `redis://localhost:6379` | Vault | Vault | Vault |
 | `JWT_SECRET` | `dev-secret-only-local` | Vault | Vault | Vault |
 | `LOG_LEVEL` | `debug` | `info` | `info` | `warn` |
 | `NODE_ENV` | `development` | `development` | `staging` | `production` |

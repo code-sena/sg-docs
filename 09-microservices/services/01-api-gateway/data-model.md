@@ -11,20 +11,19 @@
 
 **Engine:** N/A — no persistent database.
 
-**Justification:** An API Gateway that requires its own database introduces an extra failure point in the layer that all traffic passes through. Routing state is managed via configuration (YAML files or environment variables), and session state (token blacklist, rate limits) is delegated to shared Redis.
+**Justification:** An API Gateway that requires its own database introduces an extra failure point in the layer that all traffic passes through. Routing state is managed via configuration (YAML files or environment variables), and rate-limit counters are kept in local, per-node memory. Token revocation is not stored here: it lives in iam-service's in-memory deny list.
 
 ---
 
-## In-memory / Redis state
+## In-memory state
 
-The API Gateway does keep ephemeral state:
+The API Gateway keeps only ephemeral, per-node in-memory state:
 
 | Data | Storage | TTL | Purpose |
 |------|---------|-----|---------|
-| Rate limit counters | Redis | 60 seconds | Request counting per IP |
-| Token blacklist check | Redis (read-only) | Per token expiration | Check revoked tokens |
+| Rate limit counters | Local memory (per node) | 60 seconds | Request counting per IP |
 
-**iam-service** is the **owner** of the token blacklist — the gateway only queries it.
+**iam-service** is the **owner** of the token deny list (keyed by `jti`, tied to the short access-token TTL) — the gateway validates tokens statelessly against the JWT signature and expiry and does not store revocation state.
 
 ---
 

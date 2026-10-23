@@ -173,7 +173,6 @@ ALTER TABLE Bus DROP COLUMN Plate;
 |--------|------------|---------------|
 | **SQL Server** | ACID fleet records, catalog integrity, and relational lookups | Ephemeral counters or cache-only state |
 | **MongoDB** | Flexible documents and catalog-style data | Complex transactions across collections |
-| **Redis** | Cache, sessions, TTL state, and counters | Authoritative fleet records |
 | **Elasticsearch** | Full-text search, analytics, and logs | Source of truth for vehicles |
 
 ## Relationship diagram (per service)

@@ -20,7 +20,7 @@ CREATE TABLE Person (
     IdentificationType VARCHAR(20) NOT NULL CHECK (IdentificationType IN ('TI', 'CC')) DEFAULT 'TI',
     IdentificationNumber VARCHAR(20) UNIQUE NOT NULL, 
     Email VARCHAR(50) NOT NULL, 
-    Phone INT NOT NULL, 
+    Phone BIGINT NOT NULL, 
     ResidenceAddress VARCHAR(50) NOT NULL, 
     DateBirth DATE NOT NULL, 
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
@@ -179,7 +179,6 @@ ALTER TABLE Person DROP COLUMN LastName;
 |--------|------------|---------------|
 | **SQL Server** | ACID transactions, personal-data integrity, and relational memberships | Ephemeral counters or cache-only state |
 | **MongoDB** | Flexible documents and catalog-style data | Complex transactions across collections |
-| **Redis** | Cache, sessions, TTL state, and counters | Authoritative personal data |
 | **Elasticsearch** | Full-text search, analytics, and logs | Source of truth for personal records |
 
 ## Relationship diagram (per service)

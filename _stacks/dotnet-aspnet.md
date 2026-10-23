@@ -48,8 +48,7 @@ ms-{name-service}/
         │   │   └── UseCases/
         │   │       └── CreateMyEntityUseCase.cs
         │   └── Infrastructure/       # Adapters — depends on Application/ and Domain/
-        │       ├── Http/             # Primary adapter: HTTP (controllers, middleware)
-        │       │   └── Controllers/
+        │       ├── Controllers/
         │       │       └── MyEntityController.cs
         │       ├── Persistence/      # Secondary adapter: Database (EF Core DbContext + repositories)
         │       │   └── NameEntity.cs   # implements IMyEntityRepository

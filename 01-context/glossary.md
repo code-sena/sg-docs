@@ -54,7 +54,7 @@
 | React | JavaScript library used as the basis of the mobile frontend. | React | Used together with Expo. |
 | Expo | React platform and tooling used for the mobile application. | Expo | Current mobile stack. |
 | .NET | Microsoft platform used by several backend services. | .NET | C# microservices in the polyglot stack. |
-| C# | Language used by several microservices. | C Sharp | user-management, school, bus, route, exceptional, audit, configuration. |
+| C# | Language used by several microservices. | C Sharp | user-management, school, bus, route, configuration. |
 | SQL Server | Relational database used for persistent application data (ADR-002). | SQL Server | Main persistence; one instance, schema per service. |
 | Docker | Container technology used in project development and deployment workflows. | Containerization | Used with WSL2. |
 | WSL2 | Windows subsystem used to support the development environment. | Windows Subsystem for Linux 2 | Part of the local development setup. |

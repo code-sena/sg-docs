@@ -11,7 +11,7 @@
 | Stack | Java + Spring Boot |
 | SQL Server schema | `Iam` |
 | Repository | One folder per service under `backend/` (reached by Docker DNS name, not by host path) |
-| Communicates with | configuration-service (password policy on change) |
+| Communicates with | — |
 | Consumed by | api-gateway (all client traffic) |
 
 ## Responsibilities (what this service DOES)
@@ -25,8 +25,6 @@
 ## Out of scope (what it does NOT do)
 
 - Personal data (Person/Family) → user-management-service
-- Business configuration → configuration-service
-- Audit persistence → audit-service
 
 ## Main endpoints
 

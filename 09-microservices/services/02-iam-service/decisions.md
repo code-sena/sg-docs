@@ -22,7 +22,7 @@
 
 **Context:** Decision scoped to iam-service.
 
-**Decision:** Gateway validates JWT + blacklist; services trust X-User-* headers injected at edge.
+**Decision:** Gateway validates JWT signature/expiry; token revocation is held in iam-service's in-memory deny list. Services trust X-User-* headers injected at edge.
 
 **Consequences:**
 - ✅ Aligned with service catalog and boundary rules

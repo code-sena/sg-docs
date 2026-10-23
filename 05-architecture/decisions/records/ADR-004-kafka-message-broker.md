@@ -39,7 +39,6 @@ School Guardian is built as microservices that need to communicate asynchronousl
 | RabbitMQ | Good | Excellent (queues, DLQ, priority) | Very good (exchanges) | Good (TLS, VHost) | Good (clients in many languages) | 8 |
 | Azure Service Bus | Good | Excellent (queues, DLQ, sessions) | Very good (topics) | Excellent (managed) | Acceptable (stronger in .NET than other languages) | 7 |
 | NATS | High | Good (JetStream) | Very good | Good | Good (clients in many languages) | 7 |
-| Redis Pub/Sub | High | Weak (no durability/DLQ) | Basic | Good | Good | 5 |
 
 ---
 

@@ -109,8 +109,6 @@ The backend is a set of microservices behind the API Gateway (see `09-microservi
 | `GET/POST/PUT/DELETE` | `/api/route-student-assignments` | `RouteManagement` | Student-to-route assignments |
 | `GET/POST/PUT/DELETE` | `/api/school` | `SchoolManagement` | Schools |
 | `GET/POST/PUT/DELETE` | `/api/school-campuse` | `SchoolManagement` | Campuses |
-| `GET/POST/PUT/DELETE` | `/api/course` | `SchoolManagement` | Courses |
-| `GET/POST/PUT/DELETE` | `/api/course-group` | `SchoolManagement` | Course groups |
 
 > The CRUD verbs above correspond to the `ACrudController` base contract. They must be checked against the OpenAPI contracts when they are published.
 

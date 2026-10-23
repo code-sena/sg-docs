@@ -4,20 +4,16 @@ Last updated: 2026-09-22 · Audiences: school admins, platform ops
 
 ## 1. Administration console access
 - Roles from `iam-service` (RBAC)
-- All changes appear in `Audit` schema
 
 ## 2. Schools, users, routes, buses
 - Create/update masters; soft-delete policy
 
-## 3. Configuration / feature flags
-- `configuration-service` scopes: global / school / user
-- Secrets never returned to browsers
-
-## 4. Notifications
+## 3. Notifications
 - Templates, channels, retry visibility
 
-## 5. Operations (technical)
+## 4. Operations (technical)
 - Health: Kong **:8000**, services **:8080**
+- Secrets never returned to browsers
 - See `10-devops/local-setup.md`, service runbooks, `13-operations/`
 
 ## Related

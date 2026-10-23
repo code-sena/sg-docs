@@ -56,7 +56,7 @@
 | AlertTypeID | TINYINT | No | Reference to alert type | FK → AlertType.ID |
 | ProfileId | UNIQUEIDENTIFIER | No | Reference to reporting profile | FK → Profile.ID (IAM) |
 | DateTime | DATETIME | Yes | Alert timestamp | |
-| Description | VARCHAR(100) | Yes | Alert description | |
+| Description | VARCHAR(500) | Yes | Alert description (free text for an incident report) | |
 
 **Relationships:**
 - `RouteExecutionID` → FK to `RouteExecution.ID` in Route service
@@ -85,3 +85,4 @@
 - **Single table for both directions:** BoardingType distinguishes ON_BOARD vs OFF_BOARD in one table, keeping the event log simple.
 - **UrgencyLevel numeric:** AlertType carries a numeric urgency level for sorting/prioritization.
 - **Read tracking:** AlertRecipient records DateTimeRead, enabling delivery confirmation per recipient.
+- **Incidents reuse `Alert`:** a driver's incident report (FR-8.1) is an `Alert` whose `ProfileId` is the reporting driver and whose `AlertRecipient` rows are the school admins plus the guardians of the students on board (FR-8.2) — there is no separate incident table. `Description` was widened to `VARCHAR(500)` to hold the free-text report, and the `AlertType` catalog gained the four reportable incident types (Accident, Medical Emergency, Mechanical Breakdown, Security Incident).

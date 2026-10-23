@@ -33,7 +33,6 @@ C4Container
         ContainerDb(db_auth, "SQL Server (schema Iam)", "SQL Server", "Users, roles, refresh tokens.")
         ContainerDb(db_a, "DB [Service A]", "[Chosen engine]", "[Service A] domain data.")
         ContainerDb(db_b, "DB [Service B]", "[Chosen engine]", "[Service B] domain data.")
-        ContainerDb(redis, "Redis", "Redis", "Token blacklist, rate limiting, shared cache.")
         ContainerDb(broker, "Message Broker", "Kafka / RabbitMQ", "Domain events between services.")
     }
 
@@ -52,8 +51,6 @@ C4Container
 
     %% Services → DB (each service has its own DB)
     Rel(auth, db_auth, "Reads / writes", "SQL")
-    Rel(auth, redis, "Token blacklist", "Redis protocol")
-    Rel(gateway, redis, "Rate limiting", "Redis protocol")
     Rel(service_a, db_a, "Reads / writes", "SQL / NoSQL")
     Rel(service_b, db_b, "Reads / writes", "SQL / NoSQL")
 

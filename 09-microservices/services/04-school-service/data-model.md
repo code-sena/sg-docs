@@ -50,33 +50,20 @@
 **Relationships:**
 - `SchoolID` → FK to `School.ID`
 
-### Table: Course
+### Table: SchoolAdmin
 
-**Purpose:** Represents a course offered at a campus
+**Purpose:** Links an administrator profile to the single school it manages
 
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
 | ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
-| CampusID | UNIQUEIDENTIFIER | No | Reference to campus | FK → SchoolCampus.ID |
-| Name | VARCHAR(10) | Yes | Course name/code | |
+| SchoolID | UNIQUEIDENTIFIER | No | Reference to school | FK → School.ID |
+| ProfileID | UNIQUEIDENTIFIER | No | Reference to admin profile | FK → Profile.ID (IAM), UNIQUE (one school per admin) |
 | Status | VARCHAR(20) | No | Record status | CHECK (Status IN ('Active', 'Inactive')), Default 'Active' |
 
 **Relationships:**
-- `CampusID` → FK to `SchoolCampus.ID`
-
-### Table: CourseGroup
-
-**Purpose:** Groups students into a course
-
-| Field | Type | Nullable | Description | Constraints |
-|-------|------|----------|-------------|-------------|
-| ID | UNIQUEIDENTIFIER | No | Unique identifier | PK |
-| ProfileID | UNIQUEIDENTIFIER | No | Reference to student profile | FK → Profile.ID (IAM) |
-| CourseID | UNIQUEIDENTIFIER | No | Reference to course | FK → Course.ID |
-
-**Relationships:**
+- `SchoolID` → FK to `School.ID`
 - `ProfileID` → FK to `Profile.ID` in IAM service
-- `CourseID` → FK to `Course.ID`
 
 ---
 
@@ -98,4 +85,4 @@
 ## Modeling decisions
 
 - **City as shared reference:** City is used by School, Stop (Route), and GpsLocation. It lives in the Geographic schema owned by this service.
-- **Course vs CourseGroup:** Course is a static offering; CourseGroup links students (profiles) to a course, becoming the enrollment record.
+- **SchoolAdmin link:** one admin profile manages exactly one school; enforced by UNIQUE on `SchoolAdmin.ProfileID`.

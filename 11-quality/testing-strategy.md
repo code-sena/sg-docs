@@ -226,8 +226,6 @@ jobs:
     services:
       postgres:
         image: postgres:15
-      redis:
-        image: redis:7
     steps:
       - run: npm run test:integration
 

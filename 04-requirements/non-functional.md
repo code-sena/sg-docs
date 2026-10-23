@@ -67,8 +67,9 @@ feature deploys are frozen until the next month and stability is prioritized.
 | Load reduction | Scale-down without interrupting active traffic |
 | Horizontal scaling limit | Up to 10 instances per service |
 
-**Strategy:** Stateless horizontal scaling — each instance does not store state in memory.
-State goes in Redis (sessions, cache) or SQL Server (persistent data — ADR-002).
+**Strategy:** Stateless horizontal scaling — persistent state goes in SQL Server (ADR-002).
+The API Gateway is stateless and holds no datastore; the iam-service keeps its short-lived
+token deny list in memory.
 
 ---
 
