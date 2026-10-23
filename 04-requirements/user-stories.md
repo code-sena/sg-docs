@@ -23,8 +23,16 @@
 
 | Cut | Sprint | Total HUs | Refined | In progress | Completed |
 |-----|--------|-----------|---------|-------------|-----------|
-| Cut 1 | Sprint 1-2 | 18 | 1 | 3 | 14 |
+| Cut 1 | Sprint 1-2 | 18 | 0 | 1 | 17 |
 | Cut 2 | Sprint 3-4 | 0 | 0 | 0 | 0 |
+
+> **Cut 1 verification (2026-10-22):** statuses were reconciled against the real backend
+> (`backend/`) and the relational model (`database/`, source of truth). `HU-INCIDENT-001`,
+> `HU-ROUTE-005`, `HU-BUS-002` and `HU-ROUTE-008` moved to **Done** (endpoints + tests verified).
+> `HU-GPS-002` moved to **In progress**: `sg-ms-gps` ingests GT06 frames over TCP `:8842` and
+> exposes the latest position, but positions are held **in memory** (never written to
+> `Gps.GpsLocation`), there is no map streaming endpoint and no signal-loss alert.
+> See `04-requirements/traceability-matrix.md` → RF-06.
 
 ---
 
@@ -241,8 +249,15 @@ Scenario 2: Bus without GPS signal (error case)
 > Live location is streamed from the GPS service; the map is rendered with Google Maps API.
 > Position updates should be received without manual refresh (push/WebSocket/streaming).
 
-- **Responsible service(s):** gps-service
-- **Endpoint(s) implemented:** `GET /api/v1/tracking/{routeId}/location`
+> **Implementation state (2026-10-22):** `sg-ms-gps` is running and ingests real device frames
+> (GT06-style) on **TCP :8842**, keeps the latest position per IMEI in memory and exposes it at
+> `GET /api/gps/devices/{imei}/location` (plus `GET /api/gps/devices/{imei}/connected` and
+> `POST /api/gps/test/{imei}` for injection). **Still missing to close this HU:**
+> persistence of positions in `Gps.GpsLocation` (the relational model already defines it),
+> a streaming endpoint for the map (Scenarios 1) and the signal-loss alert (Scenario 2).
+
+- **Responsible service(s):** gps-service (`sg-ms-gps`)
+- **Endpoint(s) implemented:** `GET /api/gps/devices/{imei}/location` (in-memory) — *intended:* `GET /api/v1/tracking/{routeId}/location`
 - **Events generated:** consumes GPS position events from the bus
 - **Required permissions:** authenticated guardian (JWT)
 
@@ -259,7 +274,7 @@ Scenario 2: Bus without GPS signal (error case)
 
 | Field | Value |
 |-------|-------|
-| Status | Done |
+| Status | In progress |
 | Story Points | 8 |
 | Priority | Medium |
 | Target sprint | Sprint 4 |
@@ -588,7 +603,7 @@ Scenario 2: Report outside an active trip (error case)
 
 | Field | Value |
 |-------|-------|
-| Status | Backlog |
+| Status | Done |
 | Story Points | 3 |
 | Priority | Medium |
 | Target sprint | Sprint 5 |
@@ -787,7 +802,7 @@ Scenario 2: Route already has a bus (error case)
 > `RouteBusAssignments` (route-service). The bus must be active to be assigned.
 
 - **Responsible service(s):** route-service
-- **Endpoint(s) implemented:** `PUT /api/v1/routes/{routeId}/bus`
+- **Endpoint(s) implemented:** `PUT /api/routes/{routeId}/bus`, `DELETE /api/routes/{routeId}/bus`
 - **Events generated:** `BusAssignedToRoute`
 - **Required permissions:** administrator (JWT)
 
@@ -804,7 +819,7 @@ Scenario 2: Route already has a bus (error case)
 
 | Field | Value |
 |-------|-------|
-| Status | In progress |
+| Status | Done |
 | Story Points | 2 |
 | Priority | Medium |
 | Target sprint | Sprint 2 |
@@ -842,8 +857,8 @@ Scenario 2: Driver already responsible for another bus (error case)
 > their routes transitively through the bus assigned to the route (`RouteBusAssignments`,
 > route-service); there is no driver→route assignment table. Inactive drivers cannot be assigned.
 
-- **Responsible service(s):** bus-service
-- **Endpoint(s) implemented:** `PUT /api/v1/buses/{busId}/driver`, `DELETE /api/v1/buses/{busId}/driver`
+- **Responsible service(s):** fleet-service
+- **Endpoint(s) implemented:** `PUT /api/buses/{busId}/driver`, `DELETE /api/buses/{busId}/driver`, `GET /api/buses/assigned/{profileId}`
 - **Events generated:** `DriverAssignedToBus`, `DriverUnassignedFromBus`
 - **Required permissions:** administrator (JWT)
 
@@ -860,7 +875,7 @@ Scenario 2: Driver already responsible for another bus (error case)
 
 | Field | Value |
 |-------|-------|
-| Status | In progress |
+| Status | Done |
 | Story Points | 3 |
 | Priority | High |
 | Target sprint | Sprint 2 |
@@ -897,7 +912,7 @@ Scenario 2: Stop that does not belong to the route (error case)
 > at a time. The assignment enables the guardian and the QR boarding flow.
 
 - **Responsible service(s):** route-service
-- **Endpoint(s) implemented:** `POST /api/v1/routes/{routeId}/students`
+- **Endpoint(s) implemented:** `POST /api/routes/{routeId}/students`
 - **Events generated:** `StudentAssignedToRoute`
 - **Required permissions:** administrator (JWT)
 
@@ -915,7 +930,7 @@ Scenario 2: Stop that does not belong to the route (error case)
 
 | Field | Value |
 |-------|-------|
-| Status | In progress |
+| Status | Done |
 | Story Points | 3 |
 | Priority | High |
 | Target sprint | Sprint 2 |
