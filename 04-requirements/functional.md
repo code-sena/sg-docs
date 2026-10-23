@@ -43,7 +43,7 @@
 | FR-3.4 | Delete route data (only when no active trip depends on it) | route-service | HU-ROUTE-001 | Medium |
 | FR-3.5 | Assign/unassign a bus to a route (one bus per route, one route per bus) | route-service | HU-ROUTE-005 | Medium |
 | FR-3.8 | Create, edit, and activate/deactivate buses (unique plate, capacity > 0) | fleet-service | HU-FLEET-001 | Medium |
-| FR-3.6 | Assign/unassign a driver to a bus (a driver is responsible for that bus until reassigned); route coverage is derived from the bus assigned to the route | bus-service | HU-BUS-002 | High |
+| FR-3.6 | Assign/unassign a driver to a bus (a driver is responsible for that bus until reassigned); route coverage is derived from the bus assigned to the route | fleet-service | HU-BUS-002 | High |
 | FR-3.7 | Assign students to a route indicating their assigned stop, used for both boarding and alighting (the stop must belong to the route) | route-service | HU-ROUTE-008 | High |
 
 > **Decision (FR-3.6 / HU-BUS-002):** The driver is assigned to the bus (`DriverAssignemts`,
@@ -81,6 +81,11 @@
 | FR-6.3 | Alert on GPS signal loss, showing the last known position with a "no signal" marker | gps-service | HU-GPS-002 | Medium |
 
 > **Note:** FR-6.3 detection is done by gps-service; the alert delivery to the guardian is handled by notification-service.
+
+> **Implementation state (2026-10-22):** gps-service (`sg-ms-gps`) is running: it ingests
+> device frames over TCP `:8842`, decodes them and exposes the latest position and the
+> connection state per IMEI. Positions are **not persisted** yet (`Gps.GpsLocation` is empty),
+> so FR-6.1 is partial and FR-6.2 / FR-6.3 remain pending. See the traceability matrix.
 
 ---
 

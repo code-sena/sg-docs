@@ -4,7 +4,7 @@
 > patterns, and cross-cutting concerns. Kept in sync with ADRs and the
 > microservices catalog.
 
-**Status:** Living document · **Last aligned:** 2026-09-22
+**Status:** Living document · **Last aligned:** 2026-10-22
 **Sources of truth:** [ADR register](./decisions/README.md) · [service catalog](../09-microservices/service-catalog.md)
 
 ---
@@ -32,7 +32,7 @@
 - Auth: [ADR-008 JWT RS256](./decisions/records/ADR-008-jwt-rs256-authentication.md)
 
 > Note: legacy contexts describing a "modular ASP.NET Core monolith" refer to
-> the original codebase shape; the target and catalog state is 11 microservices
+> the original codebase shape; the target and catalog state is 9 microservices
 > (see [clarifications](../00-governance/documentation-rules.md)).
 
 ---
@@ -78,21 +78,22 @@ flowchart TB
   subgraph services["Microservices (shared SQL Server, schema per service)"]
     iam["iam-service:8080<br/>Java + Spring Boot"]
     um["user-management-service:8080<br/>C#"]
-    sch["school-service:8080<br/>C#"]
-    notif["notification-service:8080<br/>Go"]
-    bus["bus-service:8080<br/>C#"]
+    sch["school-management-service:8080<br/>C#"]
+    notif["notification-service:8081<br/>C#"]
+    fleet["fleet-service:8080<br/>C#"]
     rt["route-service:8080<br/>C#"]
-    gps["gps-service:8080<br/>Java + Spring Boot"]
+    gps["gps-service:8080 + TCP 8842<br/>Java + Spring Boot"]
+    forgot["forgot-information-service:8091<br/>C#"]
   end
 
   kafka["Apache Kafka<br/>events"]
-  db[("SQL Server<br/>schemas: Iam, UserManagement,<br/>School, Geographic, Notification,<br/>Bus, Route, Gps")]
+  db[("SQL Server (RDS)<br/>schemas: Iam, UserManagement,<br/>School, Geographic, Fleet,<br/>Route, Notification, Gps,<br/>ForgotInformation")]
 
   web --> gw
   mob --> gw
-  gw --> iam & um & sch & notif & bus & rt & gps
-  iam & notif & rt & gps --> kafka
-  kafka --> notif & rt & gps
+  gw --> iam & um & sch & notif & fleet & rt & forgot
+  iam & notif --> kafka
+  kafka --> iam & notif
   services --> db
 ```
 
@@ -100,10 +101,10 @@ flowchart TB
 |-----------|----------------|-------|
 | Web SPA | Admin & super-admin UI | Angular 21 |
 | Mobile | Guardian/driver UX | React + Expo |
-| API Gateway | Single entry, JWT, routing, rate limit | Stateless, local (per-node) rate limiting |
-| 8 services (gateway + 7 domain/infra) | Bounded contexts | Polyglot; details in catalog |
+| API Gateway | Single entry, JWT (JWKS from iam-service), routing, rate limit | Stateless, local (per-node) rate limiting |
+| 9 services (gateway + 8 domain/infra) | Bounded contexts | Polyglot (Java + C#); details in catalog |
 | Kafka | Async domain events | ADR-004 |
-| SQL Server | Persistence | One instance, schema per service (ADR-002) |
+| SQL Server | Persistence | One instance, schema per service (ADR-002) — deployed on **AWS RDS** |
 
 Full registry, ports, stacks: [`09-microservices/service-catalog.md`](../09-microservices/service-catalog.md).
 
@@ -111,19 +112,22 @@ Full registry, ports, stacks: [`09-microservices/service-catalog.md`](../09-micr
 
 ## 4. Service catalog (summary)
 
-| # | Service | Stack | Schema | Port |
-|---|---------|-------|--------|------|
-| 01 | api-gateway (Kong OSS) | Kong OSS | — | **8000** |
-| 02 | iam-service | Java + Spring Boot | `Iam` | 8080 |
-| 03 | user-management-service | C# + ASP.NET | `UserManagement` | 8080 |
-| 04 | school-service | C# + ASP.NET | `School` + `Geographic` | 8080 |
-| 05 | notification-service | Go | `Notification` | 8080 |
-| 06 | bus-service | C# + ASP.NET | `Bus` | 8080 |
-| 07 | route-service | C# + ASP.NET | `Route` | 8080 |
-| 08 | gps-service | Java + Spring Boot | `Gps` | 8080 |
+| # | Service | Real repo | Stack | Schema | Host port |
+|---|---------|-----------|-------|--------|-----------|
+| 01 | api-gateway (Kong OSS) | `ms-api-gateway` | Kong OSS + Lua `sg-jwt` | — | **8000** |
+| 02 | iam-service | `ms-iam` | Java + Spring Boot | `Iam` | 8080 |
+| 03 | user-management-service | `ms-user-management` | C# + ASP.NET | `UserManagement` | 8080 |
+| 04 | school-management-service | `ms-school-management` | C# + ASP.NET | `School` (+ reads `Geographic`) | 8080 |
+| 05 | notification-service | `ms-notification` | C# + ASP.NET | `Notification` | 8081 |
+| 06 | fleet-service *(docs legacy: bus-service)* | `ms-fleet` | C# + ASP.NET | `Fleet` | 8080 |
+| 07 | route-service | `ms-route` | C# + ASP.NET | `Route` | 8080 |
+| 08 | gps-service | `sg-ms-gps` | Java + Spring Boot | `Gps` | 8080 + TCP 8842 |
+| 09 | forgot-information-service | `sg-ms-forgot-information` | C# + ASP.NET | `ForgotInformation` | 8091 |
 
-> **Count authority:** 8 services (gateway + 7). Older ADR text mentioning "7 microservices"
-> predates the split and must not be used for capacity or routing math.
+> **Count authority:** 9 services (gateway + 8). Older ADR text mentioning "7 microservices"
+> or "11 microservices" must not be used for capacity or routing math.
+> The `Geographic` schema (`City`) is deployed by `database/ms-geographic-db` and has **no
+> owning backend service**.
 
 ---
 
@@ -134,8 +138,12 @@ Contracts live in `07-api/contracts/openapi/` before implementation.
 Guidelines: [`07-api/guidelines.md`](../07-api/guidelines.md).
 
 ### P2: Shared Monolithic Database — Schema per Service
-One SQL Server instance, logical isolation per service, no cross-schema JOINs
-or FKs. Rules: [`09-microservices/service-boundary-rules.md`](../09-microservices/service-boundary-rules.md).
+One SQL Server instance, logical isolation per service, and **no cross-schema JOINs in
+application code** — services reach each other through API or events.
+The deployed model does use **cross-schema foreign keys** (20+ of them, e.g.
+`Iam.Profile.PersonId` → `UserManagement.Person`), which is an accepted deviation that keeps
+referential integrity inside the single database. Rules:
+[`09-microservices/service-boundary-rules.md`](../09-microservices/service-boundary-rules.md).
 Deviation from "database-per-service" is intentional and recorded in ADR-002.
 
 ### P3: Fail Fast, Recover Gracefully

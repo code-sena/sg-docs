@@ -43,8 +43,11 @@ Examples:
 | ID | Name | Type | Tool | Source file | Description |
 |----|------|------|------|-------------|-------------|
 | C4-01 | System Context | C4 L1 | PlantUML | `source/c1-system-context.puml` 📝 *(not exported yet — create under `diagrams/source/`)* | The system and its external actors |
-| C4-02 | Container Diagram | C4 L2 | PlantUML | `source/c2-container-diagram.puml` 📝 *(not exported yet — create under `diagrams/source/`)* | All services and DBs |
+| C4-02 | Container Diagram | C4 L2 | **Mermaid** | `../../05-architecture/overview.md` §3 | All 9 services, Kong, Kafka and the shared SQL Server (rendered on GitHub) |
+| C4-02b | Container Diagram (PlantUML) | C4 L2 | PlantUML | `source/c2-container-diagram.puml` 📝 *(not exported yet)* | PlantUML twin of the Mermaid container diagram |
 | C4-03 | [Service A] Components | C4 L3 | PlantUML | `source/c3-service-a.puml` 📝 *(not exported yet — create under `diagrams/source/`)* | Internal components of the service |
+| C4-10 | Real deployment (EC2 + RDS) | C4 L2 dep | **Mermaid** | `../../05-architecture/deployment.md` | What actually runs: one EC2 (Docker Compose + Portainer) + RDS SQL Server + Liquibase pipelines |
+| C4-11 | Service domains map | C4 L1 | **Mermaid** | `../../09-microservices/service-catalog.md` | The 6 business domains and their services with real repo names |
 
 ### Sequence diagrams
 
@@ -53,6 +56,9 @@ Examples:
 | SEQ-01 | Login flow | PlantUML | `source/seq-login.puml` 📝 *(not exported yet — create under `diagrams/source/`)* | Registration → Login → JWT |
 | SEQ-02 | [Main flow] | PlantUML | `source/seq-[name].puml` | [Description] |
 | SEQ-03 | [Error flow] | PlantUML | `source/seq-[name]-error.puml` | [Error scenario] |
+| SEQ-10 | QR boarding / alighting | **Mermaid** | `../../09-microservices/communication-patterns.md` (Flow A) | Driver scan → gRPC validation → `Boarding` + `Alert` → `student.scanned` → push to guardians |
+| SEQ-11 | Incident report | **Mermaid** | `../../09-microservices/communication-patterns.md` (Flow B) | Driver report → active trip check → `Alert` + `AlertRecipient` → `incident.reported` → push to school + guardians |
+| SEQ-12 | GPS ingestion (partial) | **Mermaid** | `../../09-microservices/communication-patterns.md` (Flow C) | Device → TCP :8842 GT06 → in-memory only (persistence pending) |
 
 ### State diagrams
 
@@ -60,12 +66,20 @@ Examples:
 |----|------|------|-------------|-------------|
 | ST-01 | Order lifecycle | PlantUML | `source/state-order.puml` 📝 *(not exported yet — create under `diagrams/source/`)* | Order states and transitions |
 
+### Pipeline / data-flow diagrams
+
+| ID | Name | Tool | Source file | Description |
+|----|------|------|-------------|-------------|
+| PIPE-01 | Liquibase execution order | **Mermaid** | `../../06-data/models.md` §11 | The 8 migration pipelines and their `depends_on` chain |
+
 ### ER diagrams (data)
 
 | ID | Name | Tool | Source file | Service |
 |----|------|------|-------------|---------|
 | ERD-01 | Orders DB | Mermaid | `source/erd-orders.mmd` 📝 *(not exported yet — create under `diagrams/source/`)* | order-service |
 | ERD-02 | Auth DB | Mermaid | `source/erd-auth.mmd` 📝 *(not exported yet — create under `diagrams/source/`)* | iam-service |
+| ERD-10 | **School Guardian full model (33 tables, 22 cross-schema FKs)** | **Mermaid** | `../../06-data/models.md` §1 | all — generated from the Liquibase changelogs (source of truth) |
+| ERD-11 | Schema-per-service overview | **Mermaid** | `../../06-data/models.md` §0 | all — 9 schemas and their table counts |
 
 ---
 
