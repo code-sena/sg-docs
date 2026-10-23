@@ -1,53 +1,112 @@
-# GPS
+# GPS Service
 
-> GPS devices registry and position history.
+## 1. Overview
 
-## Location in the architecture
+The GPS Service is a microservice in the Guardian Escolar platform responsible for receiving GPS tracking data from vehicle tracking devices and making location information available through an HTTP REST API.
 
-| Field | Value |
-|-------|-------|
-| Number in catalog | 08 |
-| Local port | 8080 |
-| Stack | Java + Spring Boot |
-| SQL Server schema | `Gps` |
-| Repository | One folder per service under `backend/` (reached by Docker DNS name, not by host path) |
-| Communicates with | bus-service (device↔bus binding) |
-| Consumed by | api-gateway (all client traffic) |
+The service uses two communication channels:
 
-## Responsibilities (what this service DOES)
+- **TCP:** receives data sent by GPS tracking devices.
+- **HTTP/REST:** exposes the service API for other components of Guardian Escolar.
 
-- Register GPS devices (IMEI) and connection status
-- Ingest and store position history
-- Detect anomalies (deviation) and publish events
+The service is implemented with Spring Boot and Java 21 and can be deployed using Docker.
 
-## Out of scope (what it does NOT do)
+## 2. Responsibilities
 
-- Map UI rendering → clients
-- Alert fan-out → notification-service
+The GPS Service is responsible for:
 
-## Main endpoints
+- Receiving GPS device messages through a TCP listener.
+- Identifying devices using their IMEI.
+- Processing incoming tracking information.
+- Maintaining the latest received location in memory.
+- Exposing GPS information through its REST API.
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/devices` | List devices |
-| POST | `/devices` | Register device |
-| GET | `/devices/{id}` | Get device |
-| PATCH | `/devices/{id}/status` | Update status |
-| POST | `/locations` | Ingest position |
-| GET | `/locations` | Query positions |
+The service is not currently responsible for storing a historical GPS trail in SQL Server or publishing GPS events through Kafka.
 
-## How to run it locally
+## 3. Technology Stack
 
-```bash
-docker compose up -d gps-service
-curl http://localhost:8080/health
-```
+| Component | Technology |
+|---|---|
+| Programming language | Java 21 |
+| Framework | Spring Boot 4.1.1 |
+| Build tool | Maven |
+| HTTP API | Spring Web MVC |
+| Device communication | TCP |
+| Containerization | Docker |
+| Database dependencies | JPA and Microsoft SQL Server JDBC driver declared in `pom.xml` |
 
-## Related documents
+Although database-related dependencies are declared in the Maven configuration, the current `application.properties` excludes database and JPA auto-configuration. Therefore, these dependencies do not mean that GPS locations are currently being persisted in SQL Server.
 
-- [data-model.md](./data-model.md) — schema `Gps`; tables: GpsDevice, GpsLocation
-- [events.md](./events.md) — publishes/consumes
-- [decisions.md](./decisions.md) — service-level decisions
-- [runbook.md](./runbook.md) — production operations
-- [API Contract](../../../07-api/contracts/openapi/gps-service.yaml)
-- Catalog → `09-microservices/service-catalog.md`
+## 4. Network Configuration
+
+The Docker Compose configuration publishes the following ports:
+
+| Protocol | Container port | Host mapping | Purpose |
+|---|---:|---|---|
+| HTTP | `8080` | `127.0.0.1:8080:8080` | REST API and local debugging |
+| TCP | `8842` | `8842:8842` | Incoming GPS device communication |
+
+The HTTP port is bound to the host's loopback interface. It is intended for local debugging and is not directly published on every host network interface.
+
+The TCP port is published on all host interfaces so that GPS devices can reach the listener, subject to the host firewall and network configuration.
+
+Within the shared Docker network, Kong can reach the service using:
+
+`http://ms-gps:8080`
+
+The `sg-services-network` Docker network must exist because the Compose configuration declares it as an external network.
+
+## 5. Communication Flow
+
+1. A GPS tracking device sends tracking data to the TCP listener on port `8842`.
+2. The service processes the received data and associates it with the device IMEI.
+3. The most recent location is retained in application memory.
+4. An authorized or permitted client accesses GPS information through the REST API, directly within the configured environment or through Kong when the corresponding gateway route is configured.
+
+The exact REST endpoint paths, request parameters, response fields and device message format must be documented from the implementation's controllers, DTOs and TCP parser.
+
+## 6. Data Persistence
+
+The current implementation retains the latest GPS location in memory rather than persisting it in SQL Server.
+
+As a result:
+
+- The latest received location is available while the service maintains it in memory.
+- Restarting the service clears the in-memory location data.
+- A new GPS message must be received before the latest location becomes available again.
+- The service does not currently provide a persisted GPS history.
+
+The decision not to implement GPS location persistence is documented in **ADR-010**.
+
+## 7. Kafka and Event Messaging
+
+The GPS Service documentation does not define any Kafka event contract because the reviewed configuration does not establish a GPS event producer or consumer.
+
+TCP is used for communication with GPS devices, while HTTP is used for API requests. These communication channels should not be confused with Kafka messaging.
+
+## 8. Configuration
+
+The current `application.properties` defines:
+
+- Application name: `gps-backend`
+- HTTP server port: `8080`
+- Exclusions for database and JPA auto-configuration during GPS testing
+
+The TCP listener configuration and its internal implementation must be verified in the Java source before documenting additional configuration properties.
+
+## 9. Known Limitations
+
+- GPS locations are not persisted to SQL Server.
+- No persisted GPS history is available.
+- In-memory location information is lost when the service restarts.
+- Exact REST routes and response contracts require verification against the source code.
+- The service's TCP listener must be reachable from the GPS devices.
+- Kong can proxy the HTTP API only when the gateway route and shared Docker networking are configured correctly.
+
+## 10. Related Documentation
+
+- [Data Model](data-model.md)
+- [Events and Messaging](events.md)
+- [Architecture Decisions](decisions.md)
+- [Runbook](runbook.md)
+
