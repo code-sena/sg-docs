@@ -15,7 +15,7 @@
 - ✅ Aligned with service catalog and boundary rules
 - ⚠️ Revisit if scaling or ownership changes
 
-## [DEC-002] Go for fan-out throughput
+## [DEC-002] .NET 10 for fan-out throughput
 
 **Date:** 2026-09-22
 **Status:** Active

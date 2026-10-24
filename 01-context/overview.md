@@ -44,7 +44,7 @@ Guardian Escolar addresses this gap with route management, vehicle monitoring, t
 
 - **Web frontend:** Angular 21.
 - **Mobile frontend:** React + Expo.
-- **Backend and services:** polyglot microservices — C#/.NET, Java/Spring Boot, Go.
+- **Backend and services:** polyglot microservices — C#/.NET, Java/Spring Boot.
 - **Database:** SQL Server (shared instance, schema per service — ADR-002).
 - **Development and containers:** Docker + WSL2.
 - **Additional technology under consideration:** .NET MAUI.
@@ -52,7 +52,7 @@ Guardian Escolar addresses this gap with route management, vehicle monitoring, t
 
 ## Current status
 
-Guardian Escolar is under active academic development. The web frontend contains public, authentication, administration, super administration, and profile areas. The backend is organized as **11 microservices** behind a Kong API Gateway (see `09-microservices/service-catalog.md`), with stacks across C#/.NET, Java/Spring Boot, and Go.
+Guardian Escolar is under active academic development. The web frontend contains public, authentication, administration, super administration, and profile areas. The backend is organized as **9 microservices** behind a Kong API Gateway (see `09-microservices/service-catalog.md`), with stacks across C#/.NET and Java/Spring Boot.
 
 The mobile frontend uses React + Expo. A Notifications view has recently been created with mocked data, search filters, and highlighted notifications. Some integrations and operational monitoring behaviors remain under development or require confirmation through API contracts.
 

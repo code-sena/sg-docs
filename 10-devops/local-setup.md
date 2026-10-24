@@ -31,10 +31,11 @@
 - Node.js + TypeScript → [`_stacks/node-typescript.md`](../_stacks/node-typescript.md)
 - Java + Spring Boot → [`_stacks/java-spring.md`](../_stacks/java-spring.md)
 - Python + FastAPI → [`_stacks/python-fastapi.md`](../_stacks/python-fastapi.md)
-- Go → [`_stacks/go.md`](../_stacks/go.md)
+- .NET 10 → [`_stacks/dotnet-aspnet.md`](../_stacks/dotnet-aspnet.md)
+- Java → [`_stacks/java-spring.md`](../_stacks/java-spring.md)
 
 **Recommended (not required):**
-- Team editor: [VS Code / IntelliJ IDEA / PyCharm / GoLand]
+- Team editor: [VS Code / IntelliJ IDEA / PyCharm]
 - Postman or Insomnia for manually testing endpoints
 
 ---
@@ -112,7 +113,7 @@ The command should show all containers in `healthy` or `running` state.
 | Node.js + npm | `npm install` |
 | Java + Maven | `mvn install -DskipTests` |
 | Python + Poetry | `poetry install` |
-| Go | `go mod download` |
+| .NET 10 | `dotnet restore` |
 
 > For .NET services the Docker images already run `dotnet restore` at build time,
 > so this step is only needed when you develop outside Docker.
@@ -137,7 +138,7 @@ The command should show all containers in `healthy` or `running` state.
 | Node.js + knex/Prisma | `npm run db:migrate` |
 | Java + Flyway | `mvn flyway:migrate` (or automatic on startup) |
 | Python + Alembic | `alembic upgrade head` |
-| Go + golang-migrate | `make migrate-up` |
+| .NET 10 + Liquibase | `make migrate-up` |
 
 ```bash
 # Optionally: load initial test data (seed)
@@ -154,7 +155,7 @@ The command should show all containers in `healthy` or `running` state.
 | Node.js | `npm run dev` |
 | Java | `mvn spring-boot:run` or `java -jar target/app.jar` |
 | Python | `uvicorn main:app --reload` |
-| Go | `go run ./cmd/server/...` or `make dev` |
+| .NET 10 | `dotnet run` or `make dev` |
 
 ### Step 7: Verify it works
 

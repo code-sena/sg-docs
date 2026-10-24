@@ -78,7 +78,7 @@ Themes also define `--navbar-gradient`, `--card-shadow`, `--hover-card`, `--colo
 
 ### Angular Material
 
-`material-theme.scss` configures Material 3 with Azure as the primary palette, Blue as the tertiary palette, Roboto typography, and density `0`. Do not introduce a parallel global palette without coordinating it with `styles.css`.
+`material-theme.scss` configures Material 3 with Blue as the primary palette, Indigo as the tertiary palette, Roboto typography, and density `0`. Do not introduce a parallel global palette without coordinating it with `styles.css`.
 
 ### Typography
 

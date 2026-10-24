@@ -1068,7 +1068,7 @@ Examples:
 | Domain Service `RouteAssignmentService` | `src/domain/route/services/` | `RouteAssignmentService.java` |
 | Domain Service `GpsSignalService` | `src/domain/gps/services/` | `GpsSignalService.java` |
 
-> **Implementation note:** Guardian Escolar is **polyglot**: each entity lives in the stack of its owning microservice (C#, Java/Spring Boot, or Go — see `09-microservices/service-catalog.md`). Java services follow `05-architecture/hexagonal-architecture.md`; C# services use the same ports/adapters layout under each `ms-*` project.
+> **Implementation note:** Guardian Escolar is **polyglot**: each entity lives in the stack of its owning microservice (C# or Java/Spring Boot — see `09-microservices/service-catalog.md`). Java services follow `05-architecture/hexagonal-architecture.md`; C# services use the same ports/adapters layout under each `ms-*` project.
 
 ---
 

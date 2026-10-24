@@ -2,10 +2,10 @@
 
 **Service:** notification-service
 **Port:** 8080
-**Stack:** Go
+**Stack:** .NET 10
 **Database:** SQL Server schema Notification
 **Version:** 1.0
-**Last updated:** 2026-09-22
+**Last updated:** 2026-10-23
 
 ## 1. Quick information
 
@@ -29,33 +29,30 @@ curl http://localhost:8080/health
 ## 3. Frequent alerts
 
 ### Alert: Kafka consumer lag
-
 **Triage:** Boarding/alerts delayed
 
 ```bash
-kubectl logs -n school-guardian -l app=notification-service --tail=100 | grep -E 'ERROR|WARN'
-kubectl get pods -n school-guardian -l app=notification-service
-# Describe consumer group notification-service
+docker logs notification-service --tail 100 | grep -E 'ERROR|WARN'
+docker ps | grep notification-service
+# Check consumer group lag via Kafka tools
 ```
 
 ### Alert: Delivery failure spike
-
 **Triage:** External provider down
 
 ```bash
-kubectl logs -n school-guardian -l app=notification-service --tail=100 | grep -E 'ERROR|WARN'
-kubectl get pods -n school-guardian -l app=notification-service
+docker logs notification-service --tail 100 | grep -E 'ERROR|WARN'
+docker ps | grep notification-service
 # Check AlertDelivered failure rate
 ```
 
 ### Alert: 5xx on POST /boarding
-
 **Triage:** Students cannot scan
 
 ```bash
-kubectl logs -n school-guardian -l app=notification-service --tail=100 | grep -E 'ERROR|WARN'
-kubectl get pods -n school-guardian -l app=notification-service
-# P0 during school hours — scale pods
+docker logs notification-service --tail 100 | grep -E 'ERROR|WARN'
+docker ps | grep notification-service
+# P0 during school hours — scale pods via docker compose
 ```
 
 ## 4. Database
@@ -67,9 +64,15 @@ kubectl get pods -n school-guardian -l app=notification-service
 ## 5. Rollback / scale
 
 ```bash
-kubectl rollout history deployment/notification-service -n school-guardian
-kubectl rollout undo deployment/notification-service -n school-guardian
-kubectl scale deployment/notification-service -n school-guardian --replicas=3
+# View logs for the service
+docker compose logs -f notification-service
+
+# Update to latest image and restart
+docker compose pull notification-service
+docker compose up -d notification-service
+
+# Scale the service (if configured in compose)
+docker compose up -d --scale notification-service=3
 ```
 
 ## 6. Incident communication

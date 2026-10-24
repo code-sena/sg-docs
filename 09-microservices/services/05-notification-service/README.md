@@ -8,7 +8,7 @@
 |-------|-------|
 | Number in catalog | 05 |
 | Local port | 8080 |
-| Stack | Go |
+| Stack | .NET 10 |
 | SQL Server schema | `Notification` |
 | Repository | One folder per service under `backend/` (reached by Docker DNS name, not by host path) |
 | Communicates with | iam-service (profile identity), route-service (executions/stops), bus-service (fleet reference) |

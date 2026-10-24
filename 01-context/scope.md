@@ -97,7 +97,7 @@ The following items are not part of the currently confirmed MVP implementation.
 |------|-------------|
 | **Academic** | The project is developed under SENA ADSO, cohort 3145556. |
 | **Geographic** | The initial operational context is Neiva, Huila, Colombia. |
-| **Technology** | Web frontend: Angular 21; mobile: React + Expo; backend: polyglot microservices (C#, Java, Go) + Kong gateway; database: SQL Server (ADR-002). |
+| **Technology** | Web frontend: Angular 21; mobile: React + Expo; backend: polyglot microservices (C#, Java) + Kong gateway; database: SQL Server (ADR-002). |
 | **Development** | Docker and WSL2 are part of the development and container workflow. |
 | **Security** | Student and family data is sensitive. Access control, secure transport, and privacy requirements must be considered. |
 | **Regulatory** | Colombian personal-data requirements apply, with additional care for minors' data. |

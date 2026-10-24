@@ -9,9 +9,9 @@
 
 ## Context
 
-School Guardian is built as **polyglot microservices** (ASP.NET, Go, Java + Spring Boot) that share a single SQL Server instance with schema-per-service isolation (ADR-002). Each service owns its schema and must manage its own table structures through versioned migrations.
+School Guardian is built as **polyglot microservices** (ASP.NET, Java + Spring Boot) that share a single SQL Server instance with schema-per-service isolation (ADR-002). Each service owns its schema and must manage its own table structures through versioned migrations.
 
-The initial impulse was to use each stack's native migration tool (EF Core Migrations for ASP.NET, Flyway for Java, golang-migrate for Go). However, this creates several problems:
+The initial impulse was to use each stack's native migration tool (EF Core Migrations for ASP.NET, Flyway for Java). However, this creates several problems:
 
 - **Inconsistent migration format:** each tool has its own file naming convention, checksum mechanism, and state tracking — making it harder to maintain a unified migration history.
 - **Operational complexity:** the team (3 developers) would need to learn and maintain three different migration tools.

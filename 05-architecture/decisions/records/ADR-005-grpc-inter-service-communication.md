@@ -9,7 +9,7 @@
 
 ## Context
 
-School Guardian is built as polyglot microservices (ASP.NET, Go, Java + Spring Boot) that share
+School Guardian is built as polyglot microservices (ASP.NET, Java + Spring Boot) that share
 a single SQL Server instance (ADR-002) and use Kafka for asynchronous events (ADR-004).
 Services also need **synchronous** communication: one service queries another in real time
 (e.g. API Gateway validates a token with iam-service, a service queries user data from
@@ -17,7 +17,7 @@ users-service, a service queries route details from route-service). We must choo
 for these synchronous calls.
 
 **Known constraints:**
-- Polyglot stack: the protocol must have first-class clients in C#, Go, and Java.
+- Polyglot stack: the protocol must have first-class clients in C# and Java.
 - Low latency required for real-time queries (user validation, route lookups).
 - The API Gateway must forward requests to internal services efficiently.
 - Contracts must be defined and versioned (no ad-hoc JSON negotiation).
@@ -30,7 +30,7 @@ for these synchronous calls.
 REST (HTTP/JSON) remains the protocol for **external-facing** APIs (API Gateway → mobile/web clients).
 
 **Justification:**
-- **Polyglot support:** official gRPC clients in C# (Grpc.Net), Go (google.golang.org/grpc),
+- **Polyglot support:** official gRPC clients in C# (Grpc.Net) and Java (grpc-java),
   Java (grpc-java) — first-class support in all three stacks.
 - **Performance:** HTTP/2 + Protocol Buffers = smaller payloads, multiplexed connections,
   lower latency than JSON over HTTP/1.1.

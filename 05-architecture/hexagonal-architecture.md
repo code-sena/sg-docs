@@ -10,7 +10,7 @@
 > - Node.js + TypeScript → [`_stacks/node-typescript.md`](../_stacks/node-typescript.md)
 > - Java + Spring Boot → [`_stacks/java-spring.md`](../_stacks/java-spring.md)
 > - Python + FastAPI → [`_stacks/python-fastapi.md`](../_stacks/python-fastapi.md)
-> - Go → [`_stacks/go.md`](../_stacks/go.md)
+> - .NET 10 → [`_stacks/dotnet-aspnet.md`](../_stacks/dotnet-aspnet.md)
 
 ---
 

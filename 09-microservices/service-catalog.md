@@ -218,27 +218,22 @@ Anonymous paths: `/api/v1/auth`, `/api/v1/password`.
 
 ### 08 — `gps-service`
 
-| Property | Description |
-|---|---|
-| Service name | GPS Service |
-| Repository | `school-guardian-project/sg-ms-gps` |
-| Application name | `gps-backend` |
-| Responsibility | Receive GPS tracking data and provide vehicle location information |
-| Language | Java 21 |
-| Framework | Spring Boot 4.1.1 |
-| Build tool | Maven |
-| Deployment | Docker |
-| Device communication | TCP |
-| API communication | HTTP/REST |
-| Container HTTP port | `8080` |
-| GPS device TCP port | `8842` |
-| Docker network | `sg-services-network` |
-| Gateway integration | Kong can reach `http://ms-gps:8080` over the shared Docker network |
-| Location storage | In memory |
-| SQL persistence | Disabled in the current application configuration |
-| GPS history | Not persisted |
-| Kafka integration | No GPS-specific producer or consumer verified |
-| Architecture decision | ADR-012 — GPS location persistence |
+| Field | Value |
+|-------|-------|
+| **Folder** | `09-microservices/services/08-gps-service/` |
+| **Repo** | `sg-ms-gps` |
+| **Domain** | Tracking |
+| **Responsibility** | GPS device ingestion (GT06-style protocol over TCP :8842) and last known position per IMEI |
+| **Stack** | Java 21 + Spring Boot 3 (hexagonal) |
+| **Schema** | `Gps` (owned by `database/ms-gps-db`; **not yet written by this service**) |
+| **Tables** | GpsDevice, GpsLocation |
+| **Direct FK Relationships** | `GpsLocation.GpsDeviceId` → `GpsDevice(Id)` |
+| **REST** | `GET /api/gps/devices/{imei}`, `GET /api/gps/devices/{imei}/connected`, `GET /api/gps/devices/{imei}/location`, `POST /api/gps/test/{imei}` |
+
+> **Open gap (FR-6.1/6.2/6.3):** positions live in an in-memory `ConcurrentHashMap`;
+> `GpsLocationRepository` has no persistence adapter, so `Gps.GpsLocation` stays empty.
+> There is no streaming endpoint for the map and no signal-loss alert yet.
+> Devices are registered from `ms-fleet` (bus creation) into `Gps.GpsDevice`.
 
 ---
 

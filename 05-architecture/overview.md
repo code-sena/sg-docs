@@ -19,7 +19,7 @@
 - Async events (boarding, GPS, alerts) fit real-time school-transport flows better
   than monolith background jobs.
 - Polyglot stacks let each service use the best-fit runtime already known by the
-  team (C#, Java, Go) while sharing one SQL Server instance for cost (ADR-002).
+  team (C#, Java) while sharing one SQL Server instance for cost (ADR-002).
 
 **Edge:** clients → **Kong OSS :8000** → business services **:8080** (Docker DNS by service name).
 

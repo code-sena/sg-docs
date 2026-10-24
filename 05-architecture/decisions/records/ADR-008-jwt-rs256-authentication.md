@@ -9,12 +9,12 @@
 
 ## Context
 
-School Guardian needs to authenticate users (parents, drivers, administrators) and authorize their actions. The clients are a web app and a mobile app that communicate with the API Gateway (ADR-006). The API Gateway must validate tokens in a stateless manner without querying the database on every request. The stack is polyglot (C#, Go, Java), so the authentication strategy must be consistent across all services.
+School Guardian needs to authenticate users (parents, drivers, administrators) and authorize their actions. The clients are a web app and a mobile app that communicate with the API Gateway (ADR-006). The API Gateway must validate tokens in a stateless manner without querying the database on every request. The stack is polyglot (C#, Java), so the authentication strategy must be consistent across all services.
 
 **Known constraints:**
 - Two clients: web and mobile.
 - API Gateway must validate tokens without DB calls.
-- Polyglot stack: validation must work in C#, Go, and Java.
+- Polyglot stack: validation must work in C# and Java.
 - Tokens must be invalidable (logout, password change).
 - Refresh tokens for long-lived sessions.
 
@@ -27,7 +27,7 @@ School Guardian needs to authenticate users (parents, drivers, administrators) a
 **Justification:**
 - RS256 uses a key pair (public/private): only iam-service holds the private key, all others validate with the public key — no shared secrets.
 - Stateless validation: the API Gateway and each service validate the JWT locally without calling iam-service.
-- Native support across all stacks: `System.IdentityModel.Tokens.Jwt` (C#), `jwt-go` (Go), `java-jwt` (Java).
+- Native support across all stacks: `System.IdentityModel.Tokens.Jwt` (C#) and `java-jwt` (Java).
 - The payload carries useful claims: `sub` (user ID), `role`, `permissions`, `exp`.
 - JWKS endpoint (`/.well-known/jwks.json`) enables key rotation without redeploy.
 

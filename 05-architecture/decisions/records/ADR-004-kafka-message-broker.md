@@ -9,7 +9,7 @@
 
 ## Context
 
-School Guardian is built as microservices that need to communicate asynchronously by **events** (e.g. student boarding/alighting, notifications, live-tracking alerts). The microservices are **polyglot**: they are built in several languages and stacks (for example **ASP.NET (C#), Go, Java + Spring Boot, etc.**) and share a single SQL Server instance (see ADR-002). We must choose a **message broker** that supports event-driven communication across these stacks.
+School Guardian is built as microservices that need to communicate asynchronously by **events** (e.g. student boarding/alighting, notifications, live-tracking alerts). The microservices are **polyglot**: they are built in several languages and stacks (for example **ASP.NET (C#), Java + Spring Boot, etc.**) and share a single SQL Server instance (see ADR-002). We must choose a **message broker** that supports event-driven communication across these stacks.
 
 **Known constraints:**
 - Several services in different languages and frameworks — the broker must have first-class clients for all of them.
@@ -24,7 +24,7 @@ School Guardian is built as microservices that need to communicate asynchronousl
 **We decided:** to use **Apache Kafka** as the event/message broker for inter-service communication in School Guardian.
 
 **Justification:**
-- **Language-agnostic:** official first-class clients for most languages and platforms in the market (C#, Go, Java, Python, Node.js, etc.), so all microservices integrate uniformly regardless of the stack.
+- **Language-agnostic:** official first-class clients for most languages and platforms in the market (C#, Java, Python, Node.js, etc.), so all microservices integrate uniformly regardless of the stack.
 - **Event streaming:** topics + partitions + offsets fit the event-driven model (boarding, alighting, tracking, notifications) and allow replay/audit.
 - **Scalability:** high throughput for high-volume event ingestion such as GPS/live-tracking without re-architecting.
 - **Multi-language integration** is simpler and more consistent than brokers tied to a single ecosystem.
@@ -37,7 +37,7 @@ School Guardian is built as microservices that need to communicate asynchronousl
 |--------|-------------|-------------|------------------|----------|---------------------------------------|---------------|
 | Apache Kafka (CHOSEN) | High (streaming, millions msg/s) | Consumer groups + DLT for retries | Excellent (topics, partitions) | Good (SASL, TLS, ACL) | Excellent (official clients in almost every language) | 9 |
 | RabbitMQ | Good | Excellent (queues, DLQ, priority) | Very good (exchanges) | Good (TLS, VHost) | Good (clients in many languages) | 8 |
-| Azure Service Bus | Good | Excellent (queues, DLQ, sessions) | Very good (topics) | Excellent (managed) | Acceptable (stronger in .NET than other languages) | 7 |
+| AWS RDS Service Bus | Good | Excellent (queues, DLQ, sessions) | Very good (topics) | Excellent (managed) | Acceptable (stronger in .NET than other languages) | 7 |
 | NATS | High | Good (JetStream) | Very good | Good | Good (clients in many languages) | 7 |
 
 ---

@@ -29,7 +29,7 @@ Authoritative list: [data-ownership-matrix.md](./data-ownership-matrix.md).
 |---|-----------|-----|---------|
 | F1 | Cross-schema `JOIN` | Hidden coupling; breaks deploy independence | Call owner API; compose in the caller |
 | F2 | `SELECT` from another service's tables | Breaks ownership & migrations | REST/gRPC query to owner |
-| F3 | Foreign keys pointing across schemas | Physical coupling in shared DB | Store UUID as plain column + validate via API/events |
+| F3 | Foreign keys pointing across schemas | Accepted deviation (ADR-002) | Used to maintain referential integrity in shared RDS |
 | F4 | Shared writable tables | Two writers = conflicting truths | Split entity; open ADR |
 | F5 | Direct DB access from frontend/ETL to a non-owned schema | Bypasses business rules | Published APIs only |
 | F6 | Storing another service's PII "for convenience" | Privacy & duplication | Reference by id; fetch on demand |
