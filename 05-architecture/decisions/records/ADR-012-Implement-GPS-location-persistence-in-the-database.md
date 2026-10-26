@@ -1,6 +1,6 @@
 # ADDR-010 — Do Not Implement GPS Location Persistence in the Database
 
-- **ID:** ADDR-010
+- **ID:** ADDR-012
 - **Date:** 2026-10-23
 - **Status:** Accepted
 - **Authors:** Guardian Escolar Development Team
