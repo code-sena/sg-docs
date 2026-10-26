@@ -1,4 +1,4 @@
-# ADDR-010 — Do Not Implement GPS Location Persistence in the Database
+# ADDR-012 — Do Not Implement GPS Location Persistence in the Database
 
 - **ID:** ADDR-012
 - **Date:** 2026-10-23
