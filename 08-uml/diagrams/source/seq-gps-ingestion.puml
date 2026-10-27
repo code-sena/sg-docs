@@ -1,0 +1,23 @@
+@startuml seq-gps-ingestion
+title Recepción de posición GPS — estado documentado
+autonumber
+participant "Dispositivo GPS" as Device
+participant "gps-service\nTCP :8842" as GPS
+collections "Almacén en memoria\nConcurrentHashMap" as Memory
+participant "Cliente / servicio consumidor" as Consumer
+
+Device -> GPS : Paquete de posición (GT06 / TCP)
+GPS -> GPS : Decodifica IMEI y coordenadas
+GPS -> Memory : Actualiza última posición por IMEI
+GPS --> Device : Respuesta de protocolo / ACK
+Consumer -> GPS : GET /api/gps/devices/{imei}/location
+GPS -> Memory : Consulta última posición
+Memory --> GPS : Coordenadas recientes
+GPS --> Consumer : Posición disponible
+
+note over GPS,Memory
+  Límite conocido según service-catalog.md:
+  no hay persistencia en Gps.GpsLocation,
+  streaming al mapa ni alerta de pérdida de señal.
+end note
+@enduml
