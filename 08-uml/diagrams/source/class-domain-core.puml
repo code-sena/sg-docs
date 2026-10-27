@@ -1,0 +1,112 @@
+@startuml class-domain-core
+title School Guardian — Modelo de dominio principal (vista parcial)
+hide methods
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+class School {
+  Id
+  Name
+  CityId
+}
+class SchoolCampus {
+  Id
+  SchoolId
+}
+class Profile {
+  Id
+  PersonId
+  CampuseId
+  RoleId
+}
+class Person {
+  Id
+}
+class Role {
+  Id
+}
+class Bus {
+  Id
+  CampuseId
+  GpsDeviceId
+}
+class GpsDevice {
+  Id
+}
+class Route {
+  Id
+  CampuseId
+}
+class Stop {
+  Id
+  SchoolId
+  CityId
+}
+class RouteStop {
+  Id
+  RouteId
+  StopId
+}
+class RouteBusAssignments {
+  Id
+  RouteId
+  BusId
+}
+class RouteStudentAssignments {
+  Id
+  ProfileId
+  RouteStopId
+}
+class RouteExecution {
+  Id
+  RouteId
+  BusId
+  DriverId
+}
+class Boarding {
+  Id
+  RouteExecutionId
+  ProfileId
+  RouteStopId
+}
+class Alert {
+  Id
+  RouteExecutionId
+  AlertTypeId
+}
+class AlertRecipient {
+  Id
+  AlertId
+  ProfileId
+}
+
+School "1" -- "0..*" SchoolCampus
+SchoolCampus "1" -- "0..*" Profile
+Person "1" -- "0..*" Profile
+Role "1" -- "0..*" Profile
+SchoolCampus "1" -- "0..*" Bus
+GpsDevice "1" -- "0..1" Bus
+SchoolCampus "1" -- "0..*" Route
+School "1" -- "0..*" Stop
+Route "1" -- "0..*" RouteStop
+Stop "1" -- "0..*" RouteStop
+Route "1" -- "0..*" RouteBusAssignments
+Bus "1" -- "0..*" RouteBusAssignments
+Profile "1" -- "0..*" RouteStudentAssignments
+RouteStop "1" -- "0..*" RouteStudentAssignments
+Route "1" -- "0..*" RouteExecution
+Bus "1" -- "0..*" RouteExecution
+Profile "1" -- "0..*" RouteExecution : conductor
+RouteExecution "1" -- "0..*" Boarding
+Profile "1" -- "0..*" Boarding : student
+RouteStop "1" -- "0..*" Boarding
+RouteExecution "1" -- "0..*" Alert
+Alert "1" -- "0..*" AlertRecipient
+Profile "1" -- "0..*" AlertRecipient
+
+note bottom
+  Vista parcial derivada de 06-data/models.md.
+  Se omiten atributos no necesarios para explicar relaciones.
+  La base desplegada contiene 33 tablas y 22 FKs entre esquemas.
+end note
+@enduml
