@@ -49,7 +49,7 @@ School --> DB : School
 Fleet --> DB : Fleet
 Route --> DB : Route
 Notification --> DB : Notification
-GPS --> DB : Gps (persistencia pendiente)
+GPS ..> DB : Persistencia prevista, no implementada
 Forgot --> DB : ForgotInformation
 
 note right of DB
