@@ -1,0 +1,38 @@
+@startuml seq-qr-boarding
+title Flujo QR — Abordaje / descenso y aviso a acudientes
+autonumber
+actor "Conductor (app móvil)" as Driver
+participant "Kong :8000" as Kong
+participant "notification-service" as Notif
+participant "route-service" as Route
+database "SQL Server\nNotification schema" as DB
+queue "Kafka" as Kafka
+participant "user-management-service" as Users
+participant "Expo Push" as Push
+actor "Acudiente" as Guardian
+
+Driver -> Kong : POST /api/v1/notifications/scan\n{qr, boardingType}
+Kong -> Notif : Reenvía solicitud + X-User-Id / X-User-Role
+Notif -> Notif : Valida rol Driver
+Notif -> Route : GetStudentStopOnRoute / GetCurrentTrip (gRPC)
+Route --> Notif : Parada, recorrido y estado del viaje
+Notif -> Notif : Valida asignación, QR y repetición
+alt Escaneo válido
+  Notif -> DB : Inserta Boarding (ON_BOARD / OFF_BOARD)
+  Notif -> DB : Inserta Alert
+  Notif --> Driver : 200 OK
+  Notif -> Kafka : Publica student.scanned
+  Kafka -> Notif : Consumidor procesa evento
+  Notif -> Users : GetFamilyMembersByStudent (gRPC)
+  Users --> Notif : Perfiles de acudientes
+  Notif -> DB : Inserta AlertRecipient y consulta DeviceToken
+  Notif -> Push : Envía aviso de abordaje / descenso
+  Push --> Guardian : Notificación push
+else QR o contexto inválido
+  Notif --> Driver : Rechaza escaneo
+end
+note over Notif,Kafka
+  La respuesta al conductor es inmediata;
+  la notificación se distribuye de forma asíncrona.
+end note
+@enduml
