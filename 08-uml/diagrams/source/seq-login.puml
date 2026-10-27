@@ -1,0 +1,32 @@
+@startuml seq-login
+title Inicio de sesión — JWT RS256
+autonumber
+actor Usuario
+participant "Web / app móvil" as Client
+participant "Kong OSS :8000" as Kong
+participant "iam-service" as IAM
+database "SQL Server\nIam schema" as DB
+
+Usuario -> Client : Ingresa correo y contraseña
+Client -> Kong : POST /api/v1/auth/login
+Kong -> IAM : Reenvía solicitud (ruta anónima)
+IAM -> DB : Busca perfil y verifica credenciales
+alt Credenciales válidas y cuenta activa
+  DB --> IAM : Perfil, rol y estado
+  IAM -> IAM : Firma access y refresh JWT (RS256)
+  IAM --> Kong : 200 + accessToken\n+ refresh token (cookie web)
+  Kong --> Client : 200 + tokens
+  Client --> Usuario : Sesión iniciada
+else Credenciales inválidas / cuenta inactiva
+  DB --> IAM : Sin coincidencia / inactiva
+  IAM --> Kong : 401 INVALID_CREDENTIALS
+  Kong --> Client : 401
+  Client --> Usuario : Muestra error genérico
+end
+note right of Client
+  Access token: 15 min.
+  Refresh token: 30 días.
+  Web: HttpOnly cookie.
+  Móvil: almacenamiento seguro.
+end note
+@enduml
