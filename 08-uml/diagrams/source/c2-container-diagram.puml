@@ -1,0 +1,64 @@
+@startuml c2-container-diagram
+title School Guardian — Container Diagram (C4 L2)
+left to right direction
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Acudiente / Conductor" as MobileUser
+actor "Administrador" as Admin
+cloud "Dispositivo GPS\nGT06 / TCP 8842" as GpsDevice
+
+rectangle "Clientes" {
+  component "Aplicación móvil\nReact Native + Expo" as Mobile
+  component "Web administrativa\nAngular 21" as Web
+}
+
+rectangle "AWS EC2 — Docker Compose" {
+  component "Kong OSS\nAPI Gateway :8000\nJWT RS256 / rutas / rate limit" as Kong
+  component "iam-service\nJava / Spring Boot" as IAM
+  component "user-management-service\nC# / ASP.NET" as Users
+  component "school-management-service\nC# / ASP.NET" as School
+  component "fleet-service\nC# / ASP.NET" as Fleet
+  component "route-service\nC# / ASP.NET" as Route
+  component "notification-service\nC# / ASP.NET" as Notification
+  component "gps-service\nJava / Spring Boot\nTCP :8842" as GPS
+  component "forgot-information-service\nC# / ASP.NET" as Forgot
+  queue "Apache Kafka\nEventos de dominio" as Kafka
+}
+
+database "AWS RDS — SQL Server 2022\nschool-guardian\nEsquema por servicio" as DB
+
+MobileUser --> Mobile
+Admin --> Web
+Mobile --> Kong : HTTPS / REST
+Web --> Kong : HTTPS / REST
+Kong --> IAM
+Kong --> Users
+Kong --> School
+Kong --> Fleet
+Kong --> Route
+Kong --> Notification
+Kong --> Forgot
+GpsDevice --> GPS : Protocolo GT06 / TCP
+IAM <--> Kafka : Eventos
+Notification <--> Kafka : Eventos
+IAM --> DB : Esquema Iam
+Users --> DB : UserManagement
+School --> DB : School
+Fleet --> DB : Fleet
+Route --> DB : Route
+Notification --> DB : Notification
+GPS --> DB : Gps (persistencia pendiente)
+Forgot --> DB : ForgotInformation
+
+note right of DB
+  Una instancia compartida,
+  no una base por servicio.
+  Geographic también está presente.
+end note
+note bottom of GPS
+  La ubicación se mantiene actualmente
+  en memoria; persistencia pendiente.
+end note
+@enduml
