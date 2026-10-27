@@ -1,0 +1,28 @@
+@startuml c1-system-context
+title School Guardian — System Context (C4 L1)
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor "Acudiente" as Guardian
+actor "Conductor" as Driver
+actor "Administrador\ndel colegio" as SchoolAdmin
+actor "Superadministrador" as SuperAdmin
+cloud "Dispositivo / proveedor GPS" as GpsProvider
+rectangle "School Guardian\nPlataforma de transporte escolar" as System
+rectangle "Proveedor de notificaciones\nExpo Push / SMTP / Twilio" as Notifications
+rectangle "Servicio de mapas\nOSRM / geocodificación" as Maps
+
+Guardian --> System : Consulta ruta y recibe alertas
+Driver --> System : Inicia recorrido, escanea QR\ny reporta incidentes
+SchoolAdmin --> System : Administra colegio, usuarios\ny operación
+SuperAdmin --> System : Administra la plataforma
+GpsProvider --> System : Envía posiciones GPS
+System --> Notifications : Envía notificaciones
+System --> Maps : Solicita información de rutas
+
+note bottom of System
+  Fuente: 05-architecture/overview.md,
+  deployment.md y service-catalog.md.
+end note
+@enduml
