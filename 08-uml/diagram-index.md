@@ -1,201 +1,39 @@
 # Diagram Index
 
-> **What to fill in here:** The registry of all system diagrams.
-> Diagrams go in `08-uml/diagrams/source/` as PlantUML or Mermaid files.
-> Exported renders go in `08-uml/diagrams/exports/`.
+> PlantUML sources live in `08-uml/diagrams/source/`. They are the editable source
+> of truth; GitHub renders the Mermaid diagrams kept in the architecture and data docs.
 
----
+## Architecture
 
-## When to create a diagram?
+| ID | Name | Type | Source | Purpose |
+|----|------|------|--------|---------|
+| C4-01 | System context | C4 L1 / PlantUML | [c1-system-context.puml](./diagrams/source/c1-system-context.puml) | Actors, School Guardian and external providers |
+| C4-02 | Container diagram | C4 L2 / PlantUML | [c2-container-diagram.puml](./diagrams/source/c2-container-diagram.puml) | Web/mobile, Kong, 8 services, Kafka and shared SQL Server |
+| C4-03 | Deployed topology | C4 deployment / Mermaid | [deployment.md](../05-architecture/deployment.md) | AWS EC2, RDS and runtime boundaries |
+| C4-04 | Service domain map | Mermaid | [service-catalog.md](../09-microservices/service-catalog.md) | Services, ownership, schemas and communication |
 
-```
-✓ When the flow involves 3+ services or actors
-✓ When the architecture needs to be communicated to a non-technical stakeholder
-✓ When data modeling is complex (ER diagram)
-✓ When a bug took more than 2 hours to understand (retroactive sequence diagram)
+## Sequence diagrams
 
-✗ For simple 2-element flows — code describes them better
-✗ To "document for documentation's sake" — an outdated diagram is worse than none
-```
+| ID | Name | Source | Purpose |
+|----|------|--------|---------|
+| SEQ-01 | Login with JWT RS256 | [seq-login.puml](./diagrams/source/seq-login.puml) | Credentials, IAM, access and refresh tokens |
+| SEQ-02 | QR boarding / alighting | [seq-qr-boarding.puml](./diagrams/source/seq-qr-boarding.puml) | Synchronous scan validation followed by asynchronous guardian push |
+| SEQ-03 | GPS ingestion | [seq-gps-ingestion.puml](./diagrams/source/seq-gps-ingestion.puml) | GT06 packet processing and current in-memory location lookup |
+| SEQ-04 | Incident report | [communication-patterns.md](../09-microservices/communication-patterns.md) | Incident persistence and recipient notification (Flow B) |
 
----
+## Data model
 
-## File naming
+| ID | Name | Type | Source | Purpose |
+|----|------|------|--------|---------|
+| UML-01 | Core domain relationships | UML class / PlantUML | [class-domain-core.puml](./diagrams/source/class-domain-core.puml) | Partial view of school, identity, fleet, routes, boarding and alerts |
+| ERD-01 | Full relational model | Mermaid ER | [models.md](../06-data/models.md) §1 | All 33 deployed tables and their foreign keys |
+| ERD-02 | Schema overview | Mermaid | [models.md](../06-data/models.md) §0 | Nine schemas and migration dependencies |
 
-```
-[c4-level]-[descriptive-name].[puml|mmd]
+## Maintenance
 
-Examples:
-  c1-system-context.puml
-  c2-container-diagram.puml
-  c3-iam-service.puml
-  seq-create-order.puml
-  erd-orders-service.mmd
-  state-order-lifecycle.puml
-```
-
----
-
-## Diagram registry
-
-### Architecture diagrams (C4)
-
-| ID | Name | Type | Tool | Source file | Description |
-|----|------|------|------|-------------|-------------|
-| C4-01 | System Context | C4 L1 | PlantUML | `source/c1-system-context.puml` 📝 *(not exported yet — create under `diagrams/source/`)* | The system and its external actors |
-| C4-02 | Container Diagram | C4 L2 | **Mermaid** | `../../05-architecture/overview.md` §3 | All 9 services, Kong, Kafka and the shared SQL Server (rendered on GitHub) |
-| C4-02b | Container Diagram (PlantUML) | C4 L2 | PlantUML | `source/c2-container-diagram.puml` 📝 *(not exported yet)* | PlantUML twin of the Mermaid container diagram |
-| C4-03 | [Service A] Components | C4 L3 | PlantUML | `source/c3-service-a.puml` 📝 *(not exported yet — create under `diagrams/source/`)* | Internal components of the service |
-| C4-10 | Real deployment (EC2 + RDS) | C4 L2 dep | **Mermaid** | `../../05-architecture/deployment.md` | What actually runs: one EC2 (Docker Compose + Portainer) + RDS SQL Server + Liquibase pipelines |
-| C4-11 | Service domains map | C4 L1 | **Mermaid** | `../../09-microservices/service-catalog.md` | The 6 business domains and their services with real repo names |
-
-### Sequence diagrams
-
-| ID | Name | Tool | Source file | Description |
-|----|------|------|-------------|-------------|
-| SEQ-01 | Login flow | PlantUML | `source/seq-login.puml` 📝 *(not exported yet — create under `diagrams/source/`)* | Registration → Login → JWT |
-| SEQ-02 | [Main flow] | PlantUML | `source/seq-[name].puml` | [Description] |
-| SEQ-03 | [Error flow] | PlantUML | `source/seq-[name]-error.puml` | [Error scenario] |
-| SEQ-10 | QR boarding / alighting | **Mermaid** | `../../09-microservices/communication-patterns.md` (Flow A) | Driver scan → gRPC validation → `Boarding` + `Alert` → `student.scanned` → push to guardians |
-| SEQ-11 | Incident report | **Mermaid** | `../../09-microservices/communication-patterns.md` (Flow B) | Driver report → active trip check → `Alert` + `AlertRecipient` → `incident.reported` → push to school + guardians |
-| SEQ-12 | GPS ingestion (partial) | **Mermaid** | `../../09-microservices/communication-patterns.md` (Flow C) | Device → TCP :8842 GT06 → in-memory only (persistence pending) |
-
-### State diagrams
-
-| ID | Name | Tool | Source file | Description |
-|----|------|------|-------------|-------------|
-| ST-01 | Order lifecycle | PlantUML | `source/state-order.puml` 📝 *(not exported yet — create under `diagrams/source/`)* | Order states and transitions |
-
-### Pipeline / data-flow diagrams
-
-| ID | Name | Tool | Source file | Description |
-|----|------|------|-------------|-------------|
-| PIPE-01 | Liquibase execution order | **Mermaid** | `../../06-data/models.md` §11 | The 8 migration pipelines and their `depends_on` chain |
-
-### ER diagrams (data)
-
-| ID | Name | Tool | Source file | Service |
-|----|------|------|-------------|---------|
-| ERD-01 | Orders DB | Mermaid | `source/erd-orders.mmd` 📝 *(not exported yet — create under `diagrams/source/`)* | order-service |
-| ERD-02 | Auth DB | Mermaid | `source/erd-auth.mmd` 📝 *(not exported yet — create under `diagrams/source/`)* | iam-service |
-| ERD-10 | **School Guardian full model (33 tables, 22 cross-schema FKs)** | **Mermaid** | `../../06-data/models.md` §1 | all — generated from the Liquibase changelogs (source of truth) |
-| ERD-11 | Schema-per-service overview | **Mermaid** | `../../06-data/models.md` §0 | all — 9 schemas and their table counts |
-
----
-
-## Diagram templates
-
-### C4 L1 — Context (PlantUML)
-
-```plantuml
-@startuml C4-Context
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
-
-title System Context — [System Name]
-
-Person(user, "User", "Description of the user")
-Person_Ext(admin, "Administrator", "Manages the system")
-
-System(system, "[System Name]", "Description of what it does")
-
-System_Ext(externalSystem, "[External System]", "Description of the external system")
-
-Rel(user, system, "Uses", "HTTPS")
-Rel(admin, system, "Administers", "HTTPS")
-Rel(system, externalSystem, "Sends data to", "REST API")
-
-@enduml
-```
-
-### Sequence diagram (PlantUML)
-
-```plantuml
-@startuml seq-example
-
-title Flow: [Flow name]
-
-actor "User" as U
-participant "API Gateway" as GW
-participant "Auth Service" as AUTH
-participant "Service A" as SA
-database "Service A DB" as DBA
-
-U -> GW: POST /resource\n{payload}
-GW -> AUTH: Validate JWT
-AUTH --> GW: 200 OK {claims}
-GW -> SA: POST /resource (with claims)
-SA -> DBA: INSERT ...
-DBA --> SA: OK
-SA --> GW: 201 Created {id}
-GW --> U: 201 Created {id}
-
-@enduml
-```
-
-### State diagram (PlantUML)
-
-```plantuml
-@startuml state-example
-
-title Lifecycle: [Resource name]
-
-[*] --> DRAFT : create()
-
-DRAFT --> ACTIVE : publish()
-DRAFT --> CANCELLED : cancel()
-
-ACTIVE --> INACTIVE : suspend()
-ACTIVE --> CANCELLED : cancel()
-
-INACTIVE --> ACTIVE : reactivate()
-
-CANCELLED --> [*]
-
-@enduml
-```
-
-### ER diagram (Mermaid)
-
-```mermaid
-erDiagram
-    ENTITY_A ||--o{ ENTITY_B : "has"
-    ENTITY_A {
-        uuid id PK
-        varchar name
-        timestamptz created_at
-    }
-    ENTITY_B {
-        uuid id PK
-        uuid entity_a_id FK
-        decimal value
-    }
-```
-
----
-
-## Tools and rendering
-
-| Tool | For what | How to use |
-|------|---------|------------|
-| PlantUML | C4, sequence, state, class diagrams | `plantuml -tsvg file.puml` |
-| Mermaid | Simple diagrams in Markdown | Native support on GitHub and GitLab |
-| draw.io (diagrams.net) | Complex visual diagrams | Export as XML + image |
-| Structurizr | C4 model with DSL | For projects that adopt the C4 DSL |
-
-**Rendering pipeline:**
-```bash
-# Render all PlantUML diagrams
-find 08-uml/diagrams/source -name "*.puml" -exec plantuml -tsvg -o ../rendered {} \;
-
-# Or with Docker (without installing PlantUML locally)
-docker run --rm -v $(pwd):/data ghcr.io/plantuml/plantuml:latest \
-  -tsvg -o /data/08-uml/diagrams/exports /data/08-uml/diagrams/source/*.puml
-```
-
----
-
-## Correlations
-
-- Architecture view → `05-architecture/overview.md`
-- Domain bounded contexts → `02-domain/domain-map.md`
-- ER models per service → `09-microservices/services/NN/data-model.md`
+- Keep sources aligned with [architecture overview](../05-architecture/overview.md),
+  [service catalog](../09-microservices/service-catalog.md), [communication patterns](../09-microservices/communication-patterns.md)
+  and [data models](../06-data/models.md).
+- The GPS diagram records the current behavior, including the documented in-memory-only limitation.
+- Update a diagram in the same change as its architecture, API or data-model change.
+- Render PlantUML locally with `plantuml -tsvg 08-uml/diagrams/source/*.puml`.
