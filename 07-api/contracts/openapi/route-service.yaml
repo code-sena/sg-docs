@@ -3,14 +3,19 @@ info:
   title: "Route API"
   version: 1.1.0
   description: |
-    Routes, stops, schedules, executions, and bus/student assignments.
+    Routes, stops, schedules, trips, and bus/student assignments.
+    Controller paths, DTO shapes, and mapped domain-error responses are
+    documented from the current source. This is not a generated runtime
+    contract or an exhaustive validation specification.
 
     ## Autenticacion
-    All endpoints except /health require JWT:
+    The Kong route strips /route or /trip before forwarding the remaining
+    /api/... path. Protected endpoints require JWT:
     Authorization: Bearer <token>
 
     ## Errores
-    Esquema ErrorResponse en _shared.yaml.
+    Los errores de dominio usan RFC 7807 ProblemDetails; respuestas de
+    autorización y 404 explícitos pueden no incluir cuerpo.
 
     ## Entrada publica
     En produccion/dev el trafico pasa por Kong OSS en :8000.
@@ -19,68 +24,50 @@ info:
     ## Documentacion
     Interactiva via Scalar (ADR-007), no Swagger UI.
 
-    ## Paginacion
-    Listas: ?page=1&limit=20
-
     ## Datos de bus y conductor (FR-9.1, FR-9.2)
     El bus y su conductor pertenecen a fleet-service. route-service los resuelve
     por gRPC interno (route.v1.RouteService, ADR-005) y los expone dentro de
-    RouteDetail; nunca consulta el esquema de otro servicio.
+    RouteDetail. Otros repositorios de route contienen lecturas de abordajes
+    por EF; esta descripcion no implica aislamiento de datos verificado.
 
 servers:
-  - url: http://localhost:8080
-    description: Local development
-  - url: https://api.dev.example.com/api/v1/routes
-    description: Development
-  - url: https://api.example.com/api/v1/routes
-    description: Production
+  - url: http://localhost:8080/api
+    description: Direct local service
+  - url: http://localhost:8000/route/api
+    description: Local Kong gateway for route and stop controllers (JWT required)
 
 security:
   - bearerAuth: []
 
 tags:
   - name: Route
-    description: Routes, stops, schedules, executions, and bus/student assignments.
-  - name: Health
-    description: Health checks
+    description:     Routes, stops, schedules, trips, and bus/student assignments.
 
 paths:
-  /health:
+  /cities:
     get:
-      summary: Health check
-      tags: [Health]
-      security: []
+      summary: List cities
+      tags: [Route]
       responses:
         '200':
-          description: Service healthy
+          description: City identifiers and names.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status: { type: string, example: ok }
-                  version: { type: string, example: 1.0.0 }
-                  db: { type: string, example: connected }
-
+                type: array
+                items: { $ref: '#/components/schemas/City' }
   /routes:
     get:
       summary: List routes
       tags: [Route]
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { $ref: '#/components/schemas/RouteDetail' }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
+                type: array
+                items: { $ref: '#/components/schemas/RouteListItem' }
         '401': { $ref: '#/components/responses/Unauthorized' }
     post:
       summary: Create route
@@ -89,37 +76,35 @@ paths:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
+            schema: { $ref: '#/components/schemas/RouteRequest' }
       responses:
-        '201':
+        '200':
           description: Created
           content:
             application/json:
-              schema: { type: object }
+              schema: { $ref: '#/components/schemas/RouteResponse' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
-        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
 
   /routes/search:
     get:
       summary: Search routes
       tags: [Route]
       parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
+        - name: search
+          in: query
+          required: true
+          schema: { type: string }
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { $ref: '#/components/schemas/RouteDetail' }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
+                type: array
+                items: { $ref: '#/components/schemas/RouteListItem' }
         '401': { $ref: '#/components/responses/Unauthorized' }
 
   /routes/{id}:
@@ -136,8 +121,8 @@ paths:
           description: OK
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/RouteDetail' }
-        '404': { $ref: '#/components/responses/NotFound' }
+              schema: { $ref: '#/components/schemas/RouteResponse' }
+        '404': { $ref: '#/components/responses/DomainNotFound' }
         '401': { $ref: '#/components/responses/Unauthorized' }
     put:
       summary: Update route
@@ -146,23 +131,19 @@ paths:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
+            schema: { $ref: '#/components/schemas/RouteRequest' }
       responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/RouteDetail' }
+        '200': { description: Updated; no response body. }
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
-        '404': { $ref: '#/components/responses/NotFound' }
+        '404': { $ref: '#/components/responses/DomainNotFound' }
     delete:
       summary: Delete route (only when no active trip depends on it)
       tags: [Route]
       responses:
         '204': { description: Deleted }
-        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
 
@@ -179,16 +160,16 @@ paths:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
+            schema: { $ref: '#/components/schemas/AttachStopRequest' }
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
+              schema: { $ref: '#/components/schemas/RouteStopAssignment' }
         '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
+        '404': { $ref: '#/components/responses/DomainNotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
 
   /routes/{id}/bus:
     parameters:
@@ -203,23 +184,23 @@ paths:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
+            schema: { $ref: '#/components/schemas/AssignBusRequest' }
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
+              schema: { $ref: '#/components/schemas/BusAssignment' }
         '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
+        '404': { $ref: '#/components/responses/DomainNotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
     delete:
       summary: Unassign bus
       tags: [Route]
       responses:
         '204': { description: Unassigned }
         '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
 
   /routes/{id}/students:
     post:
@@ -234,16 +215,15 @@ paths:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
+            schema: { $ref: '#/components/schemas/AssignStudentRequest' }
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
+              schema: { $ref: '#/components/schemas/StudentAssignment' }
+        '400': { $ref: '#/components/responses/PlainTextBadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
 
   /routes/{id}/students/{studentProfileId}:
     get:
@@ -263,7 +243,7 @@ paths:
           description: OK
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/StopDetail' }
+              schema: { $ref: '#/components/schemas/StudentRouteStop' }
         '404': { $ref: '#/components/responses/NotFound' }
         '401': { $ref: '#/components/responses/Unauthorized' }
 
@@ -284,7 +264,7 @@ paths:
               schema:
                 type: array
                 items: { $ref: '#/components/schemas/ScheduleDetail' }
-        '404': { $ref: '#/components/responses/NotFound' }
+        '404': { $ref: '#/components/responses/DomainNotFound' }
         '401': { $ref: '#/components/responses/Unauthorized' }
     post:
       summary: Create schedule for the active bus assignment
@@ -293,22 +273,19 @@ paths:
         required: true
         content:
           application/json:
-            schema:
-              type: object
-              required: [dayOfWeek, direction, startTime]
-              properties:
-                dayOfWeek: { type: string, enum: [Monday, Tuesday, Wednesday, Thursday, Friday] }
-                direction: { type: string, enum: [Ida, Vuelta] }
-                startTime: { type: string, example: "06:30:00" }
+            schema: { $ref: '#/components/schemas/CreateRouteSchedulesRequest' }
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/ScheduleDetail' }
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ScheduleDetail' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
+        '404': { $ref: '#/components/responses/DomainNotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
 
   /routes/current:
     get:
@@ -317,7 +294,7 @@ paths:
       parameters:
         - name: driverId
           in: query
-          required: true
+          required: false
           schema: { type: string, format: uuid }
       responses:
         '200':
@@ -325,20 +302,20 @@ paths:
           content:
             application/json:
               schema: { $ref: '#/components/schemas/RouteDetail' }
-        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
         '401': { $ref: '#/components/responses/Unauthorized' }
 
   /routes/today:
     get:
       summary: Today's route of a driver (FR-9.2)
       description: |
-        Always responds 200 with a status envelope (Active, Scheduled, or
-        NoRoute) instead of 404, so the app can show a friendly empty state.
+        Always responds 200 with a status envelope (ACTIVE, SCHEDULED, NO_ROUTE,
+        or NO_SCHEDULE) instead of 404, so the app can show a friendly empty state.
       tags: [Route]
       parameters:
         - name: driverId
           in: query
-          required: true
+          required: false
           schema: { type: string, format: uuid }
       responses:
         '200':
@@ -360,6 +337,14 @@ paths:
           in: path
           required: true
           schema: { type: string, format: uuid }
+        - name: isParent
+          in: query
+          required: false
+          schema: { type: boolean, default: false }
+        - name: studentProfileId
+          in: query
+          required: false
+          schema: { type: string, format: uuid }
       responses:
         '200':
           description: OK
@@ -369,42 +354,185 @@ paths:
         '404': { $ref: '#/components/responses/NotFound' }
         '401': { $ref: '#/components/responses/Unauthorized' }
 
-  /executions:
+  /routes/{id}/suggestion:
     get:
-      summary: List executions
+      summary: Get the route suggestion
       tags: [Route]
       parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
       responses:
         '200':
-          description: OK
+          description: Optional route geometry with ordered stops and a serialized convenience points array.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RouteSuggestion' }
+        '404': { $ref: '#/components/responses/DomainNotFound' }
+  /stops:
+    get:
+      summary: List stops
+      tags: [Route]
+      responses:
+        '200':
+          description: Stop list items with their route names.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
+                type: array
+                items: { $ref: '#/components/schemas/StopListItem' }
     post:
-      summary: Start execution
+      summary: Create a stop
       tags: [Route]
       requestBody:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
+            schema: { $ref: '#/components/schemas/StopRequest' }
       responses:
-        '201':
-          description: Created
+        '200':
+          description: Stop created.
           content:
             application/json:
-              schema: { type: object }
+              schema: { $ref: '#/components/schemas/Stop' }
+  /stops/search:
+    get:
+      summary: Search stops
+      tags: [Route]
+      parameters:
+        - name: search
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Matching stops.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/StopListItem' }
+  /stops/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      summary: Get a stop
+      tags: [Route]
+      responses:
+        '200':
+          description: Stop details.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Stop' }
+        '404': { $ref: '#/components/responses/DomainNotFound' }
+    put:
+      summary: Update a stop
+      tags: [Route]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/StopRequest' }
+      responses:
+        '200': { description: Stop updated; no response body. }
         '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/DomainNotFound' }
+    delete:
+      summary: Delete a stop
+      tags: [Route]
+      responses:
+        '204': { description: Deleted; no response body. }
+        '404': { $ref: '#/components/responses/DomainNotFound' }
+  /trips/start:
+    servers:
+      - url: http://localhost:8080/api
+        description: Direct local service
+      - url: http://localhost:8000/trip/api
+        description: Local Kong gateway (JWT required)
+    post:
+      summary: Start a trip
+      tags: [Route]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/StartTripRequest' }
+      responses:
+        '200':
+          description: Trip started.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Trip' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/DomainNotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /trips/end:
+    servers:
+      - url: http://localhost:8080/api
+        description: Direct local service
+      - url: http://localhost:8000/trip/api
+        description: Local Kong gateway (JWT required)
+    post:
+      summary: End a trip
+      tags: [Route]
+      parameters:
+        - name: tripId
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Trip ended.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Trip' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/DomainNotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /trips/current:
+    servers:
+      - url: http://localhost:8080/api
+        description: Direct local service
+      - url: http://localhost:8000/trip/api
+        description: Local Kong gateway (JWT required)
+    get:
+      summary: Get the current trip
+      tags: [Route]
+      parameters:
+        - name: driverId
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Current trip.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Trip' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /trips/status:
+    servers:
+      - url: http://localhost:8080/api
+        description: Direct local service
+      - url: http://localhost:8000/trip/api
+        description: Local Kong gateway (JWT required)
+    get:
+      summary: Get current trip status
+      tags: [Route]
+      parameters:
+        - name: driverId
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Trip status, including whether a trip was found.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TripStatus' }
         '404': { $ref: '#/components/responses/NotFound' }
 
 components:
@@ -424,41 +552,111 @@ components:
       schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
   responses:
     BadRequest:
-      description: Invalid request
+      description: Invalid request; mapped domain failures use RFC 7807 ProblemDetails.
       content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/ProblemDetails' }
+    PlainTextBadRequest:
+      description: The assignment controller returns the exception message as text.
+      content:
+        text/plain:
+          schema: { type: string }
     Unauthorized:
       description: Missing or invalid JWT
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
     Forbidden:
-      description: Insufficient permissions
+      description: Access policy denial may carry ProblemDetails; permission filters can return no body.
       content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/ProblemDetails' }
     NotFound:
       description: Resource not found
+    DomainNotFound:
+      description: Domain not-found exception mapped to RFC 7807 ProblemDetails.
       content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-    Unprocessable:
-      description: Semantic validation failed
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/ProblemDetails' }
+    Conflict:
+      description: Domain conflict mapped to RFC 7807 ProblemDetails.
       content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/ProblemDetails' }
   schemas:
-    RouteDetail:
+    ProblemDetails:
       type: object
+      properties:
+        type: { type: string, format: uri-reference }
+        title: { type: string }
+        status: { type: integer, format: int32 }
+        detail: { type: string }
+        instance: { type: string, format: uri-reference }
+    City:
+      type: object
+      required: [id, name]
       properties:
         id: { type: string, format: uuid }
         name: { type: string }
+    RouteRequest:
+      type: object
+      required: [campuseId, name, targetSector, startTime, endTime]
+      properties:
+        daysOfWeek:
+          type: array
+          items: { type: string }
         campuseId: { type: string, format: uuid }
+        name: { type: string }
         targetSector: { type: string }
         startTime: { type: string, example: "06:00:00" }
         endTime: { type: string, example: "08:00:00" }
-        status: { type: string, enum: [Active, Inactive] }
+    CreateRouteSchedulesRequest:
+      allOf:
+        - $ref: '#/components/schemas/RouteRequest'
+        - type: object
+          required: [daysOfWeek]
+          properties:
+            daysOfWeek:
+              type: array
+              minItems: 1
+              items: { type: string }
+    RouteListItem:
+      type: object
+      required: [id, name, campuseId, targetSector, startTime, endTime, stopsCount]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        campuseId: { type: string }
+        targetSector: { type: string }
+        startTime: { type: string }
+        endTime: { type: string }
+        stopsCount: { type: integer, format: int32 }
+    RouteResponse:
+      type: object
+      required: [id, name, campuseId, targetSector, startTime, endTime, status, stops]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        campuseId: { type: string }
+        targetSector: { type: string }
+        startTime: { type: string }
+        endTime: { type: string }
+        status: { type: string }
+        busId: { type: string, format: uuid, nullable: true }
+        stops:
+          type: array
+          items: { $ref: '#/components/schemas/StopDetail' }
+    RouteDetail:
+      type: object
+      required: [id, name, campuseId, targetSector, startTime, endTime, status, daysOfWeek, stops, schedules]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        campuseId: { type: string }
+        targetSector: { type: string }
+        startTime: { type: string, example: "06:00:00" }
+        endTime: { type: string, example: "08:00:00" }
+        status: { type: string }
+        daysOfWeek:
+          type: array
+          items: { type: string }
         stops:
           type: array
           description: Ordered stops of the route.
@@ -467,34 +665,214 @@ components:
           type: array
           description: Scheduled times of the active bus assignment.
           items: { $ref: '#/components/schemas/ScheduleDetail' }
-        bus: { $ref: '#/components/schemas/BusDetail' }
+        bus:
+          allOf: [{ $ref: '#/components/schemas/BusDetail' }]
+          nullable: true
     StopDetail:
       type: object
+      required: [id, name, address, latitude, longitude, orderSequence]
       properties:
         id: { type: string, format: uuid }
         name: { type: string }
         address: { type: string }
         latitude: { type: number, format: double }
         longitude: { type: number, format: double }
-        orderSequence: { type: integer }
+        orderSequence: { type: integer, format: int32 }
     ScheduleDetail:
       type: object
+      required: [id, dayOfWeek, direction, startTime]
       properties:
         id: { type: string, format: uuid }
-        dayOfWeek: { type: string, enum: [Monday, Tuesday, Wednesday, Thursday, Friday] }
-        direction: { type: string, enum: [Ida, Vuelta] }
-        startTime: { type: string, example: "06:30:00" }
+        dayOfWeek: { type: string }
+        direction: { type: string }
+        startTime: { type: string }
     BusDetail:
       type: object
+      required: [id, plate, capacity, driverName]
       description: |
         Bus of the route and its assigned driver, resolved from fleet-service
         over gRPC. Null when the route has no active bus assignment.
       properties:
         id: { type: string, format: uuid }
         plate: { type: string }
-        capacity: { type: integer }
+        capacity: { type: integer, format: int32 }
         driverProfileId: { type: string, format: uuid, nullable: true }
         driverName: { type: string }
+    AttachStopRequest:
+      type: object
+      required: [stopId]
+      properties:
+        stopId: { type: string, format: uuid }
+    AssignBusRequest:
+      type: object
+      required: [busId]
+      properties:
+        busId: { type: string, format: uuid }
+    AssignStudentRequest:
+      type: object
+      required: [studentId, stopId]
+      properties:
+        studentId: { type: string, format: uuid }
+        stopId: { type: string, format: uuid }
+    RouteStopAssignment:
+      type: object
+      required: [id, routeId, stopId, orderSequence, status]
+      properties:
+        id: { type: string, format: uuid }
+        routeId: { type: string, format: uuid }
+        stopId: { type: string, format: uuid }
+        orderSequence: { type: integer, format: int32 }
+        status: { type: string }
+    BusAssignment:
+      type: object
+      required: [id, routeId, busId, status]
+      properties:
+        id: { type: string, format: uuid }
+        routeId: { type: string, format: uuid }
+        busId: { type: string, format: uuid }
+        status: { type: string }
+    StudentAssignment:
+      type: object
+      required: [id, routeId, studentId, stopId, status]
+      properties:
+        id: { type: string, format: uuid }
+        routeId: { type: string, format: uuid }
+        studentId: { type: string, format: uuid }
+        stopId: { type: string, format: uuid }
+        status: { type: string }
+    StudentRouteStop:
+      type: object
+      required: [routeId, studentProfileId, routeStopId, stopId, stopName, stopAddress, latitude, longitude]
+      properties:
+        routeId: { type: string, format: uuid }
+        studentProfileId: { type: string, format: uuid }
+        routeStopId: { type: string, format: uuid }
+        stopId: { type: string, format: uuid }
+        stopName: { type: string }
+        stopAddress: { type: string }
+        latitude: { type: number, format: double }
+        longitude: { type: number, format: double }
+    StopRequest:
+      type: object
+      required: [name, cityId, schoolId, address, longitude, latitude]
+      properties:
+        name: { type: string }
+        cityId: { type: string, format: uuid }
+        schoolId: { type: string, format: uuid }
+        address: { type: string }
+        longitude: { type: number, format: double }
+        latitude: { type: number, format: double }
+        routeId: { type: string, format: uuid, nullable: true }
+        previousRouteId: { type: string, format: uuid, nullable: true }
+    Stop:
+      type: object
+      required: [id, name, address, latitude, longitude, cityId, schoolId, status]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        address: { type: string }
+        latitude: { type: number, format: double }
+        longitude: { type: number, format: double }
+        cityId: { type: string }
+        schoolId: { type: string }
+        status: { type: string }
+    StopListItem:
+      type: object
+      required: [id, name, address, latitude, longitude, cityId, schoolId, routeName, routeNames]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        address: { type: string }
+        latitude: { type: number, format: double }
+        longitude: { type: number, format: double }
+        cityId: { type: string, format: uuid }
+        schoolId: { type: string, format: uuid }
+        routeId: { type: string, format: uuid, nullable: true }
+        routeName: { type: string }
+        routeNames:
+          type: array
+          items: { type: string }
+    StartTripRequest:
+      type: object
+      required: [routeId, busId]
+      properties:
+        routeId: { type: string, format: uuid }
+        busId: { type: string, format: uuid }
+        driverId: { type: string, format: uuid, nullable: true }
+    Trip:
+      type: object
+      required: [id, routeId, busId, driverId, startDateTime, status, direction]
+      properties:
+        id: { type: string, format: uuid }
+        routeId: { type: string, format: uuid }
+        busId: { type: string, format: uuid }
+        driverId: { type: string, format: uuid }
+        startDateTime: { type: string, format: date-time }
+        endDateTime: { type: string, format: date-time, nullable: true }
+        status: { type: string }
+        direction: { type: string }
+    RouteSuggestion:
+      type: object
+      required: [routeId, stops, points]
+      properties:
+        routeId: { type: string, format: uuid }
+        stops:
+          type: array
+          items: { $ref: '#/components/schemas/StopDetail' }
+        geometry:
+          allOf: [{ $ref: '#/components/schemas/RouteSuggestionGeometry' }]
+          nullable: true
+        points:
+          type: array
+          description: Convenience property serialized by the DTO; mirrors geometry.points or an empty array.
+          items: { $ref: '#/components/schemas/GeoPoint' }
+    RouteSuggestionGeometry:
+      type: object
+      required: [points, distanceMeters, durationSeconds]
+      properties:
+        points:
+          type: array
+          items: { $ref: '#/components/schemas/GeoPoint' }
+        distanceMeters: { type: number, format: double }
+        durationSeconds: { type: number, format: double }
+    GeoPoint:
+      type: object
+      required: [latitude, longitude]
+      properties:
+        latitude: { type: number, format: double }
+        longitude: { type: number, format: double }
+    TripStatus:
+      type: object
+      required: [found, routeId, routeName, direction, status, canStart, canEnd, message, scheduleStartTime]
+      properties:
+        found: { type: boolean }
+        tripId: { type: string, format: uuid, nullable: true }
+        routeId: { type: string, format: uuid }
+        routeName: { type: string }
+        direction: { type: string }
+        status:
+          type: integer
+          format: int32
+          enum: [0, 1, 2, 3, 4]
+          description: "0=NotStarted, 1=ReadyToStart, 2=InProgress, 3=ReadyToEnd, 4=Ended."
+        canStart: { type: boolean }
+        canEnd: { type: boolean }
+        message: { type: string }
+        scheduleStartTime: { type: string }
+        nextScheduleTime: { type: string, nullable: true }
+        endConditionDetail:
+          allOf: [{ $ref: '#/components/schemas/TripEndConditionDetail' }]
+          nullable: true
+    TripEndConditionDetail:
+      type: object
+      required: [canEnd, totalAssignedStudents, studentsAlightedAtFinalStop, isFinalStopReached, finalStopName, message]
+      properties:
+        canEnd: { type: boolean }
+        totalAssignedStudents: { type: integer, format: int32 }
+        studentsAlightedAtFinalStop: { type: integer, format: int32 }
+        isFinalStopReached: { type: boolean }
+        finalStopName: { type: string }
+        message: { type: string }
     DriverRouteToday:
       type: object
       properties:
@@ -505,26 +883,14 @@ components:
             ACTIVE = inside the scheduled window; SCHEDULED = not due yet (or
             already past); NO_ROUTE = the driver has no bus/route; NO_SCHEDULE =
             the route has no active schedules.
-        route: { $ref: '#/components/schemas/RouteDetail' }
+        route:
+          allOf: [{ $ref: '#/components/schemas/RouteDetail' }]
+          nullable: true
         nextOccurrence:
           type: string
           format: date-time
           nullable: true
           description: Next departure in local time (UTC-5) when SCHEDULED.
-    ErrorResponse:
-      type: object
-      required: [error, message]
-      properties:
-        error: { type: string, example: VALIDATION_ERROR }
-        message: { type: string }
-        details:
-          type: array
-          items:
-            type: object
-            properties:
-              field: { type: string }
-              message: { type: string }
-        correlationId: { type: string, format: uuid }
     PageMeta:
       type: object
       properties:

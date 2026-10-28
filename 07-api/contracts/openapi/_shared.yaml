@@ -6,6 +6,8 @@ info:
     Schemas and components shared across all project API contracts.
     Reference these components in your contracts with: $ref: './_shared.yaml#/components/...'
 
+paths: {}
+
 components:
   schemas:
     # ─── Pagination ────────────────────────────────────────────────────────

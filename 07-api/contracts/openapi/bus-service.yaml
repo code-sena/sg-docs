@@ -1,215 +1,209 @@
 openapi: 3.0.3
 info:
-  title: "Bus API"
+  title: Fleet API
   version: 1.0.0
   description: |
-    Bus fleet, brands, models, and driver assignments.
-
-    ## Autenticacion
-    All endpoints except /health require JWT:
-    Authorization: Bearer <token>
-
-    ## Errores
-    Esquema ErrorResponse en _shared.yaml.
-
-    ## Entrada publica
-    En produccion/dev el trafico pasa por Kong OSS en :8000.
-    Desarrollo local directo al servicio: http://localhost:8080
-
-    ## Documentacion
-    Interactiva via Scalar (ADR-007), no Swagger UI.
-
-    ## Paginacion
-    Listas: ?page=1&limit=20
+    Controller-backed fleet and vehicle-type operations. Kong exposes these
+    upstream paths below /fleet; that prefix is stripped before forwarding.
+    Request and response DTO shapes below mirror the controller DTOs. Error
+    status and body details are included only where the controller returns them.
 
 servers:
-  - url: http://localhost:8080
-    description: Local development
-  - url: https://api.dev.example.com/api/v1/buses
-    description: Development
-  - url: https://api.example.com/api/v1/buses
-    description: Production
+  - url: http://localhost:8080/api
+    description: Direct local service
+  - url: http://localhost:8000/fleet/api
+    description: Local Kong gateway (JWT required)
 
 security:
   - bearerAuth: []
 
 tags:
-  - name: Bus
-    description: Bus fleet, brands, models, and driver assignments.
-  - name: Health
-    description: Health checks
+  - name: Buses
+  - name: Vehicle types
+  - name: GPS devices
 
 paths:
-  /health:
+  /gps-devices:
     get:
-      summary: Health check
-      tags: [Health]
-      security: []
+      summary: List GPS inventory and assigned buses
+      description: |
+        Requires the buses-management permission. These database inventory UUIDs
+        are distinct from the IMEI used by the GPS tracking service.
+      tags: [GPS devices]
       responses:
         '200':
-          description: Service healthy
+          description: GPS inventory.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status: { type: string, example: ok }
-                  version: { type: string, example: 1.0.0 }
-                  db: { type: string, example: connected }
+                type: array
+                items: { $ref: '#/components/schemas/GpsDevice' }
+        '401': { description: Authentication required. }
+        '403': { description: Missing buses-management permission. }
   /buses:
     get:
       summary: List buses
-      tags: [Bus]
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
+      tags: [Buses]
       responses:
         '200':
-          description: OK
+          description: Bus list
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /buses:
+                type: array
+                items: { $ref: '#/components/schemas/BusListItem' }
     post:
-      summary: Create bus
-      tags: [Bus]
+      summary: Create a bus
+      tags: [Buses]
       requestBody:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
+            schema: { $ref: '#/components/schemas/CreateBusRequest' }
       responses:
-        '201':
-          description: Created
+        '200':
+          description: Bus created.
           content:
             application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /buses/{id}:
+              schema: { $ref: '#/components/schemas/CreateBusResponse' }
+        '400': { $ref: '#/components/responses/ProblemBadRequest' }
+  /buses/search:
     get:
-      summary: Get bus
-      tags: [Bus]
+      summary: Search buses
+      tags: [Buses]
       parameters:
-        - name: id
+        - name: search
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        '200':
+          description: Matching buses
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/BusListItem' }
+  /buses/assigned/{profileId}:
+    get:
+      summary: Get the bus assigned to a driver profile
+      tags: [Buses]
+      parameters:
+        - name: profileId
           in: path
           required: true
           schema: { type: string, format: uuid }
       responses:
         '200':
-          description: OK
+          description: Assigned bus, if one is assigned to the driver.
           content:
             application/json:
-              schema: { type: object }
+              schema: { $ref: '#/components/schemas/BusAssigned' }
+        '403': { description: The caller is not allowed to read this assignment. }
         '404': { $ref: '#/components/responses/NotFound' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
   /buses/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      summary: Get bus details
+      tags: [Buses]
+      responses:
+        '200':
+          description: Bus details.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/BusDetail' }
+        '404': { $ref: '#/components/responses/NotFound' }
     put:
-      summary: Update bus
-      tags: [Bus]
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
+      summary: Update a bus
+      tags: [Buses]
       requestBody:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
+            schema: { $ref: '#/components/schemas/UpdateBusRequest' }
       responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /buses/{id}/driver:
-    post:
-      summary: Assign driver
-      tags: [Bus]
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { type: object, additionalProperties: true }
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /buses/{id}/driver:
+        '204': { description: Updated; no response body. }
+        '400': { $ref: '#/components/responses/ProblemBadRequest' }
+        '404': { $ref: '#/components/responses/ProblemNotFound' }
     delete:
-      summary: Unassign driver
-      tags: [Bus]
+      summary: Delete a bus
+      tags: [Buses]
+      responses:
+        '204': { description: Deleted; no response body. }
+  /buses/{id}/status:
+    patch:
+      summary: Change bus status
+      tags: [Buses]
       parameters:
         - name: id
           in: path
           required: true
           schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ChangeBusStatusRequest' }
       responses:
-        '204': { description: Deleted }
-        '404': { $ref: '#/components/responses/NotFound' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /brands:
+        '204': { description: Status changed; no response body. }
+        '400': { $ref: '#/components/responses/ProblemBadRequest' }
+        '404': { $ref: '#/components/responses/ProblemNotFound' }
+  /buses/{busId}/driver:
+    parameters:
+      - name: busId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    put:
+      summary: Assign a driver to a bus
+      tags: [Buses]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AssignDriverRequest' }
+      responses:
+        '204': { description: Driver assigned; no response body. }
+        '400': { $ref: '#/components/responses/TextBadRequest' }
+    delete:
+      summary: Unassign the driver from a bus
+      tags: [Buses]
+      responses:
+        '204': { description: Driver unassigned; no response body. }
+        '400': { $ref: '#/components/responses/TextBadRequest' }
+  /vehicle-types/brands:
     get:
-      summary: List brands
-      tags: [Bus]
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
+      summary: List vehicle brands
+      tags: [Vehicle types]
       responses:
         '200':
-          description: OK
+          description: Vehicle brands.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /models:
+                type: array
+                items: { $ref: '#/components/schemas/Brand' }
+  /vehicle-types/models:
     get:
-      summary: List models
-      tags: [Bus]
+      summary: List vehicle models
+      tags: [Vehicle types]
       parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
+        - name: brandId
+          in: query
+          required: false
+          schema: { type: integer, format: int32 }
       responses:
         '200':
-          description: OK
+          description: Vehicle models.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
+                type: array
+                items: { $ref: '#/components/schemas/VehicleModel' }
 
 components:
   securitySchemes:
@@ -217,60 +211,130 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-  parameters:
-    Page:
-      name: page
-      in: query
-      schema: { type: integer, minimum: 1, default: 1 }
-    Limit:
-      name: limit
-      in: query
-      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
   responses:
-    BadRequest:
-      description: Invalid request
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-    Unauthorized:
-      description: Missing or invalid JWT
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-    Forbidden:
-      description: Insufficient permissions
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
     NotFound:
-      description: Resource not found
+      description: Requested bus not found; the controller returns no response body.
+    ProblemBadRequest:
+      description: Invalid request or rejected domain operation.
       content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-    Unprocessable:
-      description: Semantic validation failed
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/ProblemDetails' }
+    ProblemNotFound:
+      description: Bus not found.
       content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/ProblemDetails' }
+    TextBadRequest:
+      description: Invalid driver assignment; the controller returns the exception message as text.
+      content:
+        text/plain:
+          schema: { type: string }
   schemas:
-    ErrorResponse:
+    CreateBusRequest:
       type: object
-      required: [error, message]
+      required: [campuseId, soatValidity, gpsDeviceId, capacity, plate, modelId]
       properties:
-        error: { type: string, example: VALIDATION_ERROR }
-        message: { type: string }
-        details:
-          type: array
-          items:
-            type: object
-            properties:
-              field: { type: string }
-              message: { type: string }
-        correlationId: { type: string, format: uuid }
-    PageMeta:
+        campuseId: { type: string, format: uuid }
+        soatValidity: { type: string, format: date-time }
+        gpsDeviceId: { type: string, format: uuid }
+        capacity: { type: integer, format: int32, minimum: 1, maximum: 255 }
+        plate: { type: string, minLength: 1, maxLength: 20 }
+        modelId: { type: integer, format: int32, minimum: 1 }
+        gpsStatus: { type: boolean, nullable: true }
+        gpsImei: { type: string, nullable: true }
+    UpdateBusRequest:
       type: object
       properties:
-        page: { type: integer }
-        limit: { type: integer }
-        total: { type: integer }
-        totalPages: { type: integer }
+        campuseId: { type: string, format: uuid, nullable: true }
+        soatValidity: { type: string, format: date-time, nullable: true }
+        capacity: { type: integer, format: int32, minimum: 1, maximum: 255, nullable: true }
+        plate: { type: string, minLength: 1, maxLength: 20, nullable: true }
+        modelId: { type: integer, format: int32, minimum: 1, nullable: true }
+        gpsDeviceId: { type: string, format: uuid, nullable: true }
+        gpsStatus: { type: boolean, nullable: true }
+        gpsImei: { type: string, nullable: true }
+    ChangeBusStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [Active, Inactive]
+          example: Active
+    AssignDriverRequest:
+      type: object
+      required: [profileId]
+      properties:
+        profileId: { type: string, format: uuid }
+    CreateBusResponse:
+      type: object
+      required: [busId]
+      properties:
+        busId: { type: string, format: uuid }
+    BusListItem:
+      type: object
+      required: [id, plate, campuseId, driverName, brand, model, status]
+      properties:
+        id: { type: string, format: uuid }
+        plate: { type: string }
+        campuseId: { type: string, format: uuid }
+        driverName: { type: string }
+        brand: { type: string }
+        model: { type: string }
+        status: { type: string }
+    BusDetail:
+      type: object
+      required: [id, plate, campuseId, soatValidity, gpsDeviceId, capacity, modelId, status, driverName, brand, model, gpsImei]
+      properties:
+        id: { type: string, format: uuid }
+        plate: { type: string }
+        campuseId: { type: string, format: uuid }
+        soatValidity: { type: string, format: date-time }
+        gpsDeviceId: { type: string, format: uuid }
+        capacity: { type: integer, format: int32, minimum: 0, maximum: 255 }
+        modelId: { type: integer, format: int32, minimum: 0, maximum: 255 }
+        status: { type: string }
+        driverName: { type: string }
+        brand: { type: string }
+        model: { type: string }
+        gpsImei: { type: string }
+        gpsStatus: { type: boolean, nullable: true }
+        driverProfileId: { type: string, format: uuid, nullable: true }
+    BusAssigned:
+      type: object
+      required: [id, plate, campuseId]
+      properties:
+        id: { type: string, format: uuid }
+        plate: { type: string }
+        campuseId: { type: string, format: uuid }
+    GpsDevice:
+      type: object
+      required: [id, imei, gpsStatus]
+      properties:
+        id: { type: string, format: uuid }
+        imei: { type: string }
+        gpsStatus: { type: boolean }
+        assignedBusId: { type: string, format: uuid, nullable: true }
+        assignedPlate: { type: string, nullable: true }
+    Brand:
+      type: object
+      required: [id, name]
+      properties:
+        id: { type: integer, format: int32, minimum: 0, maximum: 255 }
+        name: { type: string }
+    VehicleModel:
+      type: object
+      required: [id, name, brandId, brandName]
+      properties:
+        id: { type: integer, format: int32, minimum: 0, maximum: 255 }
+        name: { type: string }
+        brandId: { type: integer, format: int32, minimum: 0, maximum: 255 }
+        brandName: { type: string }
+    ProblemDetails:
+      type: object
+      properties:
+        type: { type: string, format: uri-reference }
+        title: { type: string }
+        status: { type: integer, format: int32 }
+        detail: { type: string }
+        instance: { type: string, format: uri-reference }

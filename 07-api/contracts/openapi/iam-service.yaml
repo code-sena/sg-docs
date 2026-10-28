@@ -1,348 +1,215 @@
 openapi: 3.0.3
 info:
-  title: "IAM API"
+  title: IAM API
   version: 1.0.0
   description: |
-    Identity authority: authentication, JWT issuance, RBAC, sessions.
-
-    ## Autenticacion
-    All endpoints except /health require JWT:
-    Authorization: Bearer <token>
-
-    ## Errores
-    Esquema ErrorResponse en _shared.yaml.
-
-    ## Entrada publica
-    En produccion/dev el trafico pasa por Kong OSS en :8000.
-    Desarrollo local directo al servicio: http://localhost:8080
-
-    ## Documentacion
-    Interactiva via Scalar (ADR-007), no Swagger UI.
-
-    ## Paginacion
-    Listas: ?page=1&limit=20
+    HTTP endpoints verified against AuthController, TermsController, and
+    JwksController. Password recovery endpoints belong to the separate
+    forgot-information service.
 
 servers:
   - url: http://localhost:8080
-    description: Local development
-  - url: https://api.dev.example.com/api/v1/iam
-    description: Development
-  - url: https://api.example.com/api/v1/iam
-    description: Production
+    description: Direct local IAM service
+  - url: http://localhost:8000
+    description: Local Kong gateway; routes retain their upstream paths
 
 security:
   - bearerAuth: []
 
 tags:
-  - name: IAM
-    description: "Identity authority: authentication, JWT issuance, RBAC, sessions."
+  - name: Authentication
+  - name: Terms
+  - name: JWKS
   - name: Health
-    description: Health checks
 
 paths:
-  /health:
+  /api/v1/auth/health:
     get:
-      summary: Health check
+      summary: IAM health check
       tags: [Health]
       security: []
       responses:
         '200':
-          description: Service healthy
+          description: Service health
           content:
             application/json:
               schema:
                 type: object
+                required: [status, service]
                 properties:
-                  status: { type: string, example: ok }
-                  version: { type: string, example: 1.0.0 }
-                  db: { type: string, example: connected }
-  /auth/login:
+                  status: { type: string, example: UP }
+                  service: { type: string, example: ms-iam }
+  /api/v1/auth/profile:
+    get:
+      summary: Get the authenticated user's profile
+      tags: [Authentication]
+      responses:
+        '200':
+          description: Current profile
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProfileResponse' }
+        '401':
+          description: Missing or invalid access token; the controller returns no response body.
+  /api/v1/auth/login:
     post:
       summary: Authenticate and issue tokens
-      tags: [IAM]
+      tags: [Authentication]
+      security: []
       requestBody:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /auth/refresh:
-    post:
-      summary: Rotate refresh token
-      tags: [IAM]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { type: object, additionalProperties: true }
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /auth/logout:
-    post:
-      summary: Revoke current session
-      tags: [IAM]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { type: object, additionalProperties: true }
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /auth/forgot-password:
-    post:
-      summary: Start password reset
-      tags: [IAM]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { type: object, additionalProperties: true }
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /auth/reset-password:
-    post:
-      summary: Complete password reset
-      tags: [IAM]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { type: object, additionalProperties: true }
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /auth/change-password:
-    post:
-      summary: Change password
-      tags: [IAM]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { type: object, additionalProperties: true }
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /auth/terms/acceptances:
-    get:
-      summary: List my terms acceptances
-      tags: [IAM]
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
+            schema: { $ref: '#/components/schemas/LoginRequest' }
       responses:
         '200':
-          description: OK
+          description: Login response; the refresh token is also set in an HttpOnly cookie.
+          headers:
+            Set-Cookie:
+              description: HttpOnly refresh_token cookie.
+              schema: { type: string }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LoginResponse' }
+        '400':
+          description: Login request failed Bean Validation.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '401':
+          description: Invalid credentials.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '403':
+          description: Account is inactive.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+  /api/v1/auth/refresh:
+    post:
+      summary: Rotate access and refresh tokens
+      tags: [Authentication]
+      security: []
+      description: |
+        The refresh credential is read from the refresh_token cookie when
+        present, otherwise from the Authorization bearer header.
+      parameters:
+        - name: Authorization
+          in: header
+          required: false
+          schema: { type: string }
+          description: Optional bearer refresh token, used by mobile clients.
+        - name: refresh_token
+          in: cookie
+          required: false
+          schema: { type: string }
+      responses:
+        '200':
+          description: Rotated tokens; the refresh cookie is renewed.
+          headers:
+            Set-Cookie:
+              description: HttpOnly refresh_token cookie.
+              schema: { type: string }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RefreshResponse' }
+        '401':
+          description: Missing or invalid refresh token. Missing credentials can return no body.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '400':
+          description: Refresh-token cookie is missing or request validation failed.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+  /api/v1/auth/logout:
+    post:
+      summary: Revoke the current session
+      tags: [Authentication]
+      security: []
+      parameters:
+        - name: Authorization
+          in: header
+          required: false
+          schema: { type: string }
+      responses:
+        '204':
+          description: Session revoked and refresh cookie cleared; no response body.
+          headers:
+            Set-Cookie:
+              description: Clears the refresh_token cookie.
+              schema: { type: string }
+  /api/v1/auth/terms/status:
+    get:
+      summary: Get current terms coverage status
+      tags: [Terms]
+      responses:
+        '200':
+          description: Terms status for the authenticated profile
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TermsStatus' }
+        '401':
+          description: Missing or invalid access token; the controller returns no response body.
+  /api/v1/auth/terms/acceptances:
+    get:
+      summary: List the authenticated user's terms acceptances
+      tags: [Terms]
+      responses:
+        '200':
+          description: Append-only acceptance history, latest first
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /auth/terms/accept:
+                type: array
+                items: { $ref: '#/components/schemas/AcceptanceResponse' }
+        '401':
+          description: Missing or invalid access token; the controller returns no response body.
+  /api/v1/auth/terms/accept:
     post:
       summary: Record terms acceptance
-      tags: [IAM]
+      tags: [Terms]
       requestBody:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
+            schema: { $ref: '#/components/schemas/AcceptTermsRequest' }
       responses:
         '201':
-          description: Created
+          description: Newly recorded acceptances
           content:
             application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /auth/terms/status:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/AcceptanceResponse' }
+        '400':
+          description: Invalid terms acceptance request.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '401':
+          description: Missing or invalid access token; the controller returns no response body.
+  /.well-known/jwks.json:
     get:
-      summary: My terms coverage status
-      tags: [IAM]
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
+      summary: Public JSON Web Key Set
+      tags: [JWKS]
+      security: []
       responses:
         '200':
-          description: OK
+          description: Public keys used to verify IAM access tokens
           content:
             application/json:
               schema:
                 type: object
+                required: [keys]
                 properties:
-                  data:
+                  keys:
                     type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /jwks:
-    get:
-      summary: Public keys for JWT verification
-      tags: [IAM]
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /roles:
-    get:
-      summary: List roles
-      tags: [IAM]
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /roles:
-    post:
-      summary: Create role
-      tags: [IAM]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { type: object, additionalProperties: true }
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /permissions:
-    get:
-      summary: List permissions
-      tags: [IAM]
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /profiles:
-    get:
-      summary: List profiles
-      tags: [IAM]
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /profiles/{id}/status:
-    patch:
-      summary: Activate/deactivate profile
-      tags: [IAM]
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { type: object, additionalProperties: true }
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
+                    items:
+                      type: object
+                      additionalProperties: true
 
 components:
   securitySchemes:
@@ -350,60 +217,94 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-  parameters:
-    Page:
-      name: page
-      in: query
-      schema: { type: integer, minimum: 1, default: 1 }
-    Limit:
-      name: limit
-      in: query
-      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
-  responses:
-    BadRequest:
-      description: Invalid request
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-    Unauthorized:
-      description: Missing or invalid JWT
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-    Forbidden:
-      description: Insufficient permissions
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-    Unprocessable:
-      description: Semantic validation failed
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
   schemas:
     ErrorResponse:
       type: object
-      required: [error, message]
+      required: [timestamp, status, error, message, path, validationErrors]
       properties:
-        error: { type: string, example: VALIDATION_ERROR }
+        timestamp: { type: string, format: date-time }
+        status: { type: integer, format: int32 }
+        error: { type: string }
         message: { type: string }
-        details:
-          type: array
-          items:
-            type: object
-            properties:
-              field: { type: string }
-              message: { type: string }
-        correlationId: { type: string, format: uuid }
-    PageMeta:
+        path: { type: string }
+        validationErrors:
+          type: object
+          nullable: true
+          additionalProperties: { type: string }
+    LoginRequest:
       type: object
+      required: [email, password]
       properties:
-        page: { type: integer }
-        limit: { type: integer }
-        total: { type: integer }
-        totalPages: { type: integer }
+        email: { type: string, format: email, maxLength: 100 }
+        password: { type: string, minLength: 1, maxLength: 128 }
+    LoginResponse:
+      type: object
+      required: [accessToken, accessTokenExpiresAt, refreshToken, refreshTokenExpiresAt, profileId, personId, email, roleId, campusId, schoolId]
+      properties:
+        accessToken: { type: string }
+        accessTokenExpiresAt: { type: string, format: date-time }
+        refreshToken: { type: string }
+        refreshTokenExpiresAt: { type: string, format: date-time }
+        profileId: { type: string, format: uuid }
+        personId: { type: string, format: uuid }
+        email: { type: string }
+        roleId: { type: integer, format: int32 }
+        campusId: { type: string, format: uuid, nullable: true }
+        schoolId: { type: string, format: uuid, nullable: true }
+    RefreshResponse:
+      type: object
+      required: [accessToken, accessTokenExpiresAt, refreshToken, refreshTokenExpiresAt]
+      properties:
+        accessToken: { type: string }
+        accessTokenExpiresAt: { type: string, format: date-time }
+        refreshToken: { type: string }
+        refreshTokenExpiresAt: { type: string, format: date-time }
+    ProfileResponse:
+      type: object
+      required: [profileId, personId, email, roleId, roleName, campusId, campusName, schoolId, schoolName, name, lastName, identificationNumber, status, cityName, permissions]
+      properties:
+        profileId: { type: string, format: uuid }
+        personId: { type: string, format: uuid }
+        email: { type: string }
+        roleId: { type: integer, format: int32 }
+        roleName: { type: string }
+        campusId: { type: string, format: uuid, nullable: true }
+        campusName: { type: string, nullable: true }
+        schoolId: { type: string, format: uuid, nullable: true }
+        schoolName: { type: string, nullable: true }
+        name: { type: string }
+        lastName: { type: string }
+        identificationNumber: { type: string }
+        status: { type: string }
+        cityName: { type: string, nullable: true }
+        permissions:
+          type: array
+          items: { type: string }
+    AcceptTermsRequest:
+      type: object
+      required: [termsVersion]
+      properties:
+        termsVersion: { type: string, minLength: 1, pattern: '.*\S.*' }
+        studentProfileIds:
+          type: array
+          items: { type: string, format: uuid }
+        channel:
+          type: string
+          pattern: '^([Ww][Ee][Bb]|[Mm][Oo][Bb][Ii][Ll][Ee])$'
+          description: Optional; accepted case-insensitively by the controller.
+    AcceptanceResponse:
+      type: object
+      required: [id, profileId, studentProfileId, termsVersion, acceptedAt, channel]
+      properties:
+        id: { type: string, format: uuid }
+        profileId: { type: string, format: uuid }
+        studentProfileId: { type: string, format: uuid, nullable: true }
+        termsVersion: { type: string }
+        acceptedAt: { type: string, format: date-time }
+        channel: { type: string }
+    TermsStatus:
+      type: object
+      required: [termsVersion, accepted]
+      properties:
+        termsVersion: { type: string }
+        accepted: { type: boolean }

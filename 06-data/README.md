@@ -8,10 +8,38 @@
 > **All services share a single SQL Server instance, each with its own schema.**
 
 Per ADR-002, this project uses a **shared monolithic database** (one SQL Server) with a
-**separate schema per service** (logical isolation). Each service owns its schema and never
-accesses another service's schema directly. If it needs data from another service, it requests
-it via API or receives it via event. The migration path to a full "Database per Service" is
-documented in ADR-002 (Strangler Fig).
+**separate schema per service** (logical isolation). Schema ownership is the architectural
+goal, not enforced physical isolation: the implemented EF contexts include cross-schema
+read models and the versioned SQL declares cross-schema foreign keys. API/event boundaries
+do not eliminate those existing dependencies. The migration path to a full "Database per
+Service" is documented in ADR-002 (Strangler Fig).
+
+## Implementation evidence (2026-10-27)
+
+The canonical `database` checkout and `schoo-guardian/sg-db` are separate revisions;
+their migrations must not be mixed. Each has 34 DDL tables across nine schemas.
+Their original DBML files also had 34 tables, but omitted
+`ForgotInformation.VerificationRequest` and included an unsupported `Audit` table.
+The corrected diagrams align those table sets, use the physical `Fleet` group
+(not a `Bus` schema), and retain the implemented spelling `DriverAssignemts`.
+
+The [recovery model](./domain/forgot-information.md) distinguishes Liquibase DDL
+from the implemented .NET startup initializer. GPS tables are versioned SQL,
+but the GPS service currently keeps devices/latest locations in memory; no GPS
+JPA entities were found. Neither a diagram nor a dependency proves live persistence.
+
+The `database` README records the static EF/JPA/DDL comparison and unresolved
+differences, including EF-only `Person.CityId`/`SchoolId`, nullable SQL versus
+required EF `RouteExecution.RouteId`, and Unicode/default/CHECK differences in
+recovery. `database` includes school address migration 007 (`VARCHAR(255)`),
+while this workspace's `sg-db` revision does not (`VARCHAR(30)`).
+Both contain route script 010 (`RouteExecution.Direction`), but neither includes
+it in the checked-in changelog: a field in a SQL file/diagram is not proof that
+the migration runner creates it.
+
+The older model examples/dictionary below are not an exhaustive physical schema
+or evidence of deployment. Prefer each checkout's SQL plus its own ordered
+migrations; consult its README for limitations. No real database was inspected.
 
 ---
 
@@ -22,6 +50,7 @@ documented in ADR-002 (Strangler Fig).
 |------|------|--------|
 | [models.md](./models.md) | **Scaffold/guide** for filling a new service model (placeholders) | ✅ template |
 | [domain/](./domain/) | Filled table models per schema | ✅ 9 schemas |
+| [domain/forgot-information.md](./domain/forgot-information.md) | Recovery table, constraints and initializer differences | Source-checked |
 | [data-dictionary.md](./data-dictionary.md) | Ambiguous / PII / enum meanings | ✅ |
 | [modeling-conventions.md](./modeling-conventions.md) | Naming, keys, timestamps | ✅ |
 | [normalization-assessment.md](./normalization-assessment.md) | Intentional denormalization | ✅ |

@@ -1,261 +1,439 @@
 openapi: 3.0.3
 info:
-  title: "Notification API"
+  title: Notification API
   version: 1.0.0
   description: |
-    Boarding/alighting events, alerts, alert types, and recipients.
+    Controller-backed notification, alert, incident, credential, device, and
+    scan routes. Kong strips the public /notification prefix before forwarding
+    to the service, preserving /api/v1/notifications/... upstream paths.
 
-    ## Autenticacion
-    All endpoints except /health require JWT:
-    Authorization: Bearer <token>
-
-    ## Errores
-    Esquema ErrorResponse en _shared.yaml.
-
-    ## Entrada publica
-    En produccion/dev el trafico pasa por Kong OSS en :8000.
-    Desarrollo local directo al servicio: http://localhost:8080
-
-    ## Documentacion
-    Interactiva via Scalar (ADR-007), no Swagger UI.
-
-    ## Paginacion
-    Listas: ?page=1&limit=20
+    Request and response DTO schemas reflect the controller's current DTOs,
+    including default .NET enum serialization and explicit controller errors.
 
 servers:
   - url: http://localhost:8080
-    description: Local development
-  - url: https://api.dev.example.com/api/v1/notifications
-    description: Development
-  - url: https://api.example.com/api/v1/notifications
-    description: Production
+    description: Direct local service
+  - url: http://localhost:8000/notification
+    description: Local Kong gateway (JWT required)
 
 security:
   - bearerAuth: []
 
 tags:
-  - name: Notification
-    description: Boarding/alighting events, alerts, alert types, and recipients.
-  - name: Health
-    description: Health checks
+  - name: Alerts
+  - name: Incidents
+  - name: Student credential
+  - name: Devices
+  - name: Student scans
+  - name: Guardian notifications
 
 paths:
-  /health:
-    get:
-      summary: Health check
-      tags: [Health]
-      security: []
-      responses:
-        '200':
-          description: Service healthy
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status: { type: string, example: ok }
-                  version: { type: string, example: 1.0.0 }
-                  db: { type: string, example: connected }
-  /boarding:
-    post:
-      summary: Register boarding/alighting
-      tags: [Notification]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { type: object, additionalProperties: true }
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /boarding:
-    get:
-      summary: List boarding events
-      tags: [Notification]
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /alerts:
+  /api/v1/notifications/alerts:
     get:
       summary: List alerts
-      tags: [Notification]
+      tags: [Alerts]
       parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 0, default: 0 }
+        - name: size
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 10 }
+        - name: sort
+          in: query
+          schema: { type: string, default: "timestamp,desc" }
+        - name: alertType
+          in: query
+          schema: { type: string, enum: [ON_BOARD, OFF_BOARD] }
+        - name: acknowledged
+          in: query
+          schema: { type: boolean }
+        - name: dateFrom
+          in: query
+          schema: { type: string, format: date-time }
+        - name: dateTo
+          in: query
+          schema: { type: string, format: date-time }
+        - name: search
+          in: query
+          schema: { type: string }
+        - name: alertTypeId
+          in: query
+          schema: { type: integer, format: int32, minimum: 0, maximum: 255 }
+        - name: schoolId
+          in: query
+          schema: { type: string, format: uuid }
       responses:
         '200':
-          description: OK
+          description: Paginated alert list.
           content:
             application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /alerts:
-    post:
-      summary: Create alert
-      tags: [Notification]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { type: object, additionalProperties: true }
-      responses:
-        '201':
-          description: Created
+              schema: { $ref: '#/components/schemas/AlertsResponse' }
+        '400':
+          description: Invalid page or size.
           content:
             application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /alerts/{id}/status:
-    patch:
-      summary: Update alert status
-      tags: [Notification]
+              schema: { $ref: '#/components/schemas/MessageError' }
+        '403': { description: Authenticated profile is not authorized. }
+  /api/v1/notifications/alerts/{alertId}:
+    get:
+      summary: Get an alert
+      tags: [Alerts]
       parameters:
-        - name: id
+        - name: alertId
           in: path
           required: true
           schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Alert summary.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AlertListItem' }
+        '404': { description: Alert not found. }
+  /api/v1/notifications/alerts/{alertId}/acknowledge:
+    post:
+      summary: Acknowledge an alert
+      tags: [Alerts]
+      parameters:
+        - name: alertId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Alert acknowledged; no response body. }
+        '409':
+          description: Alert cannot be acknowledged in its current state.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MessageError' }
+  /api/v1/notifications/alert-types:
+    get:
+      summary: List alert types used by the school
+      tags: [Alerts]
+      parameters:
+        - name: schoolId
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Alert type identifiers and names.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: { type: integer, format: int32 }
+                    name: { type: string }
+  /api/v1/notifications/incidents:
+    get:
+      summary: List incidents
+      tags: [Incidents]
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, minimum: 0, default: 0 }
+        - name: size
+          in: query
+          schema: { type: integer, minimum: 1, default: 10 }
+        - name: sort
+          in: query
+          schema: { type: string, default: "reportedAt,desc" }
+        - name: incidentType
+          in: query
+          schema: { type: string, enum: [Delay, Breakdown, Accident, Deviation, Other] }
+        - name: severity
+          in: query
+          schema: { type: string, enum: [Low, Medium, High, Critical] }
+        - name: status
+          in: query
+          schema: { type: string, enum: [Open, InProgress, Resolved, Closed] }
+        - name: dateFrom
+          in: query
+          schema: { type: string, format: date-time }
+        - name: dateTo
+          in: query
+          schema: { type: string, format: date-time }
+        - name: search
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Paginated incident list.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/IncidentsResponse' }
+    post:
+      summary: Report an incident
+      tags: [Incidents]
       requestBody:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
+            schema: { $ref: '#/components/schemas/ReportIncidentRequest' }
       responses:
         '200':
-          description: OK
+          description: Incident reported.
           content:
             application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /alert-types:
+              schema: { $ref: '#/components/schemas/IncidentResponse' }
+        '400': { $ref: '#/components/responses/ValidationProblem' }
+        '409':
+          description: Incident report conflicts with current state.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MessageError' }
+        '503': { description: A required gRPC dependency is unavailable. }
+  /api/v1/notifications/incidents/{incidentId}:
     get:
-      summary: List alert types
-      tags: [Notification]
+      summary: Get an incident
+      tags: [Incidents]
       parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
+        - name: incidentId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
       responses:
         '200':
-          description: OK
+          description: Incident summary.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/IncidentListItem' }
+        '404': { description: Incident not found. }
+  /api/v1/notifications/incidents/{incidentId}/resolve:
+    post:
+      summary: Resolve an incident
+      tags: [Incidents]
+      parameters:
+        - name: incidentId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Incident resolved; no response body. }
+        '409':
+          description: Incident cannot be resolved in its current state.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MessageError' }
+  /api/v1/notifications/credential:
+    get:
+      summary: Get the authenticated student's credential
+      tags: [Student credential]
+      responses:
+        '200':
+          description: Student QR credential.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Credential' }
+        '409':
+          description: Credential cannot be issued in the current state.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MessageError' }
+        '503': { description: A required gRPC dependency is unavailable. }
+  /api/v1/notifications/devices:
+    post:
+      summary: Register a push notification device
+      tags: [Devices]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RegisterDeviceRequest' }
+      responses:
+        '200': { description: Device registered; no response body. }
+        '400': { $ref: '#/components/responses/ValidationProblem' }
+  /api/v1/notifications/scan:
+    post:
+      summary: Process a student scan
+      tags: [Student scans]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProcessScanRequest' }
+      responses:
+        '200':
+          description: Scan processing result.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProcessScanResponse' }
+        '400': { $ref: '#/components/responses/ValidationProblem' }
+        '409':
+          description: Scan conflicts with current state.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MessageError' }
+        '503': { description: A required gRPC dependency is unavailable. }
+  /api/v1/notifications/guardian:
+    get:
+      summary: Get notifications for the authenticated guardian
+      tags: [Guardian notifications]
+      responses:
+        '200':
+          description: Notifications for the authenticated guardian.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /recipients:
-    get:
-      summary: List recipients
-      tags: [Notification]
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
+                type: array
+                items: { $ref: '#/components/schemas/GuardianNotification' }
 
 components:
+  responses:
+    ValidationProblem:
+      description: Invalid request body rejected by automatic API model validation.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/ValidationProblem' }
+  schemas:
+    MessageError:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string }
+    ValidationProblem:
+      type: object
+      properties:
+        type: { type: string, format: uri-reference }
+        title: { type: string }
+        status: { type: integer, format: int32 }
+        detail: { type: string }
+        instance: { type: string, format: uri-reference }
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items: { type: string }
+    AlertsResponse:
+      type: object
+      required: [content, totalElements, totalPages, size, number]
+      properties:
+        content:
+          type: array
+          items: { $ref: '#/components/schemas/AlertListItem' }
+        totalElements: { type: integer, format: int32 }
+        totalPages: { type: integer, format: int32 }
+        size: { type: integer, format: int32 }
+        number: { type: integer, format: int32 }
+    AlertListItem:
+      type: object
+      required: [id, routeExecutionId, profileId, studentName, routeName, alertType, message, timestamp, acknowledged, acknowledgedAt, acknowledgedBy, alertTypeId, alertTypeName]
+      properties:
+        id: { type: string, format: uuid }
+        routeExecutionId: { type: string, format: uuid }
+        profileId: { type: string, format: uuid }
+        studentName: { type: string }
+        routeName: { type: string }
+        alertType: { type: string, enum: [ON_BOARD, OFF_BOARD] }
+        message: { type: string }
+        timestamp: { type: string, format: date-time }
+        acknowledged: { type: boolean }
+        acknowledgedAt: { type: string, format: date-time, nullable: true }
+        acknowledgedBy: { type: string, nullable: true }
+        alertTypeId: { type: integer, format: int32, minimum: 0, maximum: 255 }
+        alertTypeName: { type: string }
+    AlertDetail:
+      type: object
+      required: [id, description, dateTime, alertTypeId]
+      properties:
+        id: { type: string, format: uuid }
+        description: { type: string, nullable: true }
+        dateTime: { type: string, format: date-time }
+        alertTypeId: { type: integer, format: int32, minimum: 0, maximum: 255 }
+    IncidentsResponse:
+      type: object
+      required: [content, totalElements, totalPages, size, number]
+      properties:
+        content:
+          type: array
+          items: { $ref: '#/components/schemas/IncidentListItem' }
+        totalElements: { type: integer, format: int32 }
+        totalPages: { type: integer, format: int32 }
+        size: { type: integer, format: int32 }
+        number: { type: integer, format: int32 }
+    IncidentListItem:
+      type: object
+      required: [id, routeExecutionId, routeName, driverName, busPlate, incidentType, severity, description, reportedAt, reportedBy, status, resolvedAt, resolvedBy]
+      properties:
+        id: { type: string, format: uuid }
+        routeExecutionId: { type: string, format: uuid }
+        routeName: { type: string }
+        driverName: { type: string }
+        busPlate: { type: string }
+        incidentType:
+          type: integer
+          format: int32
+          enum: [1, 2, 3, 4, 255]
+          description: "Default .NET enum values: Delay=1, Breakdown=2, Accident=3, Deviation=4, Other=255."
+        severity:
+          type: integer
+          format: int32
+          enum: [1, 2, 3, 4]
+          description: "Default .NET enum values: Low=1, Medium=2, High=3, Critical=4."
+        description: { type: string }
+        reportedAt: { type: string, format: date-time }
+        reportedBy: { type: string }
+        status:
+          type: integer
+          format: int32
+          enum: [1, 2, 3, 4]
+          description: "Default .NET enum values: Open=1, InProgress=2, Resolved=3, Closed=4."
+        resolvedAt: { type: string, format: date-time, nullable: true }
+        resolvedBy: { type: string, nullable: true }
+    IncidentResponse:
+      type: object
+      required: [alertId, routeExecutionId, studentsOnBoard, recipientsNotified]
+      properties:
+        alertId: { type: string, format: uuid }
+        routeExecutionId: { type: string, format: uuid }
+        studentsOnBoard: { type: integer, format: int32 }
+        recipientsNotified: { type: integer, format: int32 }
+    Credential:
+      type: object
+      required: [qrToken, expiresAt]
+      properties:
+        qrToken: { type: string }
+        expiresAt: { type: string, format: date-time }
+    RegisterDeviceRequest:
+      type: object
+      required: [expoToken]
+      properties:
+        expoToken: { type: string, minLength: 1, maxLength: 500 }
+    ReportIncidentRequest:
+      type: object
+      required: [alertTypeId]
+      properties:
+        alertTypeId: { type: integer, format: int32, minimum: 1, maximum: 255 }
+        description: { type: string, maxLength: 1000, nullable: true }
+    ProcessScanRequest:
+      type: object
+      required: [qrToken]
+      properties:
+        qrToken: { type: string, minLength: 1, maxLength: 500 }
+        boardingType: { type: string, enum: [ON_BOARD, OFF_BOARD], nullable: true }
+    ProcessScanResponse:
+      type: object
+      required: [boardingId, alertId, parentsNotified, alreadyProcessed, boardingType]
+      properties:
+        boardingId: { type: string, format: uuid }
+        alertId: { type: string, format: uuid }
+        parentsNotified: { type: integer, format: int32 }
+        alreadyProcessed: { type: boolean }
+        boardingType: { type: string, enum: [ON_BOARD, OFF_BOARD] }
+    GuardianNotification:
+      type: object
+      required: [id, alertId, dateTimeRead, boardingType, alert]
+      properties:
+        id: { type: string, format: uuid }
+        alertId: { type: string, format: uuid }
+        dateTimeRead: { type: string, format: date-time }
+        boardingType: { type: string, enum: [ON_BOARD, OFF_BOARD], nullable: true }
+        alert: { $ref: '#/components/schemas/AlertDetail' }
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-  parameters:
-    Page:
-      name: page
-      in: query
-      schema: { type: integer, minimum: 1, default: 1 }
-    Limit:
-      name: limit
-      in: query
-      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
-  responses:
-    BadRequest:
-      description: Invalid request
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-    Unauthorized:
-      description: Missing or invalid JWT
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-    Forbidden:
-      description: Insufficient permissions
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-    Unprocessable:
-      description: Semantic validation failed
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-  schemas:
-    ErrorResponse:
-      type: object
-      required: [error, message]
-      properties:
-        error: { type: string, example: VALIDATION_ERROR }
-        message: { type: string }
-        details:
-          type: array
-          items:
-            type: object
-            properties:
-              field: { type: string }
-              message: { type: string }
-        correlationId: { type: string, format: uuid }
-    PageMeta:
-      type: object
-      properties:
-        page: { type: integer }
-        limit: { type: integer }
-        total: { type: integer }
-        totalPages: { type: integer }

@@ -2,6 +2,11 @@
 
 ## Service: School
 
+Source scope: `database` creation scripts plus migrations 005–007. The separate
+`schoo-guardian/sg-db` checkout lacks migration 007 and still declares both
+addresses as `VARCHAR(30)`. These examples describe the canonical migrated model,
+not an inspected live database.
+
 **DB Engine:** SQL Server 16.
 
 **Engine justification:**
@@ -16,13 +21,15 @@
 CREATE TABLE School (
     Id UNIQUEIDENTIFIER PRIMARY KEY,
     CityId UNIQUEIDENTIFIER NOT NULL,
-    Logo (PENDING) NOT NULL,
+    Logo VARBINARY(MAX) NOT NULL,
     Name VARCHAR(30) NOT NULL,
-    Address VARCHAR(30) NOT NULL,
-    Phone INT NOT NULL,
+    Address VARCHAR(255) NOT NULL,
+    Phone BIGINT NOT NULL,
     Email VARCHAR(50) NOT NULL,
     Website VARCHAR(100) NULL,
     Theme VARCHAR(20) NULL,
+    Latitude DECIMAL(10,7) NULL,
+    Longitude DECIMAL(10,7) NULL,
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
 ```
@@ -33,13 +40,14 @@ CREATE TABLE School (
 |--------|------|-------------|---------|
 | Id | UNIQUEIDENTIFIER | School identifier | `550e8400-...` |
 | CityId | UNIQUEIDENTIFIER | City reference | `550e8400-...` |
-| Logo | (PENDING) | School logo content | `0x89504E47` |
+| Logo | VARBINARY(MAX) | School logo content | `0x89504E47` |
 | Name | VARCHAR(30) | School name | `Central School` |
-| Address | VARCHAR(30) | School address | `10 Main St` |
-| Phone | INT | Contact phone | `6015550100` |
+| Address | VARCHAR(255) | School address after migration 007 | `10 Main St` |
+| Phone | BIGINT | Contact phone after migration 006 | `6015550100` |
 | Email | VARCHAR(50) | Contact email | `office@example.edu` |
 | Website | VARCHAR(100) | Website URL | `https://example.edu` |
 | Theme | VARCHAR(20) | Visual theme | `Blue` |
+| Latitude / Longitude | DECIMAL(10,7), nullable | Optional campus-independent school location, migration 005 | `2.9273000` / `-75.2819000` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
 
 **Modeling decisions:**
@@ -54,7 +62,9 @@ CREATE TABLE School (
 CREATE TABLE SchoolCampus (
     Id UNIQUEIDENTIFIER PRIMARY KEY,
     SchoolId UNIQUEIDENTIFIER NOT NULL,
-    Name VARCHAR(30) NOT NULL, Address VARCHAR(30) NOT NULL, 
+    Name VARCHAR(30) NOT NULL, Address VARCHAR(255) NOT NULL,
+    Latitude DECIMAL(10,7) NULL,
+    Longitude DECIMAL(10,7) NULL,
     Status VARCHAR(20) NOT NULL CHECK (Status IN ('Active', 'Inactive')) DEFAULT 'Active'
 );
 ```
@@ -66,7 +76,8 @@ CREATE TABLE SchoolCampus (
 | Id | UNIQUEIDENTIFIER | Campus identifier | `550e8400-...` |
 | SchoolId | UNIQUEIDENTIFIER | Parent school | `550e8400-...` |
 | Name | VARCHAR(30) | Campus name | `North Campus` |
-| Address | VARCHAR(30) | Campus address | `20 North St` |
+| Address | VARCHAR(255) | Campus address after migration 007 | `20 North St` |
+| Latitude / Longitude | DECIMAL(10,7), nullable | Optional campus location, migration 005 | `2.9273000` / `-75.2819000` |
 | Status | VARCHAR(20) | Lifecycle status | `Active` |
 
 **Modeling decisions:**

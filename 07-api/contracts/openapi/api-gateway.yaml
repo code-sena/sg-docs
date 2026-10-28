@@ -3,83 +3,17 @@ info:
   title: API Gateway
   version: 1.0.0
   description: |
-    Single entry point to the system. The gateway routes requests to the
-    corresponding microservices based on the path.
-
-    ## Authentication
-    Most endpoints require a valid JWT:
-    ```
-    Authorization: Bearer <access_token>
-    ```
-    The token is obtained from `POST /api/v1/auth/login` (see `iam-service.yaml`).
-
-    ## Internal headers (services only)
-    The gateway adds these headers before forwarding the request upstream:
-    - `X-User-Id`: UUID of the authenticated user
-    - `X-User-Role`: User role (ADMIN, USER, VIEWER)
-    - `X-Correlation-Id`: Trace ID to correlate logs
+    Kong is the reverse-proxy entry point. Its configured upstream routes and
+    authentication behavior are described in the gateway configuration and
+    individual service contracts. The current Kong configuration does not
+    define a public /health endpoint; therefore this document declares no
+    gateway-owned HTTP operations.
 
 servers:
   - url: http://localhost:8000
-    description: Local development
-  - url: https://api.dev.{domain}
-    description: Development
-    variables:
-      domain:
-        default: example.com
-  - url: https://api.{domain}
-    description: Production
-    variables:
-      domain:
-        default: example.com
+    description: Local Kong gateway
 
-tags:
-  - name: Health
-    description: Gateway and upstream status
-
-paths:
-  /health:
-    get:
-      summary: Gateway health check
-      description: |
-        Verifies that the gateway is running and that all upstream services
-        are responding. Does not require authentication.
-      tags:
-        - Health
-      security: []
-      responses:
-        '200':
-          description: Gateway and upstreams healthy
-          content:
-            application/json:
-              schema:
-                type: object
-                required: [status, timestamp]
-                properties:
-                  status:
-                    type: string
-                    enum: [ok, degraded]
-                  timestamp:
-                    type: string
-                    format: date-time
-                  upstreams:
-                    type: object
-                    description: Status of each microservice
-                    additionalProperties:
-                      type: string
-                      enum: [ok, degraded, down]
-              example:
-                status: ok
-                timestamp: '2024-01-15T10:30:00Z'
-                upstreams:
-                  iam-service: ok
-                  sample-service: ok
-        '503':
-          description: Gateway is starting or a critical upstream is down
-          content:
-            application/json:
-              schema:
-                $ref: './iam-service.yaml#/components/schemas/ErrorResponse'
+paths: {}
 
 components:
   securitySchemes:
