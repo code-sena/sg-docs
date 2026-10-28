@@ -50,10 +50,10 @@ Canonical labels in HUs: `administrator` · `parent`/`guardian` · `student` · 
 | HU-ROUTE-001 | Create / manage routes (stops, schedules) | Admin | Web | High | Done |
 | HU-ROUTE-002 | View my assigned route | Driver | Mobile | High | Done |
 | HU-ROUTE-004 | View child's route details | Parent / guardian | Mobile | Medium | Done |
-| HU-ROUTE-008 | Assign students to route + assigned stop | Admin | Web | High | In progress |
+| HU-ROUTE-008 | Assign students to route + assigned stop | Admin | Web | High | Done |
 | HU-FLEET-001 | Manage bus fleet (CRUD, activate/deactivate) | Admin | Web | Medium | Done |
-| HU-ROUTE-005 | Assign bus to route | Admin | Web | Medium | In progress |
-| HU-BUS-002 | Assign driver to bus | Admin | Web | High | In progress |
+| HU-ROUTE-005 | Assign bus to route | Admin | Web | Medium | Done |
+| HU-BUS-002 | Assign driver to bus | Admin | Web | High | Done |
 
 ### EP-004 — User Management / Family
 
@@ -73,7 +73,7 @@ Canonical labels in HUs: `administrator` · `parent`/`guardian` · `student` · 
 
 | HU | Title (short) | Role | Platform | Priority | Status |
 |----|---------------|------|----------|----------|--------|
-| HU-INCIDENT-001 | Report incident / emergency | Driver | Mobile | Medium | Backlog |
+| HU-INCIDENT-001 | Report incident / emergency | Driver | Mobile | Medium | Done |
 
 ### EP-007 — UI & Personalization
 

@@ -252,9 +252,10 @@ Scenario 2: Bus without GPS signal (error case)
 > **Implementation state (2026-10-22):** `sg-ms-gps` is running and ingests real device frames
 > (GT06-style) on **TCP :8842**, keeps the latest position per IMEI in memory and exposes it at
 > `GET /api/gps/devices/{imei}/location` (plus `GET /api/gps/devices/{imei}/connected` and
-> `POST /api/gps/test/{imei}` for injection). **Still missing to close this HU:**
-> persistence of positions in `Gps.GpsLocation` (the relational model already defines it),
-> a streaming endpoint for the map (Scenarios 1) and the signal-loss alert (Scenario 2).
+> `POST /api/gps/test/{imei}` for injection). Capture and current-location query are complete.
+> Per ADR-012, persistence to `Gps.GpsLocation` is intentionally omitted (latest position kept
+> in memory). Per ADR-014, the frontend consumes the location via HTTP polling. **Still missing:**
+> signal-loss alert / "no signal" marker (Scenario 2).
 
 - **Responsible service(s):** gps-service (`sg-ms-gps`)
 - **Endpoint(s) implemented:** `GET /api/gps/devices/{imei}/location` (in-memory) — *intended:* `GET /api/v1/tracking/{routeId}/location`
@@ -274,7 +275,7 @@ Scenario 2: Bus without GPS signal (error case)
 
 | Field | Value |
 |-------|-------|
-| Status | In progress |
+| Status | Done (capture + current-location query; signal-loss alert pending) |
 | Story Points | 8 |
 | Priority | Medium |
 | Target sprint | Sprint 4 |
