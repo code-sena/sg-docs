@@ -1,0 +1,14 @@
+@startuml
+ title Person creation event flow
+participant "ms-user-management" as UM
+database "SQL Server" as DB
+queue Kafka as KFK
+participant "ms-iam" as IAM
+
+UM -> DB: INSERT Person
+UM -> KFK: publishes student/driver/admin/parent.created
+KFK -> IAM: Consume evento (grupo iam)
+IAM -> DB: creates or updates Profile
+IAM -> KFK: publishes profile.created
+@enduml
+

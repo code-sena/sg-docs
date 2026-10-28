@@ -1,0 +1,9 @@
+@startuml
+ title Profile lifecycle
+[*] --> INACTIVE : create profile
+INACTIVE --> active : activate()
+active --> INACTIVE : deactivate()
+active --> [*] : Invalidar profile
+INACTIVE --> [*] : Invalidar profile
+@enduml
+

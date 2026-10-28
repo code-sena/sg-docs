@@ -1,0 +1,57 @@
+@startuml
+ title Routes, fleet, and tracking ER model
+hide methods
+entity SchoolCampus
+entity bus
+entity Route
+entity Model
+entity Brand
+entity GpsDevice
+entity GpsLocation
+entity DriverAssignemts
+entity Profile
+entity RouteStop
+entity Stop
+entity RouteBusAssignments
+entity RouteSchedule
+entity RouteExecution
+entity RouteStudentAssignments
+entity Boarding {
+  * Id : uuid
+  --
+  RouteExecutionId : uuid
+  ProfileId : uuid
+  RouteStopId : uuid
+  DateTime : datetime2
+  BoardingType : enum
+}
+entity Alert
+entity AlertType
+entity AlertRecipient
+entity DeviceToken
+
+SchoolCampus ||--o{ bus : assigns
+SchoolCampus ||--o{ Route : origina
+Model ||--o{ bus : type
+Brand ||--o{ Model : brands
+GpsDevice ||--o{ GpsLocation : reports
+GpsDevice ||--|| bus : equips
+bus ||--o{ DriverAssignemts : drives
+Profile ||--o{ DriverAssignemts : assigned
+Route ||--o{ RouteStop : contains
+Stop ||--o{ RouteStop : included
+Route ||--o{ RouteBusAssignments : operates
+bus ||--o{ RouteBusAssignments : operates
+RouteBusAssignments ||--o{ RouteSchedule : programa
+Route ||--o{ RouteExecution : executes
+bus ||--o{ RouteExecution : recorre
+Profile ||--o{ RouteExecution : drives
+RouteStop ||--o{ RouteStudentAssignments : boards
+Profile ||--o{ RouteStudentAssignments : assigned
+RouteExecution ||--o{ Boarding : records
+RouteExecution ||--o{ Alert : generates
+AlertType ||--o{ Alert : classifies
+Alert ||--o{ AlertRecipient : notifies
+Profile ||--o{ DeviceToken : records
+@enduml
+

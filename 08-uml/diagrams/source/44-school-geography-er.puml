@@ -1,0 +1,40 @@
+@startuml
+ title School and geography ER model
+hide methods
+entity City {
+  * Id : uuid
+  --
+  Name : varchar
+  Country : varchar
+}
+entity School {
+  * Id : uuid
+  --
+  CityId : uuid
+  Name : varchar
+  Logo : varbinary
+  Status : status
+}
+entity SchoolCampus {
+  * Id : uuid
+  --
+  SchoolId : uuid
+  Name : varchar
+  Address : varchar
+}
+entity SchoolAdmin {
+  * Id : uuid
+  --
+  SchoolId : uuid
+  ProfileId : uuid
+}
+entity Stop
+entity Profile
+
+City ||--o{ School : ubica
+City ||--o{ Stop : ubica
+School ||--o{ SchoolCampus : has
+School ||--o{ SchoolAdmin : administra
+SchoolCampus ||--o{ Profile : adscribe
+@enduml
+

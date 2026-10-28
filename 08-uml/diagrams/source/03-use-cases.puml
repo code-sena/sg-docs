@@ -1,0 +1,62 @@
+@startuml
+ title Use case diagram
+left to right direction
+actor SuperAdmin as Super
+actor Administrator as Admin
+actor Guardian
+actor Driver
+actor Student
+actor system
+actor "device GPS VT03F" as GPS
+
+rectangle "School Guardian" {
+  usecase "start session and renovar session" as UC1
+  usecase "recover password" as UC2
+  usecase "Gestionar cuentas of user" as UC3
+  usecase "Gestionar families and vincular students" as UC4
+  usecase "Gestionar schools and sedes" as UC5
+  usecase "Gestionar fleet of buses" as UC6
+  usecase "assign Driver a bus" as UC7
+  usecase "Gestionar routes and stops" as UC8
+  usecase "assign bus a route" as UC9
+  usecase "assign students a route" as UC10
+  usecase "query route assigned" as UC11
+  usecase "start and finish trip" as UC12
+  usecase "record boarding and alighting per QR" as UC13
+  usecase "Visualizar code QR" as UC14
+  usecase "receive notifications and alerts" as UC15
+  usecase "Monitorear bus in time real" as UC16
+  usecase "report incident" as UC17
+  usecase "Gestionar profile and data of contacto" as UC18
+  usecase "Personalizar theme e language" as UC19
+}
+Super --> UC1
+Super --> UC3
+Super --> UC5
+Super --> UC18
+Admin --> UC1
+Admin --> UC3
+Admin --> UC4
+Admin --> UC6
+Admin --> UC7
+Admin --> UC8
+Admin --> UC9
+Admin --> UC10
+Admin --> UC18
+Guardian --> UC1
+Guardian --> UC11
+Guardian --> UC15
+Guardian --> UC16
+Driver --> UC1
+Driver --> UC11
+Driver --> UC12
+Driver --> UC13
+Driver --> UC17
+Student --> UC1
+Student --> UC11
+Student --> UC14
+system --> UC15
+system --> UC16
+GPS --> UC16
+@enduml
+

@@ -1,0 +1,25 @@
+@startuml
+ title Account creation event flow
+autonumber
+actor Administrator as Admin
+participant "application web" as app
+participant "API Gateway" as GW
+participant "user-management-service" as UM
+queue Kafka
+participant "iam-service" as IAM
+database "database of data" as DB
+
+Admin -> app: enters data and role
+app -> GW: request of creation
+GW -> UM: create Person
+UM -> UM: validates document and data
+UM -> DB: stores Person
+UM -> Kafka: publishes evento of person created
+Kafka -> IAM: delivery evento
+IAM -> IAM: creates Profile with role
+IAM -> DB: stores Profile active
+IAM --> UM: confirms processing
+UM --> app: account created
+app --> Admin: confirmation
+@enduml
+

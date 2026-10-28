@@ -1,0 +1,13 @@
+@startuml
+ title GPS technical flow
+participant "Rastreador GPS" as Device
+participant "gps-backend TCP :8842" as GPS
+actor "web/mobile" as Client
+
+Device -> GPS: Trama binaria (login / heartbeat / location)
+GPS -> GPS: Decodifica and saves in memoria
+GPS --> Device: ACK with CRC-16
+Client -> GPS: GET /API/gps/devices/{imei}/location
+GPS --> Client: last position known
+@enduml
+

@@ -1,0 +1,34 @@
+@startuml
+ title Use cases summary
+left to right direction
+actor Guardian as Parent
+actor Student as Student
+actor Driver as Driver
+actor Administrator as Admin
+actor SuperAdmin as Super
+
+rectangle "School Guardian" {
+  usecase "start session" as Login
+  usecase "query routes and stops" as Routes
+  usecase "query location of the bus" as Location
+  usecase "record boarding or alighting" as Boarding
+  usecase "Gestionar users and families" as Users
+  usecase "Gestionar fleet and routes" as Fleet
+  usecase "Gestionar schools and administradores" as Schools
+}
+Parent --> Login
+Parent --> Routes
+Parent --> Location
+Student --> Login
+Student --> Routes
+Driver --> Login
+Driver --> Routes
+Driver --> Boarding
+Admin --> Login
+Admin --> Users
+Admin --> Fleet
+Super --> Login
+Super --> Schools
+Super --> Users
+@enduml
+

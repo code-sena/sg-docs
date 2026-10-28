@@ -1,0 +1,32 @@
+@startuml
+ title QR boarding
+autonumber
+actor Driver
+participant "application mobile" as app
+participant "API Gateway" as GW
+participant "notification-service" as NTF
+participant "iam-service" as IAM
+participant "route-service" as RTE
+queue Kafka
+participant "Proveedor push" as Push
+actor Guardian
+
+Driver -> app: scans QR of boarding
+app -> GW: request of boarding
+GW -> NTF: Procesa scan
+NTF -> IAM: resolves identity
+IAM --> NTF: identity of the Student
+NTF -> RTE: validates assignment a route active
+alt Student not valid or ya abordó
+  RTE --> NTF: Rechaza
+  NTF --> app: error of validación
+else Student valid
+  NTF -> NTF: records Boarding (BOARDING)
+  NTF -> Kafka: publishes evento of boarding
+  Kafka -> Push: delivery evento
+  Push -> Guardian: notifies boarding, time and stop
+  NTF --> app: boarding recorded
+  app --> Driver: Student confirmado
+end
+@enduml
+

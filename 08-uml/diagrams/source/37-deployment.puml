@@ -1,0 +1,35 @@
+@startuml
+ title Deployment
+node "Docker Host / WSL2" {
+  frame "sg-services-network" {
+    node "kong:3.9\n8000/8443/8001" as Kong
+    node "ms-iam:8080" as IAM
+    node "ms-user-management:8080" as UM
+    node "ms-school-management:8080/5001" as School
+    node "ms-fleet:8080" as Fleet
+    node "ms-route:8080" as Route
+    node "ms-notification:8080" as Notification
+    node "ms-forgot-information:8080" as Forgot
+    node "ms-configuration:8080" as Config
+    node "ms-exceptional:8080" as Exceptional
+    node "kafka:4.1.0\n9092" as Kafka
+    database "sqlserver:2022\n1433" as DB
+    node "Liquibase migrations" as LB
+  }
+  folder "Volumes" {
+    database "SQL data" as V1
+    database "Kafka data" as V2
+  }
+}
+LB --> DB
+DB --> V1
+Kafka --> V2
+Kong --> IAM
+Kong --> UM
+Kong --> School
+Kong --> Fleet
+Kong --> Route
+Kong --> Notification
+Kong --> Forgot
+@enduml
+

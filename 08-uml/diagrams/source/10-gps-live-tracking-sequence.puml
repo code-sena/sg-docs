@@ -1,0 +1,21 @@
+@startuml
+ title Live GPS tracking
+autonumber
+participant "device GPS VT03F" as Device
+participant "gps-service" as GPS
+database "database of data" as DB
+queue Kafka
+participant "bus-service" as bus
+participant "WebSocket/SSE" as Edge
+actor Guardian
+
+Device -> GPS: sends position per TCP
+GPS -> GPS: validates IMEI
+GPS -> DB: stores GpsLocation
+GPS -> Kafka: publishes position recibida
+Kafka -> bus: delivery evento
+bus -> bus: updates location of the bus
+bus -> Edge: new position
+Edge -> Guardian: updates map
+@enduml
+

@@ -1,0 +1,10 @@
+@startuml
+ title Alert lifecycle
+[*] --> CREATED : create alert
+CREATED --> DELIVERING : start delivery
+DELIVERING --> DELIVERED : confirm delivery
+DELIVERING --> FAILED : Agotar retries
+FAILED --> DELIVERING : Reintentar with waits exponencial
+DELIVERED --> [*] : Atendida or expirada
+@enduml
+

@@ -1,0 +1,18 @@
+@startuml
+ title Login sequence
+actor user as U
+participant "client web/mobile" as C
+participant Kong as G
+participant IAM as I
+database "SQL Server" as D
+
+U -> C: enters email and password
+C -> G: POST /API/v1/auth/login
+G -> I: Reenvía request
+I -> D: looks profile and validates credencial
+D --> I: profile / status
+I --> G: JWT and session or error
+G --> C: Respuesta
+C --> U: access or message of error
+@enduml
+

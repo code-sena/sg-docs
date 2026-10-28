@@ -1,0 +1,25 @@
+@startuml
+ title Bus and route assignment
+autonumber
+actor Administrator as Admin
+participant "application web" as app
+participant "API Gateway" as GW
+participant "route-service" as RTE
+queue Kafka
+participant "gps-service" as GPS
+participant "bus-service" as bus
+
+Admin -> app: assigns bus a route
+app -> GW: request of assignment
+GW -> RTE: create RouteBusAssignment
+RTE -> RTE: validates uniqueness of assignment
+RTE -> Kafka: publishes bus assigned a route
+Kafka -> GPS: delivery evento
+GPS -> bus: queries device GPS of the bus
+bus --> GPS: device associated
+GPS -> GPS: Asocia tracking a route
+GPS --> RTE: confirms assignment
+RTE --> app: assignment completada
+app --> Admin: confirmation
+@enduml
+

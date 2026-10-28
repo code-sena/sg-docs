@@ -1,0 +1,22 @@
+@startuml
+ title Incident report and recipients
+start
+:Driver selects report incident;
+:enters type, descripción and location;
+if (¿is there trip active?) then (yes)
+  :validate data;
+  :save alert;
+  :determine School and guardians a bordo;
+  fork
+    :notify al School;
+  fork again
+    :notify a the guardians;
+  end fork
+  :record trazabilidad;
+else (not)
+  :request start trip;
+  stop
+endif
+stop
+@enduml
+

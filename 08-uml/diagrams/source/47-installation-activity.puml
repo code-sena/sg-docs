@@ -1,0 +1,16 @@
+@startuml
+ title Installation workflow
+start
+:5.1 clone repositorios;
+:5.2 create network sg-services-network;
+:5.3 database of data and migrations;
+:5.4 Kafka and topics;
+:5.5 Microservicios .NET and Java;
+:5.6 API Gateway Kong;
+:5.7 Frontend web;
+:5.8 application mobile;
+:5.9 service GPS;
+:5.10 check order of startup;
+stop
+@enduml
+

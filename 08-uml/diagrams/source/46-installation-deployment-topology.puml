@@ -1,0 +1,47 @@
+@startuml
+ title Installation deployment topology
+left to right direction
+node "client" {
+  artifact "web Angular :4200" as web
+  artifact "mobile Expo / React Native" as MOV
+}
+node "Kong 3.9 DB-less\n:8000 / :8443" as KONG
+node "Backend Docker" {
+  component "ms-iam\nJava 21" as IAM
+  component "ms-user-management\n.NET 10" as UM
+  component "ms-school-management\n.NET 10" as SM
+  component "ms-fleet\n.NET 10" as FL
+  component "ms-route\n.NET 10" as RT
+  component "ms-notification\n.NET 10" as NT
+  component "ms-configuration\n.NET 10" as CF
+  component "ms-exceptional\n.NET 10" as EX
+  component "ms-forgot-information\n.NET 10" as FI
+  queue "Kafka 4.1.0 KRaft :9092" as Kafka
+  database "SQL Server 2022 :1433" as DB
+  component "gps-backend Java 21 :8080" as GPS
+}
+web --> KONG
+MOV --> KONG
+KONG --> IAM
+KONG --> UM
+KONG --> SM
+KONG --> FL
+KONG --> RT
+KONG --> NT
+KONG --> FI
+UM --> SM : gRPC :5001
+IAM --> SM : gRPC :5001
+UM --> Kafka
+IAM --> Kafka
+NT --> Kafka
+IAM --> DB
+UM --> DB
+SM --> DB
+FL --> DB
+RT --> DB
+NT --> DB
+CF --> DB
+EX --> DB
+FI --> DB
+@enduml
+

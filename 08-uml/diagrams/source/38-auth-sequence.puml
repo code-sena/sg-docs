@@ -1,0 +1,15 @@
+@startuml
+ title Authentication flow
+participant "user (web/mobile)" as U
+participant Kong as K
+participant "ms-iam" as IAM
+participant "service of domain" as SV
+
+U -> K: POST /API/v1/auth/login
+K -> IAM: credentials
+IAM --> U: Access 15 min + cookie refresh 30 days
+U -> K: GET /fleet/API/buses (Bearer)
+K -> SV: Reenvía token
+SV --> U: 200 + data per School
+@enduml
+

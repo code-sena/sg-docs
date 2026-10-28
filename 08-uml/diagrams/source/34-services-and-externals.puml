@@ -1,0 +1,57 @@
+@startuml
+ title Services and external systems
+left to right direction
+actor "web Angular" as web
+actor "mobile Expo" as Mobile
+cloud "Cloudflare Tunnel" as CF
+component "API Gateway Kong :8000" as Kong
+component "ms-iam" as IAM
+component "ms-user-management" as UM
+component "ms-school-management" as SM
+component "ms-fleet" as Fleet
+component "ms-route" as Route
+component "ms-notification" as Notification
+component "ms-forgot-information" as Forgot
+component "ms-configuration" as Config
+component "ms-exceptional" as Exceptional
+component "gps-backend" as GPS
+queue Kafka
+database "SQL Server: school-guardian" as DB
+actor "Rastreadores GPS" as GPSDevices
+cloud "Expo Push" as Expo
+cloud "Twilio Verify" as Twilio
+cloud SMTP
+
+web --> CF
+Mobile --> CF
+CF --> Kong
+Kong --> IAM
+Kong --> UM
+Kong --> SM
+Kong --> Fleet
+Kong --> Route
+Kong --> Notification
+Kong --> Forgot
+UM --> SM
+Fleet --> UM
+Route --> Fleet
+Notification --> UM
+Notification --> Route
+Notification --> Expo
+Forgot --> IAM
+Forgot --> Twilio
+Forgot --> SMTP
+IAM <--> Kafka
+UM <--> Kafka
+Notification <--> Kafka
+GPSDevices --> GPS : TCP
+IAM --> DB
+UM --> DB
+SM --> DB
+Fleet --> DB
+Route --> DB
+Notification --> DB
+Config --> DB
+Exceptional --> DB
+@enduml
+

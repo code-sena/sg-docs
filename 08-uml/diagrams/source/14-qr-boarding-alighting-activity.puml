@@ -1,0 +1,25 @@
+@startuml
+ title QR boarding and alighting
+start
+:Driver scans QR;
+:system resolves identity of the Student;
+if (¿is a boarding?) then (yes)
+  if (¿is assigned a the route active?) then (yes)
+    :records Boarding type BOARDING;
+  else (not)
+    :Rechaza the boarding;
+    stop
+  endif
+else (not)
+  if (¿exists boarding active?) then (yes)
+    :records Boarding type EXIT;
+  else (not)
+    :Rechaza the alighting;
+    stop
+  endif
+endif
+:publishes evento of boarding or alighting;
+:sends notification al Guardian;
+stop
+@enduml
+

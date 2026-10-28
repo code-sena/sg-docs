@@ -1,0 +1,9 @@
+@startuml
+ title GPS device lifecycle
+[*] --> REGISTERED : record IMEI
+REGISTERED --> CONNECTED : receive posiciones
+CONNECTED --> DISCONNECTED : loss of signal
+DISCONNECTED --> CONNECTED : Reanudar recepción
+CONNECTED --> [*] : Retirar device
+@enduml
+

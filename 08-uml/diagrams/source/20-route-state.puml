@@ -1,0 +1,9 @@
+@startuml
+ title Route lifecycle
+[*] --> CREATED : create route
+CREATED --> active : activate() [configuración completa]
+active --> INACTIVE : deactivate()
+INACTIVE --> active : activate()
+CREATED --> [*] : delete [without trips active]
+@enduml
+

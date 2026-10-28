@@ -1,0 +1,18 @@
+@startuml
+ title Student route assignment
+start
+:Administrator selects Student and route;
+if (¿user and route valid and active?) then (yes)
+  :select stops of boarding and alighting;
+  if (¿the stops belong a the route?) then (yes)
+    :save assignment;
+    :confirm result;
+  else (not)
+    :Informar error and not save;
+  endif
+else (not)
+  :Informar error and not save;
+endif
+stop
+@enduml
+

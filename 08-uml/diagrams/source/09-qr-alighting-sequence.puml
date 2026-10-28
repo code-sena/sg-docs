@@ -1,0 +1,29 @@
+@startuml
+ title QR alighting
+autonumber
+actor Driver
+participant "application mobile" as app
+participant "API Gateway" as GW
+participant "notification-service" as NTF
+participant "route-service" as RTE
+queue Kafka
+participant "Proveedor push" as Push
+actor Guardian
+
+Driver -> app: scans QR of alighting
+app -> GW: request of alighting
+GW -> NTF: Procesa scan
+NTF -> RTE: checks boarding active
+alt not exists boarding active
+  RTE --> NTF: not encontrado
+  NTF --> app: error: alighting without boarding
+else boarding active
+  NTF -> NTF: records Boarding (EXIT)
+  NTF -> Kafka: publishes evento of alighting
+  Kafka -> Push: delivery evento
+  Push -> Guardian: notifies alighting, location and time
+  NTF --> app: alighting recorded
+  app --> Driver: Student confirmado
+end
+@enduml
+

@@ -1,0 +1,26 @@
+@startuml
+ title Trip start
+autonumber
+actor Driver
+participant "application mobile" as app
+participant "API Gateway" as GW
+participant "route-service" as RTE
+queue Kafka
+participant "notification-service" as NTF
+database "database of data" as DB
+
+Driver -> app: selects "start trip"
+app -> GW: request of start
+GW -> RTE: create RouteExecution
+RTE -> RTE: Comprueba trip active of the bus
+alt Ya exists trip active
+  RTE --> app: error: trip active
+else not is there trip active
+  RTE -> DB: saves execution IN_PROGRESS
+  RTE -> Kafka: publishes change of status
+  Kafka -> NTF: delivery evento
+  NTF --> app: confirms start
+  app --> Driver: trip iniciado
+end
+@enduml
+

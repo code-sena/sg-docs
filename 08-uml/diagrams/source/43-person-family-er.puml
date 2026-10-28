@@ -1,0 +1,40 @@
+@startuml
+ title People and families ER model
+hide methods
+entity Person {
+  * Id : uuid
+  --
+  Name : varchar
+  LastName : varchar
+  IdentificationNumber : varchar
+  Email : varchar
+  Phone : bigint
+  DateBirth : date
+}
+entity Profile
+entity Family {
+  * Id : uuid
+  --
+  Name : varchar
+  Status : status
+}
+entity FamilyMember {
+  * Id : uuid
+  --
+  FamilyId : uuid
+  ProfileId : uuid
+  RelationshipType : enum
+}
+entity DriverLicense {
+  * Id : uuid
+  --
+  ProfileId : uuid
+  LicenseNumber : varchar
+  LicenseExpirationDate : date
+}
+Person ||--o{ Profile : is
+Family ||--o{ FamilyMember : incluye
+Profile ||--o{ FamilyMember : belongs
+Profile ||--o{ DriverLicense : has
+@enduml
+

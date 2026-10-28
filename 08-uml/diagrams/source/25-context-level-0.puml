@@ -1,0 +1,30 @@
+@startuml
+ title Context diagram, level 0
+left to right direction
+actor Administrator
+actor SuperAdmin
+actor Guardian
+actor Driver
+actor Student
+actor School
+actor "device GPS VT03F" as GPS
+rectangle "School Guardian" as system
+cloud "Proveedor push / SMS / email" as Push
+cloud "service of maps" as maps
+
+Administrator --> system : data of management
+SuperAdmin --> system : data of management
+Guardian --> system : queries routes
+Driver --> system : trips and escaneos
+Student --> system : QR and consultas
+GPS --> system : position TCP
+system --> Guardian : alerts
+system --> Driver : notifications
+system --> School : incidents
+system --> Student : QR vigente
+system --> Administrator : status
+system --> SuperAdmin : status
+system --> Push : Solicitudes of sending
+system --> maps : data of map
+@enduml
+

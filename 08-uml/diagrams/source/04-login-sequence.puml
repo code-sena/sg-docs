@@ -1,0 +1,29 @@
+@startuml
+ title Login and token renewal
+autonumber
+actor user
+participant "application client" as app
+participant "API Gateway" as GW
+participant "iam-service" as IAM
+database Redis
+database "database of data" as DB
+
+user -> app: enters document and password
+app -> GW: request of authentication
+GW -> IAM: validates credentials
+IAM -> DB: queries Profile (status and role)
+DB --> IAM: data of the profile
+alt profile inactive or credentials inválidas
+  IAM --> app: error 401
+else profile active and credentials valid
+  IAM -> Redis: records session and revocación
+  IAM --> app: Access token (1 h) and refresh token (7 days)
+end
+app --> user: shows result by role
+...
+app -> GW: requests renewal with refresh token
+GW -> IAM: validates refresh token
+IAM -> Redis: checks that not esté revocado
+IAM --> app: new par of tokens
+@enduml
+

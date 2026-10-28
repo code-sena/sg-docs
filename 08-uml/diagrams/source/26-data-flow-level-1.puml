@@ -1,0 +1,68 @@
+@startuml
+ title Data flow diagram, level 1
+left to right direction
+actor Administrator as Admin
+actor Guardian
+actor Driver
+actor Student
+actor "device GPS" as GPS
+
+rectangle "P1 authentication" as P1
+rectangle "P3 users and families" as P3
+rectangle "P4 fleet" as P4
+rectangle "P5 routes" as P5
+rectangle "P6 schools" as P6
+rectangle "P7 queries of route" as P7
+rectangle "P8 alerts and notifications" as P8
+rectangle "P9 trips" as P9
+rectangle "P10 boardings" as P10
+rectangle "P11 incidents" as P11
+rectangle "P12 Telemetría GPS" as P12
+
+database people
+database families
+database buses
+database routes
+database stops
+database Asignaciones
+database schools
+database "profiles and roles" as profiles
+database Ejecuciones
+database boardings
+database alerts
+database Posiciones
+database Dispositivos
+
+Admin --> P3 : people and families
+Admin --> P4 : fleet
+Admin --> P5 : routes and asignaciones
+Admin --> P6 : schools
+Guardian --> P1 : credentials
+Guardian --> P7 : queries route
+Driver --> P1 : credentials
+Driver --> P9 : start and end trip
+Driver --> P10 : QR boarding / alighting
+Driver --> P11 : incident
+Student --> P10 : requests QR
+GPS --> P12 : position
+P3 --> people
+P3 --> families
+P4 --> buses
+P5 --> routes
+P5 --> stops
+P5 --> Asignaciones
+P6 --> schools
+P1 --> profiles
+P7 --> routes
+P9 --> Ejecuciones
+P10 --> boardings
+P8 --> alerts
+P11 --> alerts
+P12 --> Posiciones
+P12 --> Dispositivos
+P8 --> Guardian : alerts
+P8 --> School : incidents
+P11 --> P8 : alert
+P12 --> P8 : loss of signal
+@enduml
+

@@ -1,0 +1,27 @@
+@startuml
+ title Incident report
+autonumber
+actor Driver
+participant "application mobile" as app
+participant "API Gateway" as GW
+participant "notification-service" as NTF
+participant "route-service" as RTE
+database "database of data" as DB
+participant "Proveedor push" as Push
+actor Guardian
+actor School
+
+Driver -> app: reports type, descripción and location
+app -> GW: request of incident
+GW -> NTF: creates Alert
+NTF -> RTE: queries execution active and students a bordo
+RTE --> NTF: students and School
+NTF -> DB: saves Alert and AlertRecipient
+NTF -> Push: notifies al School
+Push -> School: alert of incident
+NTF -> Push: notifies a guardians a bordo
+Push -> Guardian: alert of the trip
+NTF --> app: incident recorded
+app --> Driver: confirmation
+@enduml
+

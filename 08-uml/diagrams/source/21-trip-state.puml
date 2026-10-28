@@ -1,0 +1,10 @@
+@startuml
+ title Trip lifecycle
+[*] --> SCHEDULED : Programar execution
+SCHEDULED --> IN_PROGRESS : Driver starts
+IN_PROGRESS --> FINISHED : finish [without alightings pending]
+IN_PROGRESS --> CANCELLED : Driver cancela
+FINISHED --> SCHEDULED : Programar new execution
+CANCELLED --> SCHEDULED : Programar new execution
+@enduml
+

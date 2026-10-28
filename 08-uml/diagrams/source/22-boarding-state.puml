@@ -1,0 +1,7 @@
+@startuml
+ title Boarding lifecycle
+[*] --> QR_SCANNED : scan QR
+QR_SCANNED --> BOARDING_REGISTERED : validate BOARDING or EXIT
+QR_SCANNED --> [*] : Rechazar scan
+@enduml
+

@@ -1,0 +1,16 @@
+@startuml
+ title QR and guardian notification
+participant "client QR" as Client
+participant "ms-notification" as Notification
+queue Kafka as KFK
+participant "ms-user-management" as UM
+participant "Expo Push" as Expo
+
+Client -> Notification: POST /API/v1/notifications/scan
+Notification -> KFK: publishes student.scanned
+KFK -> Notification: Consumidor lee evento
+Notification -> UM: queries guardians of the Student
+UM --> Notification: Lista of guardians
+Notification -> Expo: sends notification push
+@enduml
+

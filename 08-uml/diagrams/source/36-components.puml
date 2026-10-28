@@ -1,0 +1,30 @@
+@startuml
+ title Components
+left to right direction
+component "Kong 3.9 :8000" as KONG
+component "ms-iam\nJava/Spring\nREST auth, profiles\nJWT HS256" as IAM
+component "ms-user-management\n.NET\nREST users/families\ngRPC client" as UM
+component "ms-school-management\n.NET\nREST schools\ngRPC :5001" as School
+component "ms-fleet\n.NET\nREST buses / tipos" as Fleet
+component "ms-route\n.NET\nREST routes / stops / trips\ngRPC server" as Route
+component "ms-notification\n.NET\nREST notifications\nConsumidor L3" as Notification
+component "ms-forgot-information\n.NET\nREST password / email / phone" as Forgot
+component "ms-configuration\n.NET" as Config
+component "ms-exceptional\n.NET" as Exceptional
+component "gps-backend\nJava\nTCP :8842 + REST" as GPS
+
+KONG --> IAM
+KONG --> UM
+KONG --> School
+KONG --> Fleet
+KONG --> Route
+KONG --> Notification
+KONG --> Forgot
+UM --> School : gRPC
+Fleet --> UM : HTTP
+Route --> Fleet : HTTP
+Notification --> UM : HTTP
+Notification --> Route : HTTP
+Forgot --> IAM : HTTP / API key
+@enduml
+

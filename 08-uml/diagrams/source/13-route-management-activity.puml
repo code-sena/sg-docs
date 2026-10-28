@@ -1,0 +1,16 @@
+@startuml
+ title Route management
+start
+:Administrator selects new route;
+:enters name and School;
+repeat
+  :adds stops in order;
+  :defines schedules;
+repeat while (¿is there stops or route duplicate?) is (yes)
+:validates that the route pertenezca al School;
+:saves route and stops;
+:publishes evento of route created;
+:notifies a services dependent;
+stop
+@enduml
+

@@ -1,0 +1,142 @@
+@startuml
+ title Class model
+class Person {
+  id: UUID
+  name: String
+  lastName: String
+  identificationType: IdentificationType
+  identificationNumber: String
+  email: Email
+  phone: PhoneNumber
+  residenceAddress: String
+  dateBirth: Date
+  status: Status
+}
+class Family {
+  id: UUID
+  name: String
+  observations: String
+  status: Status
+}
+class Profile {
+  id: UUID
+  personId: UUID
+  campuseId: UUID
+  roleId: UUID
+  status: Status
+}
+class School {
+  id: UUID
+  cityId: UUID
+  name: String
+  address: String
+  phone: PhoneNumber
+  email: Email
+  theme: String
+  status: Status
+}
+class bus {
+  id: UUID
+  plate: String
+  capacity: int
+  soatValidity: Date
+  campuseId: UUID
+  gpsDeviceId: UUID
+  modelId: UUID
+  status: Status
+}
+class Route {
+  id: UUID
+  name: String
+  targetSector: String
+  campuseId: UUID
+  startTime: Time
+  endTime: Time
+  status: Status
+}
+class Stop {
+  id: UUID
+  cityId: UUID
+  schoolId: UUID
+  name: String
+  address: String
+  longitude: Decimal
+  latitude: Decimal
+  status: Status
+}
+class RouteStop {
+  id: UUID
+  routeId: UUID
+  stopId: UUID
+  orderSequence: int
+  status: Status
+}
+class RouteBusAssignment {
+  id: UUID
+  busId: UUID
+  routeId: UUID
+  status: Status
+}
+class RouteStudentAssignment {
+  id: UUID
+  profileId: UUID
+  routeStopId: UUID
+  status: Status
+}
+class GpsDevice {
+  id: UUID
+  imei: String
+  lastConnection: DateTime
+  gpsStatus: Boolean
+}
+class GpsLocation {
+  id: UUID
+  gpsDeviceId: UUID
+  latitude: Decimal
+  longitude: Decimal
+  speed: Decimal
+  course: Decimal
+  dateTime: DateTime
+}
+class RouteExecution {
+  id: UUID
+  busId: UUID
+  driverId: UUID
+  routeId: UUID
+  startDateTime: DateTime
+  endDateTime: DateTime
+  status: Status
+}
+class Boarding {
+  id: UUID
+  profileId: UUID
+  routeExecutionId: UUID
+  routeStopId: UUID
+  boardingType: BoardingType
+  dateTime: DateTime
+}
+class Alert {
+  id: UUID
+  alertTypeId: UUID
+  profileId: UUID
+  routeExecutionId: UUID
+  description: String
+  dateTime: DateTime
+  acknowledgedAt: DateTime
+}
+
+Person "1" --> "0..1" Profile : has
+Person "1" --> "1..*" Family : includes
+Route "1" --> "1..*" RouteStop : contains
+Route "1" --> "0..*" RouteBusAssignment : assigns
+RouteStop "1" --> "0..*" RouteStudentAssignment : assigns
+Route "1" --> "0..*" RouteExecution : executes
+bus "1" --> "0..1" GpsDevice : installs
+GpsDevice "1" --> "0..*" GpsLocation : generates
+bus "1" --> "0..*" RouteBusAssignment : participa
+bus "1" --> "0..*" RouteExecution : operates
+Boarding --> Profile : Student
+Boarding --> RouteExecution : belongs
+Alert --> RouteExecution : references
+@enduml
+

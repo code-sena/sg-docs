@@ -1,0 +1,17 @@
+@startuml
+ title GPS alert
+start
+:receive position GPS;
+if (¿is within of the threshold?) then (yes)
+  :update location of the bus;
+  -->[next position] start
+else (not)
+  :detect loss of signal;
+  :publish evento;
+  :create alert;
+  :send notification;
+  :show last position como without signal;
+endif
+stop
+@enduml
+

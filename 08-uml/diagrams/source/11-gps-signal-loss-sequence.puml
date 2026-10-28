@@ -1,0 +1,23 @@
+@startuml
+ title GPS signal loss alert
+autonumber
+participant "Temporizador of signal" as Timer
+participant "gps-service" as GPS
+queue Kafka
+participant "notification-service" as NTF
+participant "Proveedor push" as Push
+actor Guardian
+
+Timer -> GPS: queries last position
+GPS -> GPS: Evalúa threshold of signal
+alt within of the threshold
+  GPS -> GPS: Continúa monitoreo
+else is supera the threshold
+  GPS -> Kafka: publishes loss of signal
+  Kafka -> NTF: delivery evento
+  NTF -> NTF: creates alert
+  NTF -> Push: sends last position known
+  Push -> Guardian: alert without signal
+end
+@enduml
+

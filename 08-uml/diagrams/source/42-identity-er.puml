@@ -1,0 +1,37 @@
+@startuml
+ title Identity ER model
+hide methods
+entity Role {
+  * ID : tinyint
+  --
+  Name : varchar
+  Status : status
+}
+entity Permissions
+entity PermissionsRole
+entity Profile {
+  * Id : uuid
+  --
+  PersonId : uuid
+  CampuseId : uuid
+  PasswordHash : varchar
+  RoleId : tinyint
+  Status : status
+}
+entity SessionProfile {
+  * ID : int
+  --
+  ProfileID : uuid
+  DateStart : datetime2
+  DateEnd : datetime2
+  StatusSession : status
+}
+entity TermsAcceptance
+
+Role ||--o{ Profile : has
+Role ||--o{ PermissionsRole : groups
+Permissions ||--o{ PermissionsRole : otorga
+Profile ||--o{ SessionProfile : abre
+Profile ||--o{ TermsAcceptance : acepta
+@enduml
+

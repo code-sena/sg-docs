@@ -1,0 +1,29 @@
+@startuml
+ title System context
+left to right direction
+actor Administrator
+actor SuperAdmin
+actor Guardian
+actor Driver
+actor Student
+cloud "device GPS VT03F" as GPS
+rectangle "School Guardian" as system
+rectangle "API Gateway" as Gateway
+rectangle "services backend\nIAM, users, schools,\nnotificaciones, fleet, routes,\nGPS and configuración" as services
+database "database of data relational\nesquema per service" as DB
+queue "Kafka" as Kafka
+database "Redis" as Redis
+
+Administrator --> system
+SuperAdmin --> system
+Guardian --> system
+Driver --> system
+Student --> system
+system --> Gateway
+Gateway --> services
+GPS --> services : TCP
+services --> DB
+services --> Kafka
+services --> Redis
+@enduml
+

@@ -1,0 +1,15 @@
+@startuml
+ title Trip completion
+start
+:Driver requests finish trip;
+:query execution active;
+while (¿is there students without alighting?) is (yes)
+  :identify students pending;
+  :request al Driver record alightings;
+endwhile (not)
+:finish execution of route;
+:publish evento of finalización;
+:notify a guardians;
+stop
+@enduml
+

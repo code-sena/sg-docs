@@ -1,0 +1,44 @@
+@startuml
+ title Architecture overview
+left to right direction
+component "web Angular" as web
+component "mobile React Native / Expo" as MOB
+component "Kong API Gateway :8000" as GW
+component "IAM" as IAM
+component "management of users" as USR
+component "schools and sedes" as SCH
+component "fleet and drivers" as FLT
+component "routes and stops" as RTE
+component "notifications and boardings" as NOT
+component "GPS\npendiente of completar" as GPS
+component "recovery of account" as FORGOT
+queue Kafka
+database "SQL Server" as DB
+cloud SMTP
+cloud "Twilio Verify" as TWILIO
+
+web --> GW
+MOB --> GW
+GW --> IAM
+GW --> USR
+GW --> SCH
+GW --> FLT
+GW --> RTE
+GW --> NOT
+GW --> FORGOT
+GW ..> GPS : service objetivo
+IAM --> DB
+USR --> DB
+SCH --> DB
+FLT --> DB
+RTE --> DB
+NOT --> DB
+FORGOT --> DB
+IAM <--> Kafka
+RTE <--> Kafka
+NOT <--> Kafka
+FORGOT --> IAM
+FORGOT --> SMTP
+FORGOT --> TWILIO
+@enduml
+

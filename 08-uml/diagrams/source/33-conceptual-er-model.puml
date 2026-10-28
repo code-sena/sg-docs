@@ -1,0 +1,40 @@
+@startuml
+ title Conceptual ER model
+hide methods
+entity ROLE
+entity PROFILE
+entity PERSON
+entity FAMILY
+entity FAMILY_MEMBER
+entity SCHOOL
+entity SCHOOL_CAMPUS
+entity bus
+entity DRIVER_ASSIGNMENT
+entity ROUTE
+entity STOP
+entity ROUTE_STOP
+entity ROUTE_bus_ASSIGNMENT
+entity ROUTE_STUDENT_ASSIGNMENT
+entity ROUTE_EXECUTION
+entity BOARDING
+entity VERIFICATION_REQUEST
+
+ROLE ||--o{ PROFILE : classifies
+PERSON ||--o{ PROFILE : identifies
+FAMILY ||--o{ FAMILY_MEMBER : groups
+PROFILE ||--o{ FAMILY_MEMBER : links
+SCHOOL ||--o{ SCHOOL_CAMPUS : contains
+SCHOOL_CAMPUS ||--o{ PROFILE : assigns
+bus ||--o{ DRIVER_ASSIGNMENT : assigns
+ROUTE ||--o{ ROUTE_STOP : contains
+STOP ||--o{ ROUTE_STOP : orders
+ROUTE ||--o{ ROUTE_bus_ASSIGNMENT : programa
+bus ||--o{ ROUTE_bus_ASSIGNMENT : serves
+ROUTE ||--o{ ROUTE_STUDENT_ASSIGNMENT : assigns
+PROFILE ||--o{ ROUTE_STUDENT_ASSIGNMENT : transports
+ROUTE_EXECUTION ||--o{ BOARDING : records
+PROFILE ||--o{ BOARDING : Student
+bus ||--o{ BOARDING : vehicle
+VERIFICATION_REQUEST }o--|| PROFILE : validates
+@enduml
+

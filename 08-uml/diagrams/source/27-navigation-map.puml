@@ -1,0 +1,41 @@
+@startuml
+ title Navigation map
+top to bottom direction
+package "application web" {
+  [start public] --> [start of session]
+  [start of session] --> [recover password]
+  [recover password] --> [Restablecer password]
+  [start of session] --> [Panel Administrator]
+  [Panel Administrator] --> [users]
+  [Panel Administrator] --> [families]
+  [Panel Administrator] --> [drivers]
+  [Panel Administrator] --> [buses]
+  [Panel Administrator] --> [stops]
+  [Panel Administrator] --> [routes]
+  [Panel Administrator] --> [profile]
+  [profile] --> [Cambiar email]
+  [profile] --> [Cambiar password]
+  [profile] --> [Cambiar phone]
+  [start of session] --> [Panel Super Admin]
+  [Panel Super Admin] --> [Administradores]
+  [Panel Super Admin] --> [schools and sedes]
+  [Panel Super Admin] --> [profile]
+}
+package "application mobile" {
+  [Login mobile] --> [start by role]
+  [start by role] --> [Mis students]
+  [Mis students] --> [route of the Student]
+  [route of the Student] --> [map in vivo]
+  [Mis students] --> [notifications Guardian]
+  [map in vivo] --> [notifications Guardian]
+  [start by role] --> [route of the Driver]
+  [route of the Driver] --> [trip active]
+  [trip active] --> [scan QR]
+  [trip active] --> [report incident]
+  [trip active] --> [notifications Driver]
+  [start by role] --> [Mi QR]
+  [Mi QR] --> [route Student]
+  [route Student] --> [notifications Student]
+}
+@enduml
+
