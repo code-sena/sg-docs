@@ -3,7 +3,7 @@
 - **ID:** ADDR-012
 - **Date:** 2026-10-23
 - **Status:** Accepted
-- **Authors:** Guardian Escolar Development Team
+- **Authors:** [Team]
 
 ---
 

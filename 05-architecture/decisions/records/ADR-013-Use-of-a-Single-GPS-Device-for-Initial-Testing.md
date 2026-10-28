@@ -4,7 +4,7 @@
 - **Date:** 2026-10-26
 - **Status:** Accepted
 - **Proposed path:** `records/ADR-013-single-gps-initial-testing.md`
-
+- **Authors:** Sharik Dayanna Rojas Ibarra
 ---
 
 ## Context

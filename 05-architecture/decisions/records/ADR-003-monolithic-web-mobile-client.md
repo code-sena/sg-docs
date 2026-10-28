@@ -2,7 +2,7 @@
 
 - **ID:** ADR-003
 - **Date:** 2026-09-04
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authors:** Juan Pablo Chala
 
 ---
