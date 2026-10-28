@@ -1,194 +1,250 @@
 openapi: 3.0.3
 info:
-  title: "User Management API"
+  title: User Management API
   version: 1.0.0
   description: |
-    Persons, families, family members, and driver licenses.
+    Controller routes for people by role, families, person status,
+    driver licenses and profile lookup. DTOs in these operations follow the
+    checked-in request/response types; exceptions not mapped by a controller
+    are not assigned a speculative error body here.
+    Role-scoped permission and tenant guards still apply: admins require
+    SuperAdmin for create/list/update/delete/search; drivers require driver
+    permissions; parent writes use the student-management permission.
 
-    ## Autenticacion
-    All endpoints except /health require JWT:
-    Authorization: Bearer <token>
-
-    ## Errores
-    Esquema ErrorResponse en _shared.yaml.
-
-    ## Entrada publica
-    En produccion/dev el trafico pasa por Kong OSS en :8000.
-    Desarrollo local directo al servicio: http://localhost:8080
-
-    ## Documentacion
-    Interactiva via Scalar (ADR-007), no Swagger UI.
-
-    ## Paginacion
-    Listas: ?page=1&limit=20
+    Kong strips the public /user prefix and forwards the remaining
+    /api/v1/... path to the service.
 
 servers:
-  - url: http://localhost:8080
-    description: Local development
-  - url: https://api.dev.example.com/api/v1/users
-    description: Development
-  - url: https://api.example.com/api/v1/users
-    description: Production
+  - url: http://localhost:8080/api/v1
+    description: Direct local service
+  - url: http://localhost:8000/user/api/v1
+    description: Local Kong gateway (JWT required)
 
 security:
   - bearerAuth: []
 
 tags:
-  - name: User Management
-    description: Persons, families, family members, and driver licenses.
-  - name: Health
-    description: Health checks
+  - name: Families
+  - name: Persons
+  - name: Driver licenses
+  - name: Profile lookup
 
 paths:
-  /health:
-    get:
-      summary: Health check
-      tags: [Health]
-      security: []
-      responses:
-        '200':
-          description: Service healthy
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status: { type: string, example: ok }
-                  version: { type: string, example: 1.0.0 }
-                  db: { type: string, example: connected }
-  /persons:
-    get:
-      summary: List persons
-      tags: [User Management]
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /persons:
+  /students: &peopleCollection
     post:
-      summary: Create person
-      tags: [User Management]
+      summary: Create a person with this role
+      tags: [Persons]
       requestBody:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
+            schema: { $ref: '#/components/schemas/CreatePersonRequest' }
       responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /persons/{id}:
+        '200': { description: Person created; no response body. }
+        '400': { description: Missing or invalid school/campus or request field. }
+        '401': { description: Authentication required. }
+        '403': { description: Permission or tenant access denied. }
+        '503': { description: School directory unavailable. }
     get:
-      summary: Get person
-      tags: [User Management]
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
-      responses:
+      summary: List visible people with this role
+      tags: [Persons]
+      responses: &personListResponses
         '200':
-          description: OK
+          description: Visible people.
           content:
             application/json:
-              schema: { type: object }
-        '404': { $ref: '#/components/responses/NotFound' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /persons/{id}:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/PersonList' }
+        '401': { description: Authentication required. }
+        '403': { description: Permission or tenant access denied. }
+  /students/{id}: &personById
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      summary: Get a visible person
+      tags: [Persons]
+      responses:
+        '200':
+          description: Person details.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PersonResponse' }
+        '401': { description: Authentication required. }
+        '403': { description: Permission or tenant access denied. }
+        '404': { description: Person not found. }
     put:
-      summary: Update person
-      tags: [User Management]
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
+      summary: Update a person
+      tags: [Persons]
       requestBody:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
+            schema: { $ref: '#/components/schemas/PersonRequest' }
+      responses:
+        '200': { description: Updated; no response body. }
+        '401': { description: Authentication required. }
+        '403': { description: Permission or tenant access denied. }
+    delete:
+      summary: Delete a person
+      tags: [Persons]
+      responses:
+        '204': { description: Deleted; no response body. }
+        '401': { description: Authentication required. }
+        '403': { description: Permission or tenant access denied. }
+  /students/search: &personSearch
+    get:
+      summary: Search visible people with this role
+      tags: [Persons]
+      parameters:
+        - name: search
+          in: query
+          required: true
+          schema: { type: string }
+      responses: *personListResponses
+  /parents: *peopleCollection
+  /parents/{id}: *personById
+  /parents/search: *personSearch
+  /drivers: *peopleCollection
+  /drivers/{id}: *personById
+  /drivers/search: *personSearch
+  /admins:
+    post:
+      summary: Create an administrator
+      description: Requires SuperAdmin; schoolId is required by the use case.
+      tags: [Persons]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/PersonRequest'
+                - type: object
+                  required: [schoolId]
+                  properties:
+                    schoolId: { type: string, format: uuid }
+      responses:
+        '200': { description: Administrator created; no response body. }
+        '400': { description: Missing or invalid school or request field. }
+        '401': { description: Authentication required. }
+        '403': { description: SuperAdmin role required. }
+        '503': { description: School directory unavailable. }
+    get:
+      summary: List administrators
+      description: Requires SuperAdmin.
+      tags: [Persons]
+      responses: *personListResponses
+  /admins/{id}: *personById
+  /admins/search: *personSearch
+  /families:
+    post:
+      summary: Create a family
+      tags: [Families]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RegisterFamilyRequest' }
       responses:
         '200':
-          description: OK
+          description: Family created with generated family and member identifiers.
           content:
             application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /persons/{id}:
-    delete:
-      summary: Soft delete person
-      tags: [User Management]
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string, format: uuid }
-      responses:
-        '204': { description: Deleted }
-        '404': { $ref: '#/components/responses/NotFound' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /families:
+              schema: { $ref: '#/components/schemas/RegisterFamilyResponse' }
+        '400': { $ref: '#/components/responses/ValidationProblem' }
+        '500': { $ref: '#/components/responses/Problem' }
     get:
       summary: List families
-      tags: [User Management]
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
+      tags: [Families]
       responses:
         '200':
-          description: OK
+          description: Family list.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /families:
-    post:
-      summary: Create family
-      tags: [User Management]
+                type: array
+                items: { $ref: '#/components/schemas/FamilyListItem' }
+        '500': { $ref: '#/components/responses/Problem' }
+  /families/search:
+    get:
+      summary: Search families
+      tags: [Families]
+      parameters:
+        - name: search
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Matching families.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/FamilyListItem' }
+  /families/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      summary: Get a family
+      tags: [Families]
+      responses:
+        '200':
+          description: Family details.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FamilyResponse' }
+        '404': { $ref: '#/components/responses/Problem' }
+        '500': { $ref: '#/components/responses/Problem' }
+    put:
+      summary: Update a family
+      tags: [Families]
       requestBody:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
+            schema: { $ref: '#/components/schemas/RegisterFamilyRequest' }
       responses:
-        '201':
-          description: Created
+        '200': { description: Family updated; no response body. }
+        '400': { $ref: '#/components/responses/ValidationProblem' }
+        '404': { $ref: '#/components/responses/Problem' }
+        '500': { $ref: '#/components/responses/Problem' }
+    delete:
+      summary: Delete a family
+      tags: [Families]
+      responses:
+        '204': { description: Deleted; no response body. }
+  /families/student/{studentProfileId}/members:
+    get:
+      summary: List family members for a student
+      tags: [Families]
+      parameters:
+        - name: studentProfileId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Parent profile identifiers associated with the student.
           content:
             application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /families/{id}/members:
-    post:
-      summary: Link member to family
-      tags: [User Management]
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/FamilyMemberProfile' }
+        '403': { $ref: '#/components/responses/Problem' }
+        '404': { $ref: '#/components/responses/Problem' }
+        '500': { $ref: '#/components/responses/Problem' }
+  /persons/{id}/status:
+    patch:
+      summary: Update a person's status
+      tags: [Persons]
       parameters:
         - name: id
           in: path
@@ -198,115 +254,287 @@ paths:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
+            schema: { $ref: '#/components/schemas/ChangePersonStatusRequest' }
       responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /driver-licenses:
-    get:
-      summary: List driver licenses
-      tags: [User Management]
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
+        '200': { description: Status updated. }
+        '400': { $ref: '#/components/responses/Problem' }
+        '403': { $ref: '#/components/responses/Problem' }
+        '404': { $ref: '#/components/responses/Problem' }
+        '500': { $ref: '#/components/responses/Problem' }
+        '503': { $ref: '#/components/responses/Problem' }
   /driver-licenses:
     post:
-      summary: Create driver license
-      tags: [User Management]
+      summary: Create a driver license
+      tags: [Driver licenses]
       requestBody:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
+            schema: { $ref: '#/components/schemas/DriverLicenseRequest' }
       responses:
-        '201':
-          description: Created
+        '200':
+          description: Driver license created.
           content:
             application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
+              schema: { $ref: '#/components/schemas/CreateDriverLicenseResponse' }
+    get:
+      summary: List driver licenses
+      tags: [Driver licenses]
+      responses:
+        '200':
+          description: Driver licenses.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/DriverLicenseListItem' }
+      parameters:
+        - name: profileId
+          in: query
+          required: false
+          schema: { type: string, format: uuid }
+  /driver-licenses/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      summary: Get a driver license
+      tags: [Driver licenses]
+      responses:
+        '200':
+          description: Driver license details.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DriverLicense' }
+        '404': { description: Driver license not found. }
+    put:
+      summary: Update a driver license
+      tags: [Driver licenses]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpdateDriverLicenseRequest' }
+      responses:
+        '200': { description: Driver license updated. }
+        '404': { description: Driver license not found. }
+    delete:
+      summary: Delete a driver license
+      tags: [Driver licenses]
+      responses:
+        '204': { description: Deleted; no response body. }
+        '404': { description: Driver license not found. }
+  /profiles/{id}/exists:
+    get:
+      summary: Check whether a profile exists
+      tags: [Profile lookup]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200': { description: Profile exists; no response body. }
+        '404': { description: Profile does not exist. }
+  /profiles/{id}/name:
+    get:
+      summary: Get a profile name
+      tags: [Profile lookup]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Profile name as plain text.
+          content:
+            text/plain:
+              schema: { type: string }
+        '404': { description: Profile does not exist or has no name. }
 
 components:
+  schemas:
+    RegisterFamilyRequest:
+      type: object
+      required: [familyName, members]
+      properties:
+        familyName: { type: string, minLength: 1 }
+        observations: { type: string, nullable: true }
+        members:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/FamilyMemberRequest' }
+    FamilyMemberRequest:
+      type: object
+      required: [profileId, relationshipType]
+      properties:
+        profileId: { type: string, format: uuid }
+        relationshipType:
+          type: string
+          enum: [Parent, Student]
+          description: Relationship parser accepts these names case-insensitively.
+    RegisterFamilyResponse:
+      type: object
+      required: [familyId, members]
+      properties:
+        familyId: { type: string, format: uuid }
+        members:
+          type: array
+          items: { $ref: '#/components/schemas/RegisteredFamilyMember' }
+    RegisteredFamilyMember:
+      type: object
+      required: [memberId, profileId]
+      properties:
+        memberId: { type: string, format: uuid }
+        profileId: { type: string, format: uuid }
+    FamilyListItem:
+      type: object
+      required: [id, name]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        parentProfileId: { type: string, format: uuid, nullable: true }
+    FamilyResponse:
+      allOf:
+        - $ref: '#/components/schemas/FamilyListItem'
+        - type: object
+          required: [description, children]
+          properties:
+            description: { type: string }
+            children:
+              type: array
+              items: { type: string, format: uuid }
+    FamilyMemberProfile:
+      type: object
+      required: [profileId]
+      properties:
+        profileId: { type: string, format: uuid }
+    ChangePersonStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string, enum: [Active, Inactive] }
+    DriverLicenseRequest:
+      type: object
+      required: [profileId, licenseNumber, licenseExpirationDate]
+      properties:
+        profileId: { type: string, format: uuid }
+        licenseNumber: { type: string }
+        licenseExpirationDate: { type: string, format: date }
+    UpdateDriverLicenseRequest:
+      type: object
+      required: [licenseNumber, licenseExpirationDate]
+      properties:
+        licenseNumber: { type: string }
+        licenseExpirationDate: { type: string, format: date }
+        status: { type: string, nullable: true, enum: [Active, Inactive] }
+    CreateDriverLicenseResponse:
+      type: object
+      required: [id, profileId]
+      properties:
+        id: { type: string, format: uuid }
+        profileId: { type: string, format: uuid }
+    DriverLicenseListItem:
+      type: object
+      required: [id, profileId, licenseNumber, licenseExpirationDate]
+      properties:
+        id: { type: string, format: uuid }
+        profileId: { type: string, format: uuid }
+        licenseNumber: { type: string }
+        licenseExpirationDate: { type: string, format: date }
+    DriverLicense:
+      allOf:
+        - $ref: '#/components/schemas/DriverLicenseListItem'
+        - type: object
+          required: [status]
+          properties:
+            status:
+              type: integer
+              format: int32
+              enum: [0, 1]
+              description: "Default System.Text.Json enum values: 0=Active, 1=Inactive."
+    ProblemDetails:
+      type: object
+      properties:
+        type: { type: string, format: uri-reference }
+        title: { type: string }
+        status: { type: integer, format: int32 }
+        detail: { type: string }
+        instance: { type: string, format: uri-reference }
+        hint: { type: string }
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items: { type: string }
+    PersonRequest:
+      type: object
+      description: |
+        Common PersonRequestDto fields. This is the serialized shape, not an
+        exhaustive statement of persistence constraints. PUT does not assign campusId.
+      required: [name, lastName, identificationType, identificationNumber, email, residenceAddress]
+      properties:
+        name: { type: string }
+        lastName: { type: string }
+        identificationType: { type: string }
+        identificationNumber: { type: string }
+        email: { type: string }
+        phone: { type: integer, format: int64 }
+        residenceAddress: { type: string }
+        dateBirth: { type: string, format: date }
+        cityId: { type: string, format: uuid, nullable: true }
+        schoolId: { type: string, format: uuid, nullable: true }
+    CreatePersonRequest:
+      allOf:
+        - $ref: '#/components/schemas/PersonRequest'
+        - type: object
+          required: [campusId]
+          properties:
+            campusId:
+              type: string
+              format: uuid
+              description: Required and verified through the school directory before saving.
+    PersonList:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        lastName: { type: string }
+        identificationNumber: { type: string }
+        email: { type: string }
+        phone: { type: integer, format: int64 }
+        profileId: { type: string, format: uuid, nullable: true }
+        cityId: { type: string, format: uuid, nullable: true }
+        schoolId: { type: string, format: uuid, nullable: true }
+        licenseNumber: { type: string, nullable: true }
+        licenseExpirationDate: { type: string, format: date, nullable: true }
+    PersonResponse:
+      allOf:
+        - $ref: '#/components/schemas/PersonList'
+        - type: object
+          properties:
+            identificationType:
+              type: integer
+              enum: [0, 1]
+              description: Default System.Text.Json enum serialization; TI=0, CC=1.
+            residenceAddress: { type: string }
+            dateBirth: { type: string, format: date }
+  responses:
+    Problem:
+      description: ProblemDetails returned by ApiErrors.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/ProblemDetails' }
+    ValidationProblem:
+      description: Request body failed automatic API model validation.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/ProblemDetails' }
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-  parameters:
-    Page:
-      name: page
-      in: query
-      schema: { type: integer, minimum: 1, default: 1 }
-    Limit:
-      name: limit
-      in: query
-      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
-  responses:
-    BadRequest:
-      description: Invalid request
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-    Unauthorized:
-      description: Missing or invalid JWT
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-    Forbidden:
-      description: Insufficient permissions
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-    NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-    Unprocessable:
-      description: Semantic validation failed
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-  schemas:
-    ErrorResponse:
-      type: object
-      required: [error, message]
-      properties:
-        error: { type: string, example: VALIDATION_ERROR }
-        message: { type: string }
-        details:
-          type: array
-          items:
-            type: object
-            properties:
-              field: { type: string }
-              message: { type: string }
-        correlationId: { type: string, format: uuid }
-    PageMeta:
-      type: object
-      properties:
-        page: { type: integer }
-        limit: { type: integer }
-        total: { type: integer }
-        totalPages: { type: integer }

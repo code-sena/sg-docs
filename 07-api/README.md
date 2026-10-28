@@ -1,7 +1,28 @@
 # 07 — API Contracts
 
 > **Interactive docs:** **Scalar** is the chosen portal (ADR-007) — not Swagger UI.
-> Contracts in `contracts/openapi/` are rendered by Scalar in dev/CI.
+> The .NET services expose their generated documents through Scalar. The central
+> documents below are maintained separately; CI publication of them is not verified.
+
+## Validate the central documents
+
+From `contracts/openapi/`, run `npm ci --ignore-scripts` and `npm test`.
+The isolated development dependencies validate all ten YAML files with duplicate
+key rejection, OpenAPI 3.0 schema validation and reference resolution. No service,
+database or deployment is started.
+
+Passing validation is not proof of full runtime contract parity. This validator
+also checks source-derived DTO, enum, error-shape and status assertions for the
+fleet, route, notification, family/license, IAM, GPS, school and person contracts.
+The GPS contract was compared with its three controllers, models, Kong route and
+mobile consumer. This is a bounded correction, not a guarantee that every DTO or
+runtime behavior in every service has been exhaustively checked. IAM's two
+exception handlers map account-inactive errors differently (401 vs. 403), so
+that status remains unresolved; recovery HTTP controllers currently have no
+central contract. Do not generate production clients without checking the
+service's generated OpenAPI and source. The gateway document has no gateway-owned
+operations: Kong proxies the routes described by the service documents and does
+not implement the former `/health` response.
 
 > **What is this?** The formal specification of how microservices communicate with each other
 > and with the outside world. The contract is the promise a service makes to its consumers.

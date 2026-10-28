@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "description": "Isolated validation tools for the OpenAPI contract documents.",
+  "scripts": {
+    "test": "node validate-openapi.cjs"
+  },
+  "devDependencies": {
+    "@apidevtools/swagger-parser": "^12.1.0",
+    "yaml": "^2.8.1"
+  }
+}

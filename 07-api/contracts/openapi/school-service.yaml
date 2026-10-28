@@ -3,14 +3,18 @@ info:
   title: "School API"
   version: 1.0.0
   description: |
-    Schools, campuses, school admins, and cities (Geographic).
+    Schools and campus lookup endpoints.
 
     ## Autenticacion
-    All endpoints except /health require JWT:
+    The Kong route uses /school-management and strips that prefix before
+    forwarding; the remaining /api/v1/... path is preserved.
+
+    Protected endpoints require JWT:
     Authorization: Bearer <token>
 
     ## Errores
-    Esquema ErrorResponse en _shared.yaml.
+    Invalid school/campus requests return HTTP 400 Problem Details.
+    Authentication and not-found failures may have no response body.
 
     ## Entrada publica
     En produccion/dev el trafico pasa por Kong OSS en :8000.
@@ -19,64 +23,33 @@ info:
     ## Documentacion
     Interactiva via Scalar (ADR-007), no Swagger UI.
 
-    ## Paginacion
-    Listas: ?page=1&limit=20
-
 servers:
-  - url: http://localhost:8080
-    description: Local development
-  - url: https://api.dev.example.com/api/v1/schools
-    description: Development
-  - url: https://api.example.com/api/v1/schools
-    description: Production
+  - url: http://localhost:8080/api/v1
+    description: Direct local service
+  - url: http://localhost:8000/school-management/api/v1
+    description: Local Kong gateway (JWT required)
 
 security:
   - bearerAuth: []
 
 tags:
   - name: School
-    description: Schools, campuses, school admins, and cities (Geographic).
-  - name: Health
-    description: Health checks
+    description: Schools and campus lookup endpoints.
 
 paths:
-  /health:
-    get:
-      summary: Health check
-      tags: [Health]
-      security: []
-      responses:
-        '200':
-          description: Service healthy
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status: { type: string, example: ok }
-                  version: { type: string, example: 1.0.0 }
-                  db: { type: string, example: connected }
   /schools:
     get:
       summary: List schools
       tags: [School]
-      parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
       responses:
         '200':
-          description: OK
+          description: School list.
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
+                type: array
+                items: { $ref: '#/components/schemas/SchoolList' }
         '401': { $ref: '#/components/responses/Unauthorized' }
-  /schools:
     post:
       summary: Create school
       tags: [School]
@@ -84,16 +57,41 @@ paths:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
+            schema: { $ref: '#/components/schemas/SchoolRequest' }
       responses:
-        '201':
-          description: Created
+        '201': { description: Created; no response body. }
+        '400': { $ref: '#/components/responses/BadRequest' }
+  /schools/search:
+    get:
+      summary: Search schools
+      tags: [School]
+      parameters:
+        - name: search
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Matching schools.
           content:
             application/json:
-              schema: { type: object }
+              schema: { type: array, items: { $ref: '#/components/schemas/SchoolList' } }
+  /schools/with-campuses:
+    post:
+      summary: Create a school with campuses
+      tags: [School]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SchoolWithCampusesRequest' }
+      responses:
+        '201':
+          description: School and campuses created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SchoolWithCampusesResponse' }
         '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
   /schools/{id}:
     get:
       summary: Get school
@@ -108,10 +106,9 @@ paths:
           description: OK
           content:
             application/json:
-              schema: { type: object }
+              schema: { $ref: '#/components/schemas/SchoolResponse' }
         '404': { $ref: '#/components/responses/NotFound' }
         '401': { $ref: '#/components/responses/Unauthorized' }
-  /schools/{id}:
     put:
       summary: Update school
       tags: [School]
@@ -124,91 +121,71 @@ paths:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
+            schema: { $ref: '#/components/schemas/SchoolRequest' }
       responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema: { type: object }
+        '204': { description: Updated; no response body. }
         '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /campuses:
-    get:
-      summary: List campuses
+    delete:
+      summary: Delete school
       tags: [School]
       parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '204': { description: Deleted; no response body. }
+  /schools/{id}/campuses:
+    get:
+      summary: List campuses for a school
+      tags: [School]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: includeInactive
+          in: query
+          required: false
+          schema: { type: boolean, default: false }
       responses:
         '200':
-          description: OK
+          description: School campuses
           content:
             application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /campuses:
-    post:
-      summary: Create campus
+              schema: { type: array, items: { $ref: '#/components/schemas/SchoolCampusResponse' } }
+  /schools/{id}/with-campuses:
+    put:
+      summary: Update a school and its campuses
       tags: [School]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
       requestBody:
         required: true
         content:
           application/json:
-            schema: { type: object, additionalProperties: true }
+            schema: { $ref: '#/components/schemas/SchoolWithCampusesRequest' }
       responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema: { type: object }
+        '204': { description: Updated; no response body. }
         '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-        '404': { $ref: '#/components/responses/NotFound' }
-  /cities:
+  /campuses/{id}:
     get:
-      summary: List cities
+      summary: Get campus
       tags: [School]
       parameters:
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/Limit'
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
       responses:
         '200':
-          description: OK
+          description: Campus
           content:
             application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items: { type: object }
-                  pagination: { $ref: '#/components/schemas/PageMeta' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
-  /cities:
-    post:
-      summary: Create city
-      tags: [School]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { type: object, additionalProperties: true }
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema: { type: object }
-        '400': { $ref: '#/components/responses/BadRequest' }
-        '401': { $ref: '#/components/responses/Unauthorized' }
+              schema: { $ref: '#/components/schemas/CampusDetail' }
         '404': { $ref: '#/components/responses/NotFound' }
 
 components:
@@ -217,60 +194,110 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-  parameters:
-    Page:
-      name: page
-      in: query
-      schema: { type: integer, minimum: 1, default: 1 }
-    Limit:
-      name: limit
-      in: query
-      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
   responses:
     BadRequest:
       description: Invalid request
       content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/ProblemDetails' }
     Unauthorized:
-      description: Missing or invalid JWT
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-    Forbidden:
-      description: Insufficient permissions
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
+      description: Missing or invalid JWT; response body depends on gateway or service.
     NotFound:
-      description: Resource not found
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
-    Unprocessable:
-      description: Semantic validation failed
-      content:
-        application/json:
-          schema: { $ref: '#/components/schemas/ErrorResponse' }
+      description: Resource not found; no response body is guaranteed.
   schemas:
-    ErrorResponse:
+    SchoolRequest:
       type: object
-      required: [error, message]
+      required: [logo, name, address, email]
+      description: |
+        SchoolRequestDto. Coordinates may both be null/omitted, or must both
+        be supplied together. The address limits apply before persistence.
       properties:
-        error: { type: string, example: VALIDATION_ERROR }
-        message: { type: string }
-        details:
+        cityId: { type: string, format: uuid }
+        logo: { type: string, format: byte }
+        name: { type: string }
+        address: { type: string, minLength: 5, maxLength: 255 }
+        latitude: { type: number, minimum: -90, maximum: 90, nullable: true }
+        longitude: { type: number, minimum: -180, maximum: 180, nullable: true }
+        phone: { type: integer, format: int64 }
+        email: { type: string }
+        website: { type: string, nullable: true }
+        theme: { type: string, nullable: true }
+        status: { type: string, nullable: true }
+    SchoolCampusRequest:
+      type: object
+      required: [name, address]
+      description: |
+        Coordinates must be supplied together or both absent. Names must be
+        unique within the request; existing IDs cannot be repeated. New campuses
+        must be Active; Inactive campuses require an existing ID.
+      properties:
+        id: { type: string, format: uuid, nullable: true }
+        name: { type: string, minLength: 1, maxLength: 30 }
+        address: { type: string, minLength: 5, maxLength: 255 }
+        latitude: { type: number, minimum: -90, maximum: 90, nullable: true }
+        longitude: { type: number, minimum: -180, maximum: 180, nullable: true }
+        status: { type: string, enum: [Active, Inactive], default: Active }
+    SchoolWithCampusesRequest:
+      allOf:
+        - $ref: '#/components/schemas/SchoolRequest'
+        - type: object
+          required: [campuses]
+          properties:
+            campuses:
+              type: array
+              items: { $ref: '#/components/schemas/SchoolCampusRequest' }
+            removedCampusIds:
+              type: array
+              nullable: true
+              items: { type: string, format: uuid }
+              description: IDs cannot also be present in campuses.
+    SchoolList:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        cityId: { type: string, format: uuid }
+        name: { type: string }
+        address: { type: string }
+        status: { type: string }
+    SchoolResponse:
+      allOf:
+        - $ref: '#/components/schemas/SchoolRequest'
+        - type: object
+          properties:
+            id: { type: string, format: uuid }
+            cityName: { type: string }
+    SchoolCampusResponse:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        address: { type: string }
+        latitude: { type: number, nullable: true }
+        longitude: { type: number, nullable: true }
+        status: { type: string }
+    SchoolWithCampusesResponse:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        campuses:
           type: array
-          items:
-            type: object
-            properties:
-              field: { type: string }
-              message: { type: string }
-        correlationId: { type: string, format: uuid }
-    PageMeta:
+          items: { $ref: '#/components/schemas/SchoolCampusResponse' }
+    CampusDetail:
       type: object
       properties:
-        page: { type: integer }
-        limit: { type: integer }
-        total: { type: integer }
-        totalPages: { type: integer }
+        id: { type: string, format: uuid }
+        schoolId: { type: string, format: uuid }
+        name: { type: string }
+        address: { type: string }
+        status: { type: string }
+    ProblemDetails:
+      type: object
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string }
+        errors: { type: object, additionalProperties: { type: array, items: { type: string } } }
+      additionalProperties: true
